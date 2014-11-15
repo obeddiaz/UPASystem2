@@ -21,6 +21,8 @@ class Sii {
     private $request;
     private $response;
     private $logFile;
+    private $token;
+    private $minutesToCache = 20;
 
     public function __construct($config = null) {
         //var_dump($config["url"]);exit
@@ -40,10 +42,13 @@ class Sii {
             $this->url = $config["url"];
             $this->name = $config["name"];
             $this->password = $config["password"];
+            $curr_user = Session::get('user');
+            $this->token = $curr_user['persona']['token'];
             $this->client = new Buzz\Client\FileGetContents();
             //$this->client = new Buzz\Client\Curl();
             $this->client->setTimeout(60);
             $this->response = new Buzz\Message\Response();
+
             Log::useFiles($this->logFile, (App::environment('local', 'staging') ? 'debug' : 'critical'));
         }
         //$this->client = $buzz;
@@ -57,20 +62,47 @@ class Sii {
         $this->request->fromUrl($this->url . "/persona/login");
         $this->response = $this->send($this->client, $this->request);
         Log::info($this->response);
+        //$user_token=  json_decode($this->response->getContent());
+        //User::$token = $user_token->persona->token;
         return json_decode($this->response->getContent(), true);
+    }
+
+    public function orderParamsToKeyCache($datos) {
+        ksort($datos);
+        foreach ($datos as $key => $value) {
+            if (is_array($value)) {
+                $datos[$key] = $this->orderParamsToKeyCache($value);
+            }
+        }
+        return $datos;
     }
 
     public function new_request($type, $service, $datos = null) {
         $this->request = new Request($type);
-        $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        if ($datos) {
-            $content = array($datos);
-            $this->request->setContent(http_build_query($content));
+        if ($datos && is_array($datos)) {
+            $datos = $this->orderParamsToKeyCache($datos);
         }
-        $this->request->fromUrl($this->url . $service);
-        $this->response = $this->send($this->client, $this->request);
-        Log::info($this->response);
-        return json_decode($this->response->getContent(), true);
+        $datosToCache['datos'] = $datos;
+        $datosToCache['service'] = $service;
+        $keyToService = md5(json_encode($datosToCache));
+
+        if (Cache::has($keyToService)) {
+            $response = Cache::get($keyToService);
+        } else {
+            $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
+            $datos['token'] = $this->token;
+            if ($datos) {
+                $this->request->setContent(http_build_query($datos));
+            }
+            $this->request->fromUrl($this->url . $service);
+            $this->response = $this->send($this->client, $this->request);
+            Log::info($this->response);
+            $response = json_decode($this->response->getContent(), true);
+            if (!isset($response['error'])){
+                Cache::put($keyToService, $response, $this->minutesToCache);
+            }
+        }
+        return $response;
     }
 
     public function getPersonaByToken($token) {
@@ -80,52 +112,6 @@ class Sii {
         var_dump(http_build_query($content));
         $this->request->setContent(http_build_query($content));
         $this->request->fromUrl($this->url . "/persona/getbytoken");
-        $this->response = $this->send($this->client, $this->request);
-
-        return json_decode($this->response->getContent(), true);
-        // Do things with data, etc etc
-    }
-
-    public function getAlumnosActivos() {
-        $content = array("token" => User::$token);
-        $this->request = new Request("POST");
-        $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        $this->request->setContent(http_build_query($content));
-        $this->request->fromUrl($this->url . "/alumnos");
-        $this->response = $this->send($this->client, $this->request);
-
-        return json_decode($this->response->getContent(), true);
-        // Do things with data, etc etc
-    }
-
-    public function getAllPeriodos() {
-        $content = array("token" => User::$token);
-        $this->request = new Request("POST");
-        $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        $this->request->setContent(http_build_query($content));
-        $this->request->fromUrl($this->url . "/periodos");
-        $this->response = $this->send($this->client, $this->request);
-
-        return json_decode($this->response->getContent(), true);
-        // Do things with data, etc etc
-    }
-
-    public function getDocentes() {
-        $content = array("token" => User::$token);
-        $this->request = new Request("POST");
-        $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        $this->request->setContent(http_build_query($content));
-        $this->request->fromUrl($this->url . "/persona/getdocentes");
-        $this->response = $this->send($this->client, $this->request);
-
-        return json_decode($this->response->getContent(), true);
-        // Do things with data, etc etc
-    }
-
-    public function status() {
-        $this->request = new Request("GET");
-        //$this->request->addHeader('Authorization: Basic '.base64_encode($this->name.':'.$this->password));
-        $this->request->fromUrl($this->url . "/status");
         $this->response = $this->send($this->client, $this->request);
 
         return json_decode($this->response->getContent(), true);
