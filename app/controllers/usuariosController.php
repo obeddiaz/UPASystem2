@@ -47,28 +47,14 @@ class UsuariosController extends \BaseController {
         if (isset($params['u']) && isset($params['p'])) {
             $user = $sii->login($params['u'], $params['p']);
             if (isset($user['error'])) {
-                return json_encode(array("error" => "User or password Incorrect"));
+                return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
             } else {
                 Session::put('user', $user);
                 return json_encode(Session::all());
             }
+        } else {
+            echo json_encode(array('error' => true,'mensaje'=>'No hay parametros','respuesta'=>'' ));
         }
-
-//        if ($user) {
-//            $results[] = $user->toArray();
-//            Session::put('user', $results);
-//            return json_encode(Session::all());
-//        } else {
-//            $user = Usuarios::getUserAdminProfesor($params);
-//            if ($user) {
-//                $results[] = $user->toArray();
-//                Session::put('user', $results);
-//                return json_encode(Session::all());
-//            } else {
-//                return json_encode(array("error" => "User or password Incorrect"));
-//            }
-//        }
-//        $params = Input::get();
     }
 
     public function show() {
