@@ -6,6 +6,10 @@ class  Adeudos extends \Eloquent {
 	protected $table = 'adeudos';
 	protected $table_tipoadeudos = 'adeudo_tipopago';
 	public $timestamps = true;
+	public static function referencias($adeudos_id) {
+		return $this
+				->hasMany('referencias');
+	}
 }
 
 ?>

@@ -20,7 +20,23 @@ class ReferenciasController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		$parametros = array(
+			'adeudos_id' => Input::get('adeudos_id'), 
+			'referencia' => Input::get('referencia')
+		);		
+		$reglas = array(
+		    'adeudos_id' => 'required',
+		    'referencia' => 'required'
+		);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Referencias::create($parametros);
+			echo json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -41,9 +57,38 @@ class ReferenciasController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show()
 	{
-		//
+		$parametros = Input::get();
+		$reglas = array(
+			'id' => $parametros['id']
+		);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Referencias::find($parametros['id']);
+			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
+	}
+
+	public function show_by_adeudo()
+	{
+		$parametros = Input::get();
+		$reglas = array(
+			'adeudos_id' => $parametros['adeudos_id']
+		);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Referencias::find($parametros['adeudos_id'])->adeudos();
+			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
 	}
 
 
@@ -83,26 +128,11 @@ class ReferenciasController extends \BaseController {
 	}
 
 	public function leer_archivo_banco() {
-            $file=Input::file('referencia_archivo');
-            $fp = file($file);
-            var_dump($fp);
-            //var_dump(strlen($fp[0]));
-            //var_dump(strlen($fp[0])==337);
-            foreach ($fp as $line){
-                if (strlen($line)==143){
-//                    $explode_data=explode('.',substr($line,57));
-//                    var_dump(substr($line,0,27));
-//                    var_dump(substr($explode_data[3],11,10));
-//                    $referencia_data[]=$explode_data;
-//                    var_dump(substr($line,57));
-//                    var_dump($explode_data[0]);
-//                    var_dump($explode_data[1]);
-//                    var_dump($explode_data[2]);
-//                    var_dump(substr($explode_data[3],21));
-                    
-                }
-               // var_dump(strlen($line));
-            }
-            //echo json_encode($referencia_data);
+        $file=Input::file('referencia_archivo');
+        if (isset($file)) {
+        	$data_file=Archivo_referencias::leer($file);
+        	echo json_encode($data_file);
+        }
+        	echo json_encode(array('error'=>true,'mensaje'=>'No hay archivo','respuesta'=>''));
 	}
 }

@@ -10,7 +10,7 @@ class AgrupacionesController extends \BaseController {
 	public function index()
 	{
 		$res['data']=Agrupaciones::all();
-		echo json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 	}
 
 
@@ -37,7 +37,7 @@ class AgrupacionesController extends \BaseController {
 			$res['data']=Agrupaciones::create($parametros);
 			echo json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o no están mal', 'respuesta'=>null ));
+			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 	}
 

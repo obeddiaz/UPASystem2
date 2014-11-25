@@ -1,6 +1,6 @@
 <?php
 
-class AdeudosController extends \BaseController {
+class APIServicesController extends \BaseController {
 
 	/**
 	 * Display a listing of the resource.
@@ -9,7 +9,7 @@ class AdeudosController extends \BaseController {
 	 */
 	public function index()
 	{
-		
+		//
 	}
 
 
@@ -20,7 +20,7 @@ class AdeudosController extends \BaseController {
 	 */
 	public function create()
 	{
-		
+		//
 	}
 
 
@@ -36,30 +36,16 @@ class AdeudosController extends \BaseController {
 
 
 	/**
-	 * Muestra los adeudos por periodos.
+	 * Display the specified resource.
 	 *
-	 * @param  int  $id_periodo
+	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show_by_periodo()
+	public function show($id)
 	{
-		$parametros=Input::get();		
-		$reglas = 
-			array(
-			    'periodo' => 'required|integer'
-			);
-    	$validator = Validator::make($parametros,$reglas);
-
-		if (!$validator->fails())
-		{
-			$res['data']=Adeudos::where('periodo','=',$parametros['periodo']);
-			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
-		} else {
-			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o no están mal', 'respuesta'=>null ));
-		}
+		//
 	}
 
-	
 
 	/**
 	 * Show the form for editing the specified resource.
@@ -96,5 +82,21 @@ class AdeudosController extends \BaseController {
 		//
 	}
 
+	public function periodos() {
+		$sii= new Sii();
+		$res['data']=array();
+		try {
+			$res['data']=$sii->new_request('POST','/periodos');	
+			if (isset($res['data']) && !isset($res['data']['error'])) {
+				return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			} else {
+				return json_encode(array('error' =>true,'mensaje'=>'Algo esta mal con el servico.', 'respuesta'=>null ));
+			}
+		} catch (Exception $e) {
+			return json_encode(array('error' =>true,'mensaje'=>'Algo esta mal con el servico.', 'respuesta'=>null ));
+		}
+		
+		
+	}
 
 }

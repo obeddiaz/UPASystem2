@@ -10,7 +10,7 @@ class PruebaAPIController extends Controller {
         //$data=  Session::get('user');
         //var_dump($sii);
         //return $sii->getAlumnosActivos();
-        return $sii->new_request('POST','/grupos',array('obed'=>15,'diego'=>22,));
+        return $sii->new_request('POST','/periodos');
     }
 
 }
