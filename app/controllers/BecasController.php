@@ -168,7 +168,7 @@ class BecasController extends \BaseController {
 			'tipobeca' => Input::get('tipobeca')
 		);		
 		$reglas = array(
-			'id' => 'required'
+			'id' => 'required',
 			'abreviatura' => '', 
 			'importe' => 'numeric', 
 			'periodicidades_id' => 'integer',
