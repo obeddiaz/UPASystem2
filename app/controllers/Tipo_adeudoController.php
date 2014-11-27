@@ -9,7 +9,8 @@ class Tipo_adeudoController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$res['data']=Tipo_adeudo::All();
+		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));	
 	}
 
 
@@ -20,7 +21,24 @@ class Tipo_adeudoController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		$parametros=array(
+			'nombre' => Input::get('nombre'), 
+			'descripcion' => Input::get('descripcion')
+		);		
+		$reglas = 
+			array(
+			    'nombre' => 'required',
+			    'descripcion' => 'required'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Tipo_adeudo::create($parametros);
+			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
 	}
 
 
@@ -41,9 +59,22 @@ class Tipo_adeudoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show()
 	{
-		//
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Tipo_adeudo::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -65,9 +96,28 @@ class Tipo_adeudoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
-		//
+		$parametros=array(
+			'id'=>Input::get('id'),
+			'descripcion' => Input::get('descripcion'), 
+			'nombre' => Input::get('nombre')
+		);				
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			    'nombre' => 'max:30',
+			    'descripcion' => ''
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			Tipo_adeudo::where('id','=',$parametros['id'])->update($parametros);
+			$res['data']=Tipo_adeudo::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
 	}
 
 
@@ -77,9 +127,22 @@ class Tipo_adeudoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy()
 	{
-		//
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			Tipo_adeudo::destroy($parametros['id']);
+			$res['data']=Tipo_adeudo::All();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}		
 	}
 
 

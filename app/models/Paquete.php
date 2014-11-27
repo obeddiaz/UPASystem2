@@ -9,9 +9,10 @@ class  Paquete extends \Eloquent {
 		return $this
 				->belongsTo('Planes_de_pago', 'id_plandepago');
 	}
-}	public static function create_subconceptos_paquetes($data) {
+	public static function create_subconceptos_paquetes($data) {
 		$table=DB::table($table_subconceptos);
         $query=$table->insert($data);
         return $query->get();
     }
+}	
 ?>

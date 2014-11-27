@@ -75,7 +75,6 @@ class Planes_de_pagoController extends \BaseController {
 		}
 	}
 
-
 	/**
 	 * Show the form for editing the specified resource.
 	 *

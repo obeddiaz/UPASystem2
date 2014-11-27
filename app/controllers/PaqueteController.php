@@ -102,12 +102,11 @@ class PaqueteController extends \BaseController {
 	}
 
 
-	public function show_filtered()
+	public function show_nivel_periodo()
 	{
 		$parametros=Input::get();		
 		$reglas = 
 			array(
-			    'id_plandepago' => 'required|integer',
 			    'idnivel' => 'required|integer',
 			    'periodo' => 'required|integer'
 			);
@@ -115,7 +114,8 @@ class PaqueteController extends \BaseController {
 
 		if (!$validator->fails())
 		{
-			$res['data']=Paquete::where('id_plandepago','=',$parametros['id_plandepago'])->plan_de_pago;
+			$res['data']=Paquete::where('idnivel','=',$parametros['idnivel'])
+									->where('periodo','=',$parametros['periodo']);
 			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
