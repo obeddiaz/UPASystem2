@@ -21,7 +21,8 @@ class Sub_ConceptosController extends \BaseController {
 		{
 			$res['data']=Sub_conceptos::where('periodo','=',$parametros['periodo'])
 										->where('nivel_id','=',$parametros['nivel_id'])
-										->where('conceptos_id','=',$parametros['conceptos_id']);
+										->where('conceptos_id','=',$parametros['conceptos_id'])
+										->get();
 			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -119,7 +120,7 @@ class Sub_ConceptosController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
 		$parametros = array(
 			'id'=>Input::get('id'),

@@ -9,7 +9,8 @@ class Planes_de_pagoController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$res['data']=Planes_de_pago::All();
+		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 	}
 
 
@@ -20,7 +21,22 @@ class Planes_de_pagoController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		$parametros=Input::all();		
+		$reglas = 
+		array(
+			'descripcion' => 'required',
+		    'clave_plan' => 'required|max:6',
+		    'id_agrupaciones' => 'required|integer'
+		);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Planes_de_pago::create($parametros);
+			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -41,9 +57,22 @@ class Planes_de_pagoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show()
 	{
-		//
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Planes_de_pago::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -65,9 +94,30 @@ class Planes_de_pagoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
-		//
+		$parametros=array(
+			'id'=>Input::get('id'),
+			'clave_plan' => Input::get('clave_plan'), 
+			'id_agrupaciones' => Input::get('id_agrupaciones'),
+			'descripcion' => Input::get('descripcion')
+		);				
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			    'clave_plan' => 'max:6',
+			    'id_agrupaciones' => 'integer',
+			    'descripcion' => ''
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			Planes_de_pago::where('id','=',$parametros['id'])->update($parametros);
+			$res['data']=Planes_de_pago::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -77,9 +127,22 @@ class Planes_de_pagoController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy()
 	{
-		//
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			Planes_de_pago::destroy($parametros['id']);
+			$res['data']=Planes_de_pago::All();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 

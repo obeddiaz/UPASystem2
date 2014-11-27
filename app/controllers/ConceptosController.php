@@ -134,8 +134,8 @@ class ConceptosController extends \BaseController {
 		$reglas = 
 			array(
 			    'id' => 'required|integer',
-			    'concepto' => 'required|max:30',
-			    'descripcion' => 'required|alpha_dash'
+			    'concepto' => 'max:30',
+			    'descripcion' => 'alpha_dash'
 			);
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())

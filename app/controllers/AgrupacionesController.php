@@ -60,9 +60,30 @@ class AgrupacionesController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function show($id)
+	public function show()
 	{
 		//
+	}
+
+	public function show_planes()
+	{
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{	
+			#$periodo_actual=Common_function::periodo_actual();
+			$res['data']=Agrupaciones::find($parametros['id'])
+									->planes_de_pago()
+									->get();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+
 	}
 
 

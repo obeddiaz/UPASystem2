@@ -25,8 +25,8 @@ class ReferenciasController extends \BaseController {
 			'referencia' => Input::get('referencia')
 		);		
 		$reglas = array(
-		    'adeudos_id' => 'required',
-		    'referencia' => 'required'
+		    'adeudos_id' => 'required|integer',
+		    'referencia' => 'required|alpha_dash'
 		);
     	$validator = Validator::make($parametros,$reglas);
 
@@ -110,9 +110,25 @@ class ReferenciasController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
-		//
+		$parametros = array(
+			'id' => Input::get('id'),
+			'adeudos_id' => Input::get('adeudos_id'), 
+			'referencia' => Input::get('referencia')
+		);		
+		$reglas = array(
+			'id' => 'required|integer',
+		    'adeudos_id' => 'integer',
+		    'referencia' => 'alpha_dash'
+		);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			$res=Referencias::where('id','=',$parametros['id'])->update($parametros);
+			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));	
 	}
 
 
@@ -122,9 +138,22 @@ class ReferenciasController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy()
 	{
-		//
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			Referencias::destroy($parametros['id']);
+			$res['data']=Referencias::All();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 	public function leer_archivo_banco() {

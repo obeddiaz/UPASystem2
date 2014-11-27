@@ -16,8 +16,18 @@ Route::get('/', function() {
 });
 Route::group(array('prefix' => '/administracion'), function() {
     Route::group(array('prefix' => '/agrupaciones'), function() {
-        Route::get('/', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@index'));
-        Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
+      Route::get('/', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@index'));
+      Route::get('/clasificaciones', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@show_planes'));
+      Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
+    });
+    Route::group(array('prefix' => '/generales'), function() {
+      Route::group(array('prefix' => '/planes_de_pago'), function() {
+        Route::get('/todos', array('as' => 'muestra_planes', 'uses' => 'Planes_de_pagoController@index'));
+        Route::get('/', array('as' => 'muestra_planes', 'uses' => 'PaqueteController@index'));
+        Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Planes_de_pagoController@create')); 
+        Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Planes_de_pagoController@update'));
+        Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Planes_de_pagoController@destroy'));
+      });
     });
 });
 Route::group(array('prefix' => '/adeudos'), function() {
@@ -43,7 +53,7 @@ Route::group(array('prefix' => '/caja'), function() {
     Route::group(array('prefix' => '/subconceptos'), function() {
         Route::get('/subconceptos/', array('as' => 'muestra_todos_subconceptos', 'uses' => 'Sub_ConceptosController@index'));
         Route::get('/subconceptos/actualiza', array('as' => 'muestra_subconcepto', 'uses' => 'Sub_ConceptosController@show'));
-      #  Route::get('/subconceptos/actualiza/subconceptos', array('as' => 'muestra_subconceptos_concepto', 'uses' => 'ConceptosController@show_subconceptos'));
+    #   Route::get('/subconceptos/actualiza/subconceptos', array('as' => 'muestra_subconceptos_concepto', 'uses' => 'ConceptosController@show_subconceptos'));
         Route::post('/subconceptos/agregar', array('as' => 'crear_subconcepto', 'uses' => 'Sub_ConceptosController@create'));
         Route::put('/subconceptos/guardar', array('as' => 'actualizar_valor_subconcepto', 'uses' => 'Sub_ConceptosController@update'));
         Route::delete('/subconceptos/eliminar', array('as' => 'eliminar_subconcepto', 'uses' => 'Sub_ConceptosController@destroy'));
