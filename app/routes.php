@@ -28,6 +28,7 @@ Route::group(array('prefix' => '/administracion'), function() {
         Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Planes_de_pagoController@update'));
         Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Planes_de_pagoController@destroy'));
       });
+
     });
 });
 Route::group(array('prefix' => '/adeudos'), function() {
@@ -36,8 +37,8 @@ Route::group(array('prefix' => '/adeudos'), function() {
 Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
 Route::group(array('prefix' => '/user'), function() {
     Route::post('/login', array('as' => 'user', 'uses' => 'usuariosController@login'));
-    //Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
-});
+    Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
+});    
 Route::group(array('prefix' => '/caja'), function() {
     Route::group(array('prefix' => '/caja'), function() {
         Route::post('/banco/subir', array('as' => 'referencia', 'uses' => 'ReferenciasController@leer_archivo_banco'));
