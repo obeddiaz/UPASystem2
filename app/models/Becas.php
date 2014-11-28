@@ -10,6 +10,7 @@ class  Becas extends \Eloquent {
 	public $timestamps = true;
 
 	public static function obtenerTipoImporte($id=null) {
+		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$Temporaltable=DB::table('tipo_importe');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
@@ -18,6 +19,7 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerPerodicidades($id=null) {
+		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$Temporaltable=DB::table('periodicidades');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
@@ -26,6 +28,7 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerSubcidios($id=null) {
+		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$Temporaltable=DB::table('subcidios');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
@@ -34,19 +37,22 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerAlumnosBecas($data) {
+		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$Temporaltable=DB::table('becas_alumno');
-		$query=$Temporaltable->select('id_persona')
+		$query=$Temporaltable->select('id_persona','status')
 						->where('idbeca','=',$data['idbeca'])
 	    				->where('idnivel','=',$data['idnivel'])
 	    				->where('periodo','=',$data['periodo']);
 	    return $query->get();
 	}
 	public static function create_beca_alumno($data) {
+		DB::setFetchMode(PDO::FETCH_ASSOC);
 		$Temporaltable=DB::table('becas_alumno');
         $query=$Temporaltable->insert($data);
         return $query;
     }
     public static function delete_beca_alumno($data) {
+    	DB::setFetchMode(PDO::FETCH_ASSOC);
     	$Temporaltable=DB::table('becas_alumno');
     	$query=$Temporaltable->where('idbeca','=',$data['idbeca'])
     				 ->where('id_persona','=',$data['id_persona'])
@@ -55,6 +61,7 @@ class  Becas extends \Eloquent {
     	return $query;
     }
     public static function update_status_beca_alumno ($data) {
+    	DB::setFetchMode(PDO::FETCH_ASSOC);
     	$Temporaltable=DB::table('becas_alumno');
     	$query=$Temporaltable->where('idbeca','=',$data['idbeca'])
     				 ->where('id_persona','=',$data['id_persona'])
