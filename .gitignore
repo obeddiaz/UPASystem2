@@ -6,3 +6,7 @@ composer.lock
 .env.php
 .DS_Store
 Thumbs.db
+public/.htaccess2
+upasystem2.sublime-workspace
+upasystem2.sublime-project
+app/config/app.php
