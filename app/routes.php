@@ -19,6 +19,9 @@ Route::group(array('prefix' => '/administracion'), function() {
         Route::get('/', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@index'));
         Route::get('/clasificaciones', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@show_planes'));
         Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
+        Route::group(array('prefix' => '/alumnos_paquete'), function() {
+            Route::post('/agregar', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create'));
+        });
     });
     Route::group(array('prefix' => '/generales'), function() {
         Route::group(array('prefix' => '/planes_de_pago'), function() {

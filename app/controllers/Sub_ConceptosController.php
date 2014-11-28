@@ -78,7 +78,7 @@ class Sub_ConceptosController extends \BaseController {
     public function show() {
         $parametros = Input::get();
         $reglas = array(
-                    'id' => 'required|integer'
+            'id' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -141,7 +141,7 @@ class Sub_ConceptosController extends \BaseController {
         $sii = new Sii();
         $parametros = Input::get();
         $reglas = array(
-                    'id' => 'required|integer',
+            'id' => 'required|integer',
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
@@ -151,74 +151,5 @@ class Sub_ConceptosController extends \BaseController {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
-
-	/**
-	 * Show the form for editing the specified resource.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function edit($id)
-	{
-		//
-	}
-
-
-	/**
-	 * Update the specified resource in storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function update()
-	{
-		$parametros =Input::get();				
-		$reglas = array(
-		    'id' => 'required|integer',
-		    'sub_concepto' => 'max:30',
-		    'descripcion' => '',
-		    'conceptos_id' => 'integer',
-	    	'importe' => 'numeric'
-		);
-    	$validator = Validator::make($parametros,$reglas);
-		if (!$validator->fails())
-		{
-			foreach ($parametros as $key => $value) {
-				if (!array_key_exists($key,$reglas)) {
-					unset($parametros[$key]);	
-				}
-			}
-			$res=Sub_conceptos::where('id','=',$parametros['id'])->update($parametros);
-			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
-		} else {
-			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
-		}
-	}
-
-
-	/**
-	 * Remove the specified resource from storage.
-	 *
-	 * @param  int  $id
-	 * @return Response
-	 */
-	public function destroy()
-	{
-		$sii = new Sii();
-		$parametros=Input::get();		
-		$reglas = 
-		array(
-		    'id' => 'required|integer',
-		);
-    	$validator = Validator::make($parametros,$reglas);
-		if (!$validator->fails())
-		{
-			$res=Sub_conceptos::destroy($parametros['id']);
-			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
-		} else {
-			echo json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
-		}
-	}
-
 
 }
