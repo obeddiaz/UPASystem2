@@ -95,12 +95,7 @@ class Planes_de_pagoController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros=array(
-			'id'=>Input::get('id'),
-			'clave_plan' => Input::get('clave_plan'), 
-			'id_agrupaciones' => Input::get('id_agrupaciones'),
-			'descripcion' => Input::get('descripcion')
-		);				
+		$parametros=Input::get();
 		$reglas = 
 			array(
 			    'id' => 'required|integer',
@@ -111,6 +106,11 @@ class Planes_de_pagoController extends \BaseController {
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			Planes_de_pago::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Planes_de_pago::find($parametros['id']);
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));

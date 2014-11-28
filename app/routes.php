@@ -30,15 +30,15 @@ Route::group(array('prefix' => '/administracion'), function() {
       });
       Route::group(array('prefix' => '/becas'), function() {
         Route::get('/', array('as' => 'muestra_becas', 'uses' => 'BecasController@index'));
-        Route::get('/alumnos/beca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
-        Route::get('/alumnos/nobeca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
+        Route::get('/expediente', array('as' => 'muestra_becas', 'uses' => 'BecasController@show'));
+        Route::get('/alumnos/beca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show_alumno'));
+        //Route::get('/alumnos/nobeca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'))
         Route::post('/agregar', array('as' => 'crear_becas', 'uses' => 'BecasController@create')); 
-        Route::post('/alumnos/agregar', array('as' => 'asignar_becas', 'uses' => 'BecasController@create')); 
+        Route::post('/alumnos/agregar', array('as' => 'asignar_becas', 'uses' => 'BecasController@create_alumno')); 
         Route::put('/guardar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
-        Route::put('/alumnos/asignar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
-        Route::put('/alumnos/cancelar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
+        Route::put('/alumnos/status', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update_alumno_activar'));
         Route::delete('/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy'));  
-        Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy'));  
+        Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy_alumno'));  
       });
     });
 });
@@ -87,3 +87,4 @@ Route::group(array('prefix' => '/tipo_pagos'), function() {
 });
 Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));
 Route::get('/alumnos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos'));
+Route::get('/grupos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@grupos'));

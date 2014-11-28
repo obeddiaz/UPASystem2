@@ -143,15 +143,7 @@ class PaqueteController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros = array(
-			'id'=>Input::get('id'),
-			'id_plandepago' => Input::get('id_plandepago'), 
-			'idnivel' => Input::get('idnivel'),
-			'nivel' =>  Input::get('nivel'),
-			'periodo' => Input::get('periodo'),
-			'recargo' =>  Input::get('recargo'),
-			'recargo_inscripcion' => Input::get('recargo_inscripcion'),
-		);				
+		$parametros = Input::get();				
 		$reglas = array(
 			'id' => 'required|integer',
 			'id_plandepago' => 'integer',
@@ -164,7 +156,11 @@ class PaqueteController extends \BaseController {
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
-			
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			$res=Paquete::where('id','=',$parametros['id'])->update($parametros);
 			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {

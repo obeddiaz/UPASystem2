@@ -98,11 +98,7 @@ class Tipo_adeudoController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros=array(
-			'id'=>Input::get('id'),
-			'descripcion' => Input::get('descripcion'), 
-			'nombre' => Input::get('nombre')
-		);				
+		$parametros=Input::get();			
 		$reglas = 
 			array(
 			    'id' => 'required|integer',
@@ -112,6 +108,11 @@ class Tipo_adeudoController extends \BaseController {
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			Tipo_adeudo::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Tipo_adeudo::find($parametros['id']);
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));

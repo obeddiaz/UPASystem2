@@ -9,7 +9,7 @@ class BecasController extends \BaseController {
 	 */
 	public function index()
 	{
-		$res['data']=Becas::All();
+		$res['data']=Becas::orderBy('importe','desc')->get();
 		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 	}
 
@@ -27,6 +27,7 @@ class BecasController extends \BaseController {
 			'periodicidades_id' => Input::get('periodicidades_id'),
 			'subcidios_id' => Input::get('subcidios_id'), 
 			'tipo_importe_id' => Input::get('tipo_importe_id'), 
+			'descripcion' => Input::get('descripcion'),
 			'tipobeca' => Input::get('tipobeca')
 		);		
 		$reglas = array(
@@ -35,7 +36,8 @@ class BecasController extends \BaseController {
 			'periodicidades_id' => 'required|integer',
 			'subcidios_id' => 'required|integer', 
 			'tipo_importe_id' => 'required|integer', 
-			'tipobeca' => 'required|integer'
+			'descripcion' => 'required',
+			'tipobeca' => 'integer'
 		);
     	$validator = Validator::make($parametros,$reglas);
 
@@ -47,6 +49,7 @@ class BecasController extends \BaseController {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 	}
+
 	public function create_alumno()
 	{
 		$parametros=array(
@@ -112,28 +115,28 @@ class BecasController extends \BaseController {
 		}
 	}
 
-	public function show_alumno_activo()
+	public function show_alumno()
 	{
-		$parametros= array(
-			'idbeca' => Input::get('idbeca'), 
-			'idnivel' => Input::get('idnivel'), 
-			'periodo' => Input::get('periodo'), 
-			'status' =>1
-		);		
+		$commond= new Common_functions();
+		$parametros= Input::get();		
 		$reglas = array(
+			//'id_persona' => 'required', 
 			'idbeca' => 'required|numeric', 
 			'idnivel' => 'required|integer',
 			'periodo' => 'required|integer', 
-			'status' => 'required|integer'
 		);
     	$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
-			$res['data']=Becas::find($parametros['id']);
+			$personasBeca=Becas::obtenerAlumnosBecas($parametros);
+			$res['data']=$commond->obtener_alumno_idPersona($personasBeca);
+			if ($res['data']==null) {
+				return json_encode(array('error' =>true,'mensaje'=>'Error en la busqueda de datos.', 'respuesta'=>null ));	
+			}
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			
 		}
 	}
 
@@ -158,15 +161,7 @@ class BecasController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros=array(
-			'id' => Input::get('id'),
-			'abreviatura' => Input::get('abreviatura'), 
-			'importe' => Input::get('importe'), 
-			'periodicidades_id' => Input::get('periodicidades_id'),
-			'subcidios_id' => Input::get('subcidios_id'), 
-			'tipo_importe_id' => Input::get('tipo_importe_id'), 
-			'tipobeca' => Input::get('tipobeca')
-		);		
+		$parametros=Input::get();		
 		$reglas = array(
 			'id' => 'required',
 			'abreviatura' => '', 
@@ -174,14 +169,47 @@ class BecasController extends \BaseController {
 			'periodicidades_id' => 'integer',
 			'subcidios_id' => 'integer', 
 			'tipo_importe_id' => 'integer', 
+			'descripcion' => '',
 			'tipobeca' => 'integer'
 		);
     	$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			Becas::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Becas::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+	}
+
+	public function update_alumno_activar()
+	{
+		$parametros=array(
+			'id_persona' => Input::get('id_persona') , 
+			'idbeca' => Input::get('idbeca'), 
+			'idnivel' => Input::get('idnivel'), 
+			'periodo' => Input::get('periodo'), 
+			'status' =>Input::get('status')
+		);		
+		$reglas = array(
+			'id_persona' => 'required', 
+			'idbeca' => 'required|numeric', 
+			'idnivel' => 'integer',
+			'periodo' => 'required|integer', 
+			'status' => 'required|integer'
+		);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Becas::update_status_beca_alumno($parametros);
 			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -207,7 +235,33 @@ class BecasController extends \BaseController {
 		{
 			
 			Becas::destroy($parametros['id']);
-			$res['data']=Becas::All();
+			$res['data']=Becas::orderBy('importe','desc')->get();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+	}
+
+	public function destroy_alumno()
+	{
+		$parametros=array(
+			'id_persona' => Input::get('id_persona') , 
+			'idbeca' => Input::get('idbeca'), 
+			'idnivel' => Input::get('idnivel'), 
+			'periodo' => Input::get('periodo'), 
+			'status' =>Input::get('status')
+		);		
+		$reglas = array(
+			'id_persona' => 'required', 
+			'idbeca' => 'required|numeric', 
+			'idnivel' => 'integer',
+			'periodo' => 'required|integer', 
+			'status' => 'required|integer'
+		);
+    	$validator = Validator::make($parametros,$reglas);
+		if (!$validator->fails())
+		{
+			$res['data']=Becas::update_status_beca_alumno($parametros);
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));

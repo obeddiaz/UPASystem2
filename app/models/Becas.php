@@ -4,13 +4,13 @@ class  Becas extends \Eloquent {
 	protected $fillable = [
 			'abreviatura', 'created_at', 'id', 'importe', 
 			'periodicidades_id', 'subcidios_id', 'tipo_importe_id', 
-			'tipobeca', 'updated_at'
+			'tipobeca', 'updated_at', 'descripcion'
 		];
 	protected $table = 'becas';
 	public $timestamps = true;
 
 	public static function obtenerTipoImporte($id=null) {
-		$Temporaltable=DB::Temporaltable('tipo_importe');
+		$Temporaltable=DB::table('tipo_importe');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
 			$query=$query->where('id',$id);
@@ -18,7 +18,7 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerPerodicidades($id=null) {
-		$Temporaltable=DB::Temporaltable('periodicidades');
+		$Temporaltable=DB::table('periodicidades');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
 			$query=$query->where('id',$id);
@@ -26,7 +26,7 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerSubcidios($id=null) {
-		$Temporaltable=DB::Temporaltable('subcidios');
+		$Temporaltable=DB::table('subcidios');
 		$query=$Temporaltable->select('*');
 		if (isset($id)) {
 			$query=$query->where('id',$id);
@@ -34,20 +34,20 @@ class  Becas extends \Eloquent {
 	    return $query->get();
 	}
 	public static function obtenerAlumnosBecas($data) {
-		$Temporaltable=DB::Temporaltable('becas_alumno');
-		$query=$Temporaltable->select('*')
+		$Temporaltable=DB::table('becas_alumno');
+		$query=$Temporaltable->select('id_persona')
 						->where('idbeca','=',$data['idbeca'])
 	    				->where('idnivel','=',$data['idnivel'])
 	    				->where('periodo','=',$data['periodo']);
 	    return $query->get();
 	}
 	public static function create_beca_alumno($data) {
-		$Temporaltable=DB::Temporaltable('becas_alumno');
+		$Temporaltable=DB::table('becas_alumno');
         $query=$Temporaltable->insert($data);
         return $query;
     }
     public static function delete_beca_alumno($data) {
-    	$Temporaltable=DB::$Temporaltable('becas_alumno');
+    	$Temporaltable=DB::table('becas_alumno');
     	$query=$Temporaltable->where('idbeca','=',$data['idbeca'])
     				 ->where('id_persona','=',$data['id_persona'])
     				 ->where('periodo','=',$data['periodo'])
@@ -55,7 +55,7 @@ class  Becas extends \Eloquent {
     	return $query;
     }
     public static function update_status_beca_alumno ($data) {
-    	$Temporaltable=DB::$Temporaltable('becas_alumno');
+    	$Temporaltable=DB::table('becas_alumno');
     	$query=$Temporaltable->where('idbeca','=',$data['idbeca'])
     				 ->where('id_persona','=',$data['id_persona'])
     				 ->where('periodo','=',$data['periodo'])

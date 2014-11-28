@@ -122,24 +122,22 @@ class Sub_ConceptosController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros = array(
-			'id'=>Input::get('id'),
-			'descripcion' => Input::get('descripcion'), 
-			'sub_concepto' => Input::get('sub_concepto'),
-			'conceptos_id' =>  Input::get('conceptos_id'),
-			'importe' => Input::get('importe')
-		);				
+		$parametros =Input::get();				
 		$reglas = array(
 		    'id' => 'required|integer',
 		    'sub_concepto' => 'max:30',
-		    'descripcion' => 'alpha_dash',
+		    'descripcion' => '',
 		    'conceptos_id' => 'integer',
 	    	'importe' => 'numeric'
 		);
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
-			
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			$res=Sub_conceptos::where('id','=',$parametros['id'])->update($parametros);
 			echo json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {

@@ -23,7 +23,7 @@ class ReferenciasController extends \BaseController {
         );
         $reglas = array(
             'adeudos_id' => 'required|integer',
-            'referencia' => 'required|alpha_dash'
+            'referencia' => 'required'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -97,18 +97,19 @@ class ReferenciasController extends \BaseController {
      * @return Response
      */
     public function update() {
-        $parametros = array(
-            'id' => Input::get('id'),
-            'adeudos_id' => Input::get('adeudos_id'),
-            'referencia' => Input::get('referencia')
-        );
+        $parametros = Input::get();
         $reglas = array(
             'id' => 'required|integer',
             'adeudos_id' => 'integer',
-            'referencia' => 'alpha_dash'
+            'referencia' => ''
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key,$reglas)) {
+                    unset($parametros[$key]);   
+                }
+            }
             $res = Referencias::where('id', '=', $parametros['id'])->update($parametros);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

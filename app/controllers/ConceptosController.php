@@ -126,11 +126,7 @@ class ConceptosController extends \BaseController {
 	 */
 	public function update()
 	{
-		$parametros=array(
-			'id'=>Input::get('id'),
-			'descripcion' => Input::get('descripcion'), 
-			'concepto' => Input::get('concepto')
-		);				
+		$parametros=Input::get();		
 		$reglas = 
 			array(
 			    'id' => 'required|integer',
@@ -140,6 +136,11 @@ class ConceptosController extends \BaseController {
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
 			Conceptos::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Conceptos::find($parametros['id']);
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
