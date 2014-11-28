@@ -24,6 +24,7 @@ class Common_functions {
 			foreach ($personas as $key_personas => $persona) {
 				foreach ($alumnos as $key_alumnos => $alumno) {
 					if ($alumno['id']==intval($persona->id_persona)) {
+						$alumno['status']=$persona->status;
 						$res[]=$alumno;	
 					}
 				}

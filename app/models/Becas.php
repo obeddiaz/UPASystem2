@@ -35,7 +35,7 @@ class  Becas extends \Eloquent {
 	}
 	public static function obtenerAlumnosBecas($data) {
 		$Temporaltable=DB::table('becas_alumno');
-		$query=$Temporaltable->select('id_persona')
+		$query=$Temporaltable->select('id_persona','status')
 						->where('idbeca','=',$data['idbeca'])
 	    				->where('idnivel','=',$data['idnivel'])
 	    				->where('periodo','=',$data['periodo']);
