@@ -142,9 +142,9 @@ class ReferenciasController extends \BaseController {
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
             $data_file = Archivo_referencias::leer($file);
-            echo json_encode($data_file);
+            return json_encode($data_file);
         }
-        echo json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
+        return json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
     }
 
 }

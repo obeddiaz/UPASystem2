@@ -12,7 +12,8 @@ class Archivo_referencias {
             switch (strlen($line)){
             	case 143:
 	            	$explode_data=explode('.',substr($line,57));
-					$data['referencia']=substr($line,0,27);
+	            	$data['convenio']=substr($line,0,6);
+					$data['referencia']=substr($line,7,27);
 					$data['fecha_de_pago']=substr($explode_data[3],11,10);
 					$data['importe']=intval($explode_data[2]);
 					$data['estado']=str_replace(" ","",(substr($explode_data[3],21,10)));
@@ -23,10 +24,8 @@ class Archivo_referencias {
             	case 44:
             		$res_referencias['infoFile'][str_replace(" ","",(substr($line,6,20)))]=intval(substr($line,27));	
             	break;
-            }
-           
+            }  
         }
-
         return $res_referencias;
 	}
 
