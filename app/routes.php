@@ -15,9 +15,12 @@ Route::get('/', function() {
     return View::make('hello');
 });
 Route::group(array('prefix' => '/administracion'), function() {
+
     Route::group(array('prefix' => '/agrupaciones'), function() {
         Route::get('/', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@index'));
+        # /administracion/agrupaciones/
         Route::get('/clasificaciones', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@show_planes'));
+        # /administracion/agrupaciones/clasificaciones
         Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
         Route::group(array('prefix' => '/alumnos_paquete'), function() {
             Route::post('/agregar', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create'));
@@ -79,11 +82,11 @@ Route::group(array('prefix' => '/user'), function() {
     Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
 });
 Route::group(array('prefix' => '/tipo_adeudo'), function() {
-    Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@index'));
-    Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@show'));
-    Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Tipo_adeudo@create'));
-    Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudo@update'));
-    Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudo@destroy'));
+    Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudoController@index'));
+    Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudoController@show'));
+    Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Tipo_adeudoController@create'));
+    Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudoController@update'));
+    Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudoController@destroy'));
 });
 Route::group(array('prefix' => '/tipo_pagos'), function() {
     Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@index'));
