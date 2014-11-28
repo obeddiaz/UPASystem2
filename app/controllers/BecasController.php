@@ -52,6 +52,8 @@ class BecasController extends \BaseController {
 
 	public function create_alumno()
 	{
+		$commond= new Common_functions();
+
 		$parametros=array(
 			 'id_persona' => Input::get('id_persona') , 
 			 'idbeca' => Input::get('idbeca'), 
@@ -60,7 +62,7 @@ class BecasController extends \BaseController {
 			 'status' =>1
 		);		
 		$reglas = array(
-			'id_persona' => 'required', 
+			'id_persona' => 'required|array', 
 			'idbeca' => 'required|numeric', 
 			'idnivel' => 'required|integer',
 			'periodo' => 'required|integer', 
@@ -70,7 +72,16 @@ class BecasController extends \BaseController {
 
 		if (!$validator->fails())
 		{
-			$res['data']=Becas::create_beca_alumno($parametros);
+			$array_insert=$parametros;
+			unset($array_insert['id_persona']);
+			$data_todos=$array_insert;
+			unset($data_todos['status']);
+			foreach ($parametros['id_persona'] as $key => $value) {
+				$array_insert['id_persona']=$value;
+				Becas::create_beca_alumno($array_insert);	
+			}
+			$personasBeca=Becas::obtenerAlumnosBecas($data_todos);
+			$res['data']=$commond->obtener_alumno_idPersona($personasBeca);
 			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -136,7 +147,7 @@ class BecasController extends \BaseController {
 			}
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			
+			return json_encode(array('error' =>true,'mensaje'=>'Error en la busqueda de datos.', 'respuesta'=>null ));	
 		}
 	}
 
@@ -191,6 +202,7 @@ class BecasController extends \BaseController {
 
 	public function update_alumno_activar()
 	{
+		$commond= new Common_functions();
 		$parametros=array(
 			'id_persona' => Input::get('id_persona') , 
 			'idbeca' => Input::get('idbeca'), 
@@ -199,7 +211,7 @@ class BecasController extends \BaseController {
 			'status' =>Input::get('status')
 		);		
 		$reglas = array(
-			'id_persona' => 'required', 
+			'id_persona' => 'required|array', 
 			'idbeca' => 'required|numeric', 
 			'idnivel' => 'integer',
 			'periodo' => 'required|integer', 
@@ -209,7 +221,18 @@ class BecasController extends \BaseController {
 
 		if (!$validator->fails())
 		{
-			$res['data']=Becas::update_status_beca_alumno($parametros);
+			$array_insert=$parametros;
+			unset($array_insert['id_persona']);
+			$data_todos=$array_insert;
+			unset($data_todos['status']);
+
+			foreach ($parametros['id_persona'] as $key => $value) {
+				$array_insert['id_persona']=$value;
+				Becas::update_status_beca_alumno($array_insert);
+			}
+
+			$personasBeca=Becas::obtenerAlumnosBecas($data_todos);
+			$res['data']=$commond->obtener_alumno_idPersona($personasBeca);
 			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -244,6 +267,7 @@ class BecasController extends \BaseController {
 
 	public function destroy_alumno()
 	{
+		$commond= new Common_functions();
 		$parametros=array(
 			'id_persona' => Input::get('id_persona') , 
 			'idbeca' => Input::get('idbeca'), 
@@ -252,16 +276,25 @@ class BecasController extends \BaseController {
 			'status' =>Input::get('status')
 		);		
 		$reglas = array(
-			'id_persona' => 'required', 
+			'id_persona' => 'required|array', 
 			'idbeca' => 'required|numeric', 
 			'idnivel' => 'integer',
 			'periodo' => 'required|integer', 
-			'status' => 'required|integer'
+			'status' => 'integer'
 		);
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
 		{
-			$res['data']=Becas::update_status_beca_alumno($parametros);
+			$array_insert=$parametros;
+			unset($array_insert['id_persona']);
+			$data_todos=$array_insert;
+			unset($data_todos['status']);
+			foreach ($parametros['id_persona'] as $key => $value) {
+				$array_insert['id_persona']=$value;
+				Becas::delete_beca_alumno($array_insert);
+			}
+			$personasBeca=Becas::obtenerAlumnosBecas($data_todos);
+			$res['data']=$commond->obtener_alumno_idPersona($personasBeca);
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));

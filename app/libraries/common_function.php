@@ -23,8 +23,10 @@ class Common_functions {
 		if (is_array($personas)) {
 			foreach ($personas as $key_personas => $persona) {
 				foreach ($alumnos as $key_alumnos => $alumno) {
-					if ($alumno['id']==intval($persona->id_persona)) {
-						$res[]=$alumno;	
+					if ($alumno['id']==intval($persona['id_persona'])) {
+						$persona_info=$persona;
+						unset($persona_info['id_persona']);
+						$res[]=array_merge($alumno,$persona_info);	
 					}
 				}
 			}
