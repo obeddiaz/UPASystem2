@@ -9,7 +9,8 @@ class CuentasController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$res['data']=Cuentas::All();
+		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 	}
 
 
@@ -20,7 +21,21 @@ class CuentasController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'bancos_id' => 'required|integer',
+			    'cuenta' => 'required'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Cuentas::create($parametros);
+			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -65,9 +80,30 @@ class CuentasController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'bancos_id' => 'required|integer',
+			    'cuenta' => 'required',
+			    'id' => 'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
+			Cuentas::where('id','=',$parametros['id'])->update($parametros);
+			$res['data']=Cuentas::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -77,9 +113,23 @@ class CuentasController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			Cuentas::destroy($parametros['id']);
+			$res['data']=Cuentas::All();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
