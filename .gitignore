@@ -10,3 +10,5 @@ public/.htaccess2
 upasystem2.sublime-workspace
 upasystem2.sublime-project
 app/config/app.php
+app/config/database.php
+app/config/database.php
