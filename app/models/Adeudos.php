@@ -2,8 +2,7 @@
 
 class Adeudos extends \Eloquent {
 
-    protected $fillable = ['becas_id', 'fecha_limite', 'id', 'id_persona', 'importe',
-        'periodo', 'status_adeudo', 'status_beca', 'sub_conceprto_id', 'tipo_adeudo_id'];
+    protected $fillable = ['fecha_limite', 'id', 'id_persona', 'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo','paquete_id'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -21,18 +20,20 @@ class Adeudos extends \Eloquent {
 
     public static function agregar_adeudos($alumno) {
         foreach (Adeudos::$custom_data["subconcepto"] as $subconcepto) {
-            Adeudos::insert(
-                    array(
-                        "sub_concepto_id" => $subconcepto->id,
-                        "id_persona" => $alumno,
-                        "importe" => $subconcepto->importe,
-                        "fecha_limite" => $subconcepto->fecha_de_vencimiento,
-                        "periodo" => Adeudos::$custom_data["paquete"]->periodo,
-                        "paquete_id" => Adeudos::$custom_data["paquete"]->id,
-                        "tipo_adeudo_id" => 1,
-                        "grado" => 6
-                    )
+            $adeudo = array(
+                "sub_concepto_id" => $subconcepto->id,
+                "id_persona" => $alumno,
+                "importe" => $subconcepto->importe,
+                "fecha_limite" => $subconcepto->fecha_de_vencimiento,
+                "periodo" => Adeudos::$custom_data["paquete"]->periodo,
+                "paquete_id" => Adeudos::$custom_data["paquete"]->id,
+                "recargo" => $subconcepto->recargo,
+                "tipo_recargo" => $subconcepto->tipo_recargo,
+                "grado" => 6,
+                "status_adeudo" => 0
             );
+            var_dump($adeudo);
+            Adeudos::create($adeudo);
             //echo json_encode(Adeudos::$custom_data["paquete"]);
             //echo json_encode($subconcepto->importe);
             //break;

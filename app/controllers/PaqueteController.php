@@ -19,12 +19,12 @@ class PaqueteController extends \BaseController {
     public function create() {
         $parametros = Input::all();
         $reglas = array(
-                    'id_plandepago' => 'required',
-                    'idnivel' => 'required|integer',
-                    'nivel' => 'required',
-                    'periodo' => 'required|integer',
-                    'recargo' => 'required|numeric',
-                    'recargo_inscripcion' => 'required|numeric'
+            'id_plandepago' => 'required',
+            'idnivel' => 'required|integer',
+            'nivel' => 'required',
+            'periodo' => 'required|integer',
+            'recargo' => 'required|numeric',
+            'recargo_inscripcion' => 'required|numeric'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -39,19 +39,20 @@ class PaqueteController extends \BaseController {
     public function create_subconcepto() {
         $parametros = array(
             'paquete_id' => Input::get('paquete_id'),
-            'sub_concepto_id' => Input::get('sub_concepto_id'),
-            'fecha_de_vencimiento' => Input::get('fecha_de_vencimiento')
+            'sub_concepto' => Input::get('sub_concepto'),
+            'recargo' => Input::get('recargo'),
+            'tipo_recargo' => Input::get('tipo_recargo')
         );
         $reglas = array(
-                    'paquete_id' => 'required|integer',
-                    'sub_concepto_id' => 'required|integer',
-                    'fecha_de_vencimiento' => 'required'
+            'paquete_id' => 'required|integer',
+            'sub_concepto' => 'required|array',
+            'recargo' => 'required|array',
+            'tipo_recargo' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
-
         if (!$validator->fails()) {
-            $res['data'] = Paquete::create_subconceptos_paquetes($parametros);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $res = Paquete::create_subconceptos_paquetes($parametros);
+            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -75,7 +76,7 @@ class PaqueteController extends \BaseController {
     public function show() {
         $parametros = Input::get();
         $reglas = array(
-                    'id' => 'required|integer'
+            'id' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -90,8 +91,8 @@ class PaqueteController extends \BaseController {
     public function show_nivel_periodo() {
         $parametros = Input::get();
         $reglas = array(
-                    'idnivel' => 'required|integer',
-                    'periodo' => 'required|integer'
+            'idnivel' => 'required|integer',
+            'periodo' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -158,7 +159,7 @@ class PaqueteController extends \BaseController {
     public function destroy() {
         $parametros = Input::get();
         $reglas = array(
-                    'id' => 'required|integer',
+            'id' => 'required|integer',
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
@@ -169,4 +170,5 @@ class PaqueteController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
+
 }

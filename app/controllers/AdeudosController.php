@@ -18,11 +18,29 @@ class AdeudosController extends \BaseController {
      */
     public function create() {
         //var_dump(Input::get());
-        $paquete = Paquete::find(Input::get('id_paquete'));
-        $subconceptos = Paquete::show_paquete_subconceptos(Input::get('id_paquete'));
-        Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
-        foreach (Input::get('idpersonas') as $alumno) {
-            Adeudos::agregar_adeudos($alumno);
+        $parametros = array(
+            'paquete_id' => Input::get('paquete_id'),
+            'id_personas' => Input::get('id_personas')
+        );
+        $reglas = array(
+            'paquete_id' => 'required|integer',
+            'id_personas' => 'required|array'
+        );
+        $validator = Validator::make($parametros, $reglas);
+        
+        if (!$validator->fails()) {
+            $paquete = Paquete::find($parametros['paquete_id']);
+            $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
+            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            echo json_encode(Adeudos::$custom_data);
+            //echo json_encode(Adeudos::$custom_data);
+            foreach ($parametros['id_personas'] as $alumno) {
+                Adeudos::agregar_adeudos($alumno);
+            }
+            //$res = Paquete::create_subconceptos_paquetes($parametros);
+            //return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         //return json_encode(Adeudos::$custom_data["paquete"]);
         //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));

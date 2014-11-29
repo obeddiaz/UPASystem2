@@ -76,6 +76,15 @@ Route::group(array('prefix' => '/caja'), function() {
         Route::put('/subconceptos/guardar', array('as' => 'actualizar_valor_subconcepto', 'uses' => 'Sub_ConceptosController@update'));
         Route::delete('/subconceptos/eliminar', array('as' => 'eliminar_subconcepto', 'uses' => 'Sub_ConceptosController@destroy'));
     });
+    Route::group(array('prefix' => '/descuentos'), function() {
+        Route::get('/', array('as' => 'muestra_todos_descuentos', 'uses' => 'DescuentosController@index'));
+        Route::get('/actualiza', array('as' => 'muestra_descuentos', 'uses' => 'DescuentosController@show'));
+        #   Route::get('/descuentos/actualiza/descuentos', array('as' => 'muestra_descuentos_concepto', 'uses' => 'ConceptosController@show_descuentos'));
+        Route::post('/agregar', array('as' => 'crear_descuento', 'uses' => 'DescuentosController@create'));
+        Route::put('/guardar', array('as' => 'actualizar_valor_descuento', 'uses' => 'DescuentosController@update'));
+        Route::delete('/eliminar', array('as' => 'eliminar_descuento', 'uses' => 'DescuentosController@destroy'));
+        Route::get('/expediente', array('as' => 'descuento_adeudo', 'uses' => 'DescuentosController@expediente'));
+    });
 });
 Route::group(array('prefix' => '/user'), function() {
     Route::post('/login', array('as' => 'user', 'uses' => 'usuariosController@login'));
