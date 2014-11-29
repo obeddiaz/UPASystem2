@@ -14,16 +14,25 @@ class Paquete extends \Eloquent {
 
     public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
-        $query = $table->insert($data);
-        return $query;
+        foreach ($data['sub_concepto'] as $subconcepto) {
+            $data_subconcepto = array(
+                "sub_concepto_id" => $subconcepto['id'],
+                "recargo" => $data['recargo'][$subconcepto['id']],
+                "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
+                "fecha_de_vencimiento" => $subconcepto['fecha'],
+                "paquete_id" => $data['paquete_id'],
+            );
+            $table->insert($data_subconcepto);
+        }
+        return TRUE;
     }
 
     public static function show_paquete_subconceptos($id) {
         $table = DB::table(Paquete::$subconceptos_paquete . ' as scp');
         $query = $table
                 ->where('paquete_id', '=', $id)
-                ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.id')
-                ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento')
+                ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.sub_concepto_id')
+                ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento','scp.recargo','scp.tipo_recargo')
                 ->get();
         return $query;
     }
