@@ -132,5 +132,22 @@ class DescuentosController extends \BaseController {
 		}
 	}
 
+	public static function expediente(){
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'id' => 'integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Descuentos::obtenerAdeudosDeDescuentos($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
+	}
+
 
 }

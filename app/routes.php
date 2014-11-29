@@ -83,6 +83,7 @@ Route::group(array('prefix' => '/caja'), function() {
         Route::post('/agregar', array('as' => 'crear_descuento', 'uses' => 'DescuentosController@create'));
         Route::put('/guardar', array('as' => 'actualizar_valor_descuento', 'uses' => 'DescuentosController@update'));
         Route::delete('/eliminar', array('as' => 'eliminar_descuento', 'uses' => 'DescuentosController@destroy'));
+        Route::get('/expediente', array('as' => 'descuento_adeudo', 'uses' => 'DescuentosController@expediente'));
     });
 });
 Route::group(array('prefix' => '/user'), function() {
