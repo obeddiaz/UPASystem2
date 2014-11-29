@@ -2,7 +2,7 @@
 
 class Adeudos extends \Eloquent {
 
-    protected $fillable = ['fecha_limite', 'id', 'id_persona', 'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo','paquete_id'];
+    protected $fillable = ['fecha_limite', 'id', 'id_persona', 'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -39,6 +39,20 @@ class Adeudos extends \Eloquent {
             //break;
         }
         //return $this->belongsTo('Adeudos_tipopago', 'adeudos_id');
+    }
+
+    public static function obtener_adeudos_alumno($data) {
+        $query = Adeudos::where("id_persona", "=", $data['id_persona'])
+                ->where("periodo", "=", $data['periodo'])
+                ->get();
+        foreach ($query as $key => $adeudo) {
+            //var_dump($query[$key]['status_adeudo']);
+            if ($adeudo['status_adeudo'] == 0) {
+               //select period_diff(date_format(now(), '%Y%m'), date_format(time, '%Y%m')) as months from your_table;
+            }
+        }
+        die();
+        return $query;
     }
 
 }

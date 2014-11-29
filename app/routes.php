@@ -40,7 +40,7 @@ Route::group(array('prefix' => '/administracion'), function() {
         });
         Route::group(array('prefix' => '/becas'), function() {
             Route::get('/', array('as' => 'muestra_becas', 'uses' => 'BecasController@index'));
-            Route::get('/alumnos/beca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
+            Route::get('/alumnos/beca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show_alumno'));
             Route::get('/alumnos/nobeca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
             Route::post('/agregar', array('as' => 'crear_becas', 'uses' => 'BecasController@create'));
             Route::post('/alumnos/agregar', array('as' => 'asignar_becas', 'uses' => 'BecasController@create'));
@@ -54,6 +54,7 @@ Route::group(array('prefix' => '/administracion'), function() {
 });
 Route::group(array('prefix' => '/adeudos'), function() {
     Route::get('/todos_periodo', array('as' => 'Adeudos_por_periodo', 'uses' => 'AdeudosController@show_by_periodo'));
+    Route::get('/alumno', array('as' => 'Adeudos_por_alumno_periodo', 'uses' => 'AdeudosController@show_adeudos_alumno'));
 });
 Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
 Route::group(array('prefix' => '/caja'), function() {

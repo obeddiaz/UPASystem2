@@ -27,18 +27,15 @@ class AdeudosController extends \BaseController {
             'id_personas' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
-        
         if (!$validator->fails()) {
             $paquete = Paquete::find($parametros['paquete_id']);
             $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
             Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
             echo json_encode(Adeudos::$custom_data);
-            //echo json_encode(Adeudos::$custom_data);
             foreach ($parametros['id_personas'] as $alumno) {
                 Adeudos::agregar_adeudos($alumno);
             }
-            //$res = Paquete::create_subconceptos_paquetes($parametros);
-            //return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -53,6 +50,31 @@ class AdeudosController extends \BaseController {
      */
     public function store() {
         //
+    }
+
+    /**
+     * Muestra los adeudos del alumno por periodo.
+     *
+     * @return Response
+     */
+    public function show_adeudos_alumno() {
+        $parametros = array(
+            'id_persona' => Input::get('id_persona'),
+            'periodo' => Input::get('periodo')
+        );
+        $reglas = array(
+            'id_persona' => 'required|integer',
+            'periodo' => 'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+        var_dump($validator->fails());
+        die();
+        if ($validator->fails()) {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        } else {
+            $alumno = Adeudos::obtener_adeudos_alumno($parametros);
+            return json_encode($alumno);
+        }
     }
 
     /**
