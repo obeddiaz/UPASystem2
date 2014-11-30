@@ -9,7 +9,8 @@ class Respuesta_bancariaController extends \BaseController {
 	 */
 	public function index()
 	{
-		//
+		$res['data']=Respuesta_bancaria::All();
+		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 	}
 
 
@@ -20,7 +21,26 @@ class Respuesta_bancariaController extends \BaseController {
 	 */
 	public function create()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(    
+			    'no_transacciones' => 'required',
+			    'cobro_inmediato' => 'required',
+			    'comisiones_creadas' => 'required',
+			    'remesas' => 'required',
+			    'comisiones_remesas' => 'required',
+			    'abonado' => 'required',
+			    'nombre_del_archivo' => 'required'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Respuesta_bancaria::create($parametros);
+			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -65,9 +85,37 @@ class Respuesta_bancariaController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function update($id)
+	public function update()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			    'fecha' => 'required',
+			    'monto' => 'required',			    
+			    'no_transacciones' => 'required',
+			    'cobro_inmediato' => 'required',
+			    'comisiones_creadas' => 'required',
+			    'remesas' => 'required',
+			    'comisiones_remesas' => 'required',
+			    'abonado' => 'required',
+			    'nombre_del_archivo' => 'required'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
+			Respuesta_bancaria::where('id','=',$parametros['id'])->update($parametros);
+			$res['data']=Respuesta_bancaria::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 
@@ -77,9 +125,23 @@ class Respuesta_bancariaController extends \BaseController {
 	 * @param  int  $id
 	 * @return Response
 	 */
-	public function destroy($id)
+	public function destroy()
 	{
-		//
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'id' => 'required|integer',
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			Respuesta_bancaria::destroy($parametros['id']);
+			$res['data']=Respuesta_bancaria::All();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
 	}
 
 

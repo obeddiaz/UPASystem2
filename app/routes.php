@@ -41,8 +41,12 @@ Route::group(array('prefix' => '/administracion'), function() {
         Route::group(array('prefix' => '/becas'), function() {
             Route::get('/', array('as' => 'muestra_becas', 'uses' => 'BecasController@index'));
             Route::get('/alumnos/beca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show_alumno'));
+<<<<<<< HEAD
             Route::get('/alumnos/nobeca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show_alumno'));
             Route::get('/expediente', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
+=======
+            Route::get('/alumnos/nobeca', array('as' => 'muestra_detalles_becas', 'uses' => 'BecasController@show'));
+>>>>>>> master
             Route::post('/agregar', array('as' => 'crear_becas', 'uses' => 'BecasController@create'));
             Route::post('/alumnos/agregar', array('as' => 'asignar_becas', 'uses' => 'BecasController@create'));
             Route::put('/guardar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
@@ -55,10 +59,12 @@ Route::group(array('prefix' => '/administracion'), function() {
 });
 Route::group(array('prefix' => '/adeudos'), function() {
     Route::get('/todos_periodo', array('as' => 'Adeudos_por_periodo', 'uses' => 'AdeudosController@show_by_periodo'));
+    Route::get('/alumno', array('as' => 'Adeudos_por_alumno_periodo', 'uses' => 'AdeudosController@show_adeudos_alumno'));
 });
 Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
 Route::group(array('prefix' => '/caja'), function() {
     Route::group(array('prefix' => '/caja'), function() {
+        Route::get('/', array('as' => 'referencia', 'uses' => 'ReferenciasController@index'));
         Route::post('/banco/subir', array('as' => 'referencia', 'uses' => 'ReferenciasController@leer_archivo_banco'));
     });
     Route::group(array('prefix' => '/conceptos'), function() {
@@ -105,6 +111,25 @@ Route::group(array('prefix' => '/tipo_pagos'), function() {
     Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudo@update'));
     Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudo@destroy'));
 });
+Route::group(array('prefix' => '/bancos'), function() {
+    Route::get('/', array('as' => 'muestra_bancos', 'uses' => 'BancosController@index'));
+    Route::post('/agregar', array('as' => 'crear_banco', 'uses' => 'BancosController@create'));
+    Route::put('/guardar', array('as' => 'actualizar_valor_banco', 'uses' => 'BancosController@update'));
+    Route::delete('/eliminar', array('as' => 'eliminar_banco', 'uses' => 'BancosController@destroy'));
+});
+Route::group(array('prefix' => '/cuentas'), function() {
+    Route::get('/', array('as' => 'muestra_cuentas', 'uses' => 'CuentasController@index'));
+    Route::post('/agregar', array('as' => 'crear_cuenta', 'uses' => 'CuentasController@create'));
+    Route::put('/guardar', array('as' => 'actualizar_valor_cuenta', 'uses' => 'CuentasController@update'));
+    Route::delete('/eliminar', array('as' => 'eliminar_cuenta', 'uses' => 'CuentasController@destroy'));
+});
+Route::group(array('prefix' => '/resbancaria'), function() {
+    Route::get('/', array('as' => 'muestra_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@index'));
+    Route::post('/agregar', array('as' => 'crear_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@create'));
+    Route::put('/guardar', array('as' => 'actualizar_valor_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@update'));
+    Route::delete('/eliminar', array('as' => 'eliminar_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@destroy'));
+});
+
 Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));
 Route::get('/alumnos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos'));
 Route::get('/grupos/', array('as' => 'muestra_todos_grupos', 'uses' => 'APIServicesController@grupos'));

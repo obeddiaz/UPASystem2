@@ -8,7 +8,8 @@ class ReferenciasController extends \BaseController {
      * @return Response
      */
     public function index() {
-        //
+        $res['data'] = Referencias::All();
+        echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
     }
 
     /**
@@ -143,7 +144,13 @@ class ReferenciasController extends \BaseController {
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
             $data_file = Archivo_referencias::leer($file);
-            return json_encode($data_file);
+            //return json_encode($data_file);
+            foreach ($data_file['referencias'] as $key => $value) {
+            $adeudo = Referencia::find();             
+            var_dump(json_encode($adeudo));
+            die();
+            }
+
         }
         return json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
         */
