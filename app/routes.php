@@ -58,6 +58,7 @@ Route::group(array('prefix' => '/adeudos'), function() {
 Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
 Route::group(array('prefix' => '/caja'), function() {
     Route::group(array('prefix' => '/caja'), function() {
+        Route::get('/', array('as' => 'referencia', 'uses' => 'ReferenciasController@index'));
         Route::post('/banco/subir', array('as' => 'referencia', 'uses' => 'ReferenciasController@leer_archivo_banco'));
     });
     Route::group(array('prefix' => '/conceptos'), function() {
