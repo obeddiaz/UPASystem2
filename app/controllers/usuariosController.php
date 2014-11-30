@@ -41,11 +41,17 @@ class UsuariosController extends \BaseController {
      * @return Response
      */
     public function login() {
-        $params = Input::get();
         $sii = new Sii();
-        //$sii->login('fernando.medrano@upa.edu.mx','upa.loopa');
-        if (isset($params['u']) && isset($params['p'])) {
-            $user = $sii->login($params['u'], $params['p']);
+        $parametros= Input::get();
+        $reglas = array( 
+            'u'  => 'required',
+            'p' => 'required'
+        );
+        $validator = Validator::make($parametros,$reglas);
+
+        if (!$validator->fails())
+        {
+            $user = $sii->login($parametros['u'], $parametros['p']);
             if (isset($user['error'])) {
                 return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
             } else {
@@ -53,7 +59,7 @@ class UsuariosController extends \BaseController {
                 return json_encode(Session::all());
             }
         } else {
-            echo json_encode(array('error' => true,'mensaje'=>'No hay parametros','respuesta'=>'' ));
+            return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
         }
     }
 

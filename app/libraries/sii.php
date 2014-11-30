@@ -54,14 +54,33 @@ class Sii {
         //$this->client = $buzz;
     }
 
-    public function login($email, $password) {
-        $content = array("email" => $email, "password" => $password);
-        $this->request = new Request("POST");
-        $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        $this->request->setContent(http_build_query($content));
-        $this->request->fromUrl($this->url . "/persona/login");
-        $this->response = $this->send($this->client, $this->request);
-        Log::info($this->response);
+    public function login($user, $password) {
+        $parametros = array(
+            'user'=>$user
+        );
+        $reglas = array(
+            'user'=> 'required|email'
+        );
+        $validator = Validator::make($parametros,$reglas);
+        if (!$validator->fails())
+        {
+            $content = array("email" => $user, "password" => $password);
+            $this->request = new Request("POST");
+            $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
+            $this->request->setContent(http_build_query($content));
+            $this->request->fromUrl($this->url . "/persona/login");
+            $this->response = $this->send($this->client, $this->request);
+            Log::info($this->response);
+        } else {
+            $content = array("nocuenta" => $user, "password" => $password);
+            $this->request = new Request("POST");
+            $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
+            $this->request->setContent(http_build_query($content));
+            $this->request->fromUrl($this->url . "/persona/login_alumno");
+            $this->response = $this->send($this->client, $this->request);
+            Log::info($this->response);
+        }
+        
         //$user_token=  json_decode($this->response->getContent());
         //User::$token = $user_token->persona->token;
         return json_decode($this->response->getContent(), true);

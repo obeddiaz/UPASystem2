@@ -139,12 +139,15 @@ class ReferenciasController extends \BaseController {
     }
 
     public function leer_archivo_banco() {
+        /*
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
             $data_file = Archivo_referencias::leer($file);
             return json_encode($data_file);
         }
         return json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
+        */
+        return Referencias::All();
     }
 
 }
