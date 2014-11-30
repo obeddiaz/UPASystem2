@@ -39,6 +39,17 @@ class Common_functions {
         return $res;
     }
 
+    public function calcular_importe_por_tipo($importe, $rob, $tipo) {
+        $res = null;
+        if ($tipo == 1) {
+            $res=$rob/100;
+            $res=$importe*$res;
+        } elseif ($tipo == 2) {
+            return $rob;
+        }
+        return $res;
+    }
+
 }
 
 ?>

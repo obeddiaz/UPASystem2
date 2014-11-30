@@ -67,13 +67,11 @@ class AdeudosController extends \BaseController {
             'periodo' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
-        var_dump($validator->fails());
-        die();
         if ($validator->fails()) {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         } else {
             $alumno = Adeudos::obtener_adeudos_alumno($parametros);
-            return json_encode($alumno);
+            return json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
         }
     }
 
