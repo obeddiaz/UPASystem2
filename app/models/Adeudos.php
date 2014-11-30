@@ -10,7 +10,7 @@ class Adeudos extends \Eloquent {
 
     public static function referencias() {
         return $this
-                        ->hasMany('Referencias');
+                        ->hasMany('Referencia');
     }
 
     public function tipo_pago() {
