@@ -5,13 +5,7 @@ class Referencia extends \Eloquent {
 	protected $table = 'referencias';
 	public $timestamps = true;
 	
-<<<<<<< HEAD:app/models/Referencias.php
-	public function adeudos() {
-		return $this
-				->belongsTo('adeudos', 'adeudos_id');
-=======
 	public function Adeudos() {
 		return $this->belongsTo('Adeudos', 'adeudos_id');
->>>>>>> master:app/models/Referencia.php
 	}
 }
