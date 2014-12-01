@@ -125,7 +125,9 @@ Route::group(array('prefix' => '/resbancaria'), function() {
     Route::put('/guardar', array('as' => 'actualizar_valor_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@update'));
     Route::delete('/eliminar', array('as' => 'eliminar_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@destroy'));
 });
-
+Route::group(array('prefix' => '/referencias'), function() {
+    Route::post('/agregar', array('as' => 'crear_referencia', 'uses' => 'ReferenciasController@create'));
+});
 Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));
 Route::get('/alumnos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos'));
 Route::get('/grupos/', array('as' => 'muestra_todos_grupos', 'uses' => 'APIServicesController@grupos'));

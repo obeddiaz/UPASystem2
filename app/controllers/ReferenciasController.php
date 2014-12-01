@@ -8,7 +8,7 @@ class ReferenciasController extends \BaseController {
      * @return Response
      */
     public function index() {
-        $res['data'] = Referencias::All();
+        $res['data'] = Referencia::All();
         echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
     }
 
@@ -18,18 +18,13 @@ class ReferenciasController extends \BaseController {
      * @return Response
      */
     public function create() {
-        $parametros = array(
-            'adeudos_id' => Input::get('adeudos_id'),
-            'referencia' => Input::get('referencia')
-        );
-        $reglas = array(
-            'adeudos_id' => 'required|integer',
-            'referencia' => 'required'
-        );
-        $validator = Validator::make($parametros, $reglas);
-
+        $parametros=Input::get();
+        $libereriaReferencia = new Referencias();
+        $data['referencia']=$libereriaReferencia->Generar($parametros['referencia'],$parametros['importe'],$parametros['fecha']);
+        return json_encode($data);
+        die();
         if (!$validator->fails()) {
-            $res['data'] = Referencias::create($parametros);
+            $res['data'] = Referencia::create($parametros);
             echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -59,7 +54,7 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
-            $res['data'] = Referencias::find($parametros['id']);
+            $res['data'] = Referencia::find($parametros['id']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -74,7 +69,7 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
-            $res['data'] = Referencias::find($parametros['adeudos_id'])->adeudos();
+            $res['data'] = Referencia::find($parametros['adeudos_id'])->adeudos();
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -111,7 +106,7 @@ class ReferenciasController extends \BaseController {
                     unset($parametros[$key]);   
                 }
             }
-            $res = Referencias::where('id', '=', $parametros['id'])->update($parametros);
+            $res = Referencia::where('id', '=', $parametros['id'])->update($parametros);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -131,8 +126,8 @@ class ReferenciasController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            Referencias::destroy($parametros['id']);
-            $res['data'] = Referencias::All();
+            Referencia::destroy($parametros['id']);
+            $res['data'] = Referencia::All();
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -154,7 +149,7 @@ class ReferenciasController extends \BaseController {
         }
         return json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
         */
-        return Referencias::All();
+        return Referencia::All();
     }
 
 }
