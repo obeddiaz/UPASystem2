@@ -20,9 +20,9 @@ class ReferenciasController extends \BaseController {
     public function create() {
         $parametros=Input::get();
         $libereriaReferencia = new Referencias();
+        $referencia=$parametros['id_persona'].$parametros['periodo'].$parametros['sub_concepto_id'];
         $data['referencia']=$libereriaReferencia->Generar($parametros['referencia'],$parametros['importe'],$parametros['fecha']);
         return json_encode($data);
-        die();
         if (!$validator->fails()) {
             $res['data'] = Referencia::create($parametros);
             echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));

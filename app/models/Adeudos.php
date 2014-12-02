@@ -53,7 +53,6 @@ class Adeudos extends \Eloquent {
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data);
         foreach ($query as $key => $adeudo) {
             $tiene_desceunto = Descuentos::obtenerDescuentoPorAdeudo($adeudo['id']);
-            // echo json_encode($tiene_desceunto);
             if ($adeudo['status_adeudo'] == 0) {
                 $fecha_limite = strtotime($adeudo['fecha_limite']);
                 $day = date('d', $fecha_limite);
