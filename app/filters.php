@@ -32,20 +32,18 @@ App::after(function($request, $response)
 | integrates HTTP Basic authentication for quick, simple checking.
 |
 */
+Route::filter('permisos', function($route = null) {
+  $user=Session::has('user');
+  if (intval($user['persona']['alumno'])==1) {
+    return json_encode(array('error' => true, 'message' => 'Este Usuario no tiene permisos para consumir este servicio'));
+  }
+});
 
 Route::filter('auth', function()
 {
-	if (Auth::guest())
-	{
-		if (Request::ajax())
-		{
-			return Response::make('Unauthorized', 401);
-		}
-		else
-		{
-			return Redirect::guest('login');
-		}
-	}
+	if (!Session::has('user')) {
+          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','response'=>''));
+    }
 });
 
 
