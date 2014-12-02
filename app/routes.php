@@ -131,3 +131,4 @@ Route::group(array('prefix' => '/referencias'), function() {
 Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));
 Route::get('/alumnos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos'));
 Route::get('/grupos/', array('as' => 'muestra_todos_grupos', 'uses' => 'APIServicesController@grupos'));
+Route::get('/niveles/', array('as' => 'muestra_todos_niveles', 'uses' => 'APIServicesController@niveles'));

@@ -126,4 +126,17 @@ class APIServicesController extends \BaseController {
 			return json_encode(array('error' =>true,'mensaje'=>'Algo esta mal con el servico.', 'respuesta'=>null ));
 		}
 	}
+	public function niveles() {
+		$res['data']=array();
+		try {
+			$res['data']=$this->sii->new_request('POST','/niveles');	
+			if (isset($res['data']) && !isset($res['data']['error'])) {
+				return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			} else {
+				return json_encode(array('error' =>true,'mensaje'=>'Algo esta mal con el servico.', 'respuesta'=>null ));
+			}
+		} catch (Exception $e) {
+			return json_encode(array('error' =>true,'mensaje'=>'Algo esta mal con el servico.', 'respuesta'=>null ));
+		}
+	}
 }
