@@ -56,7 +56,7 @@ class UsuariosController extends \BaseController {
                 return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
             } else {
                 Session::put('user', $user);
-                return json_encode(Session::all());
+                return array("error" => false, 'message' => "The user is not logged in", 'response' => array(Session::all(), 200));
             }
         } else {
             return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
