@@ -25,6 +25,7 @@ class AdeudosController extends \BaseController {
         $reglas = array(
             'paquete_id' => 'required|integer',
             'id_personas' => 'required|array'
+
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
@@ -35,6 +36,42 @@ class AdeudosController extends \BaseController {
             foreach ($parametros['id_personas'] as $alumno) {
                 Adeudos::agregar_adeudos($alumno);
             }
+            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+        //return json_encode(Adeudos::$custom_data["paquete"]);
+        //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
+    }
+
+    public function createSubconcepto() {
+        //var_dump(Input::get());
+        //
+        $parametros = array(
+            'subconcepto_id' => Input::get('subconcepto_id'),
+            'periodo' => Input::get('periodo'),
+            'id_personas' => Input::get('id_personas'),
+            'fecha_limite' => Input::get('fecha_limite'),
+            'grado' => 0
+        );
+        $reglas = array(
+            'subconcepto_id' => 'required|integer',
+            'periodo' => 'required|integer',
+            'id_personas' => 'required|integer',
+            'fecha_limite' => 'date_format:Y-m-d',
+            'grado' => 'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+        if (!$validator->fails()) {
+           $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
+           $adeudo = array(
+                'importe' => $subconcepto['importe'],
+                'sub_concepto_id' => $subconcepto['id'],
+                'fecha_limite' =>  $parametros['fecha_limite'],
+                'grado' => $parametros['grado']
+            );
+           $res = Adeudos::create($adeudo);
+            
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -125,5 +162,7 @@ class AdeudosController extends \BaseController {
     public function destroy($id) {
         //
     }
+
+
 
 }

@@ -58,6 +58,7 @@ Route::group(array('before' => 'auth'), function() {
         Route::group(array('prefix' => '/adeudos'), function() {
             Route::get('/todos_periodo', array('as' => 'Adeudos_por_periodo', 'uses' => 'AdeudosController@show_by_periodo'));
             Route::get('/alumno', array('as' => 'Adeudos_por_alumno_periodo', 'uses' => 'AdeudosController@show_adeudos_alumno'));
+            Route::post('/agregar_subconcepto', array('as' => 'agregar_subconcepto', 'uses' => 'AdeudosController@createSubconcepto'));
         });
         Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
         Route::group(array('prefix' => '/caja'), function() {

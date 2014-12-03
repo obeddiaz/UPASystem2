@@ -19,7 +19,7 @@ class ReferenciasController extends \BaseController {
      */
     public function create() {
         $commond = new Common_functions();
-        $parametros=Input::get();
+        $parametros['adeudos']=Adeudos::obtener_adeudos_alumno(array('id_persona'=>838,'periodo'=>143));
          
         $reglas = array( 
             'adeudos'  => 'required'
@@ -39,7 +39,7 @@ class ReferenciasController extends \BaseController {
                                 $fecha_limite=$value_a['fecha_limite'];
                             } else {
                                 if ($parametros['adeudos'][count($parametros['adeudos'])-1]['fecha_limite']==$value_a['fecha_limite'] && !isset($fecha_limite)) {
-                                    $fecha=date('Y-m-d');
+                                    $fecha=$value_a['fecha_limite'];
                                     $months= $value_a['meses_retraso'];
                                     $fecha_limite=date("Y-m-d", strtotime("$fecha +$months month"));           
                                 }
@@ -182,22 +182,44 @@ class ReferenciasController extends \BaseController {
     }
 
     public function leer_archivo_banco() {
-        
+        $commond = new Common_functions();
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
             $data_file = Archivo_referencias::leer($file);
-            //$respuesta_bancaria['nombre_archivo']=Input::file('referencia_archivo')->getClientOriginalName();
-            //return json_encode($data_file);
+            $data_file['infoFile']['nombre_archivo']=Input::file('referencia_archivo')->getClientOriginalName();
+            $infoarchivo = array(    
+                'no_transacciones' => $data_file['infoFile']['TRANSACCIONES'],
+                'cobro_inmediato' => $data_file['infoFile']['COBROINMEDIATO'],
+                'comisiones_creadas' => $data_file['infoFile']['COMISIONESCOBRADAS'],
+                'remesas' => $data_file['infoFile']['REMESAS'],
+                'comisiones_remesas' => $data_file['infoFile']['COMISIONREMESAS'],
+                'abonado' => $data_file['infoFile']['ABONADO'],
+                'monto' => $data_file['infoFile']['ABONADO'],
+                'nombre_archivo' => $data_file['infoFile']['nombre_archivo'],
+                'fecha' => date('Y-m-d')
+            );
+            $personas=array();
+            $i=0;
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
-                        ->where('referencia','=',$value['referencia']);             
-                //var_dump(json_encode($adeudo));
-                echo json_encode($adeudo);
-                die();
-            }
+                        ->where('referencia','=',$value['referencia'])->first(); 
+                if ($value['importe']>=$adeudo['adeudos']['importe']) {
+                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('status_adeudo' => 1, 'fecha_pago' => date('Y-m-d')));
+                } else{
+                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('importe' => floatval($adeudo['impote'] - floatval($value['importe'])), 'fecha_pago' => date('Y-m-d')));
+                }
 
+                $personas[$i]['persona']=$commond->obtener_infoAlumno_idPersona(array('id_persona'=>$adeudo['adeudos']['id_persona']));
+                $personas[$i]['referencia'] = $value['referencia'];
+            
+                $i++;
+            }
+            $res['data']=$personas;
+            Respuesta_bancaria::create($infoarchivo);
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
         }
-        return json_encode(array('error' => true, 'mensaje' => 'No hay archivo', 'respuesta' => ''));
     }
 
 }
