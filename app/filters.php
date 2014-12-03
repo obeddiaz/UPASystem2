@@ -32,17 +32,17 @@ App::after(function($request, $response)
 | integrates HTTP Basic authentication for quick, simple checking.
 |
 */
-Route::filter('permisos', function($route = null) {
-  $user=Session::has('user');
+Route::filter('permisos', function() {
+  $user=Session::get('user');
   if (intval($user['persona']['alumno'])==1) {
-    return json_encode(array('error' => true, 'message' => 'Este Usuario no tiene permisos para consumir este servicio'));
+    return json_encode(array('error' => true, 'message' => 'Este Usuario no tiene permisos para consumir este servicio','respuesta'=>''));
   }
 });
 
 Route::filter('auth', function()
 {
 	if (!Session::has('user')) {
-          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','response'=>''));
+          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>''));
     }
 });
 

@@ -19,45 +19,31 @@ class ReferenciasController extends \BaseController {
      */
     public function create() {
         $commond = new Common_functions();
+        $parametros=Input::get();
+         
         $reglas = array( 
-            'adeudos'  => 'required|array'
+            'adeudos'  => 'required'
         );
         $validator = Validator::make($parametros,$reglas);
 
         if (!$validator->fails())
         {
-            $parametros=Input::get();
-            if (is_object($parametros['adeudos'][0])) {
-                foreach ($parametros['adeudos'] as $key => $value) {
-                    $info[$key]=get_object_vars($parametros['adeudos'][$key]);
-                }
-            } else {
-                $info=$parametros['adeudos'];
-            }
             $libereriaReferencia = new Referencias();
             $data=array();
             $data['importe_total']=0;
-            foreach ($info as $key => $value) {
+            foreach ($parametros['adeudos'] as $key => $value) {
                 if ($value['status_adeudo']==0) {    
-                    if (count($info)>1 && !isset($fecha_limite)) {
-                        if ($value['fecha_limite']<date('Y-m-d')) {
-                            if ($info[count($info)-1]['fecha_limite']<date('Y-m-d')) {
-                                $fecha=date('Y-m-d');
-                                $dias= 1;
-                                $fecha_limite=date("Y-m-d", strtotime("$fecha +$dias day"));    
+                    foreach ($parametros['adeudos'] as $key_a => $value_a) {
+                        if (!isset($fecha_limite)) {
+                            if ($value_a['fecha_limite']>date('Y-m-d')) {
+                                $fecha_limite=$value_a['fecha_limite'];
                             } else {
-                                $fecha_limite=$info[count($info)-1]['fecha_limite'];    
+                                if ($parametros['adeudos'][count($parametros['adeudos'])-1]['fecha_limite']==$value_a['fecha_limite'] && !isset($fecha_limite)) {
+                                    $fecha=date('Y-m-d');
+                                    $months= $value_a['meses_retraso'];
+                                    $fecha_limite=date("Y-m-d", strtotime("$fecha +$months month"));           
+                                }
                             }
-                        } else {
-                            $fecha_limite=$value['fecha_limite'];
-                        }
-                    } elseif (!isset($fecha_limite)) {
-                        if ($value['fecha_limite']<=date('Y-m-d')) {
-                            $fecha=date('Y-m-d');
-                            $dias= 1;
-                            $fecha_limite=date("Y-m-d", strtotime("$fecha +$dias day"));    
-                        } else {
-                            $fecha_limite=$value['fecha_limite'];   
                         }
                     }
                     $subconcepto=Sub_conceptos::find($value['sub_concepto_id']);
@@ -65,25 +51,27 @@ class ReferenciasController extends \BaseController {
                                 sprintf('%03d',$value['periodo']).
                                 sprintf('%03d',$value['sub_concepto_id']).
                                 sprintf('%01d',$value['contador']);
-                    $data['referencias'][$key]['referencia'][]=$libereriaReferencia->Generar($referencia,$value['importe'],$fecha_limite);
-                    $data['referencias'][$key]['importe'][]=json_decode($value['importe']);
-                    $data['referencias'][$key]['sub_concepto'][]=$subconcepto['sub_concepto'];
+                    $data['referencias'][$key]['referencia']=$libereriaReferencia->Generar($referencia,$value['importe'],$fecha_limite);
+                    $data['referencias'][$key]['importe']=json_decode($value['importe']);
+                    $data['referencias'][$key]['sub_concepto']=$subconcepto['sub_concepto'];
                     $data['importe_total']+=$value['importe'];
                     $data['fecha_limite']=$fecha_limite;
                     $data['periodo']=$value['periodo'];
                     $data['persona']=$commond->obtener_infoAlumno_idPersona(array('id_persona'=>$value['id_persona']));
                     $existe_referencia=Referencia::where('referencia','=',$data['referencias'][$key]['referencia'])->first();
+                    $cuentas=Cuentas::where('activo_cobros','=',1)->first();
+                    $data['convenio']=$cuentas['cuenta'];
                     if (!$existe_referencia) {
                          Referencia::create(
                             array(
                                 'referencia'=>$data['referencias'][$key]['referencia'],
                                 'adeudos_id'=>$value['id'],
-                                'cuentas_is'=>1
+                                'cuentas_id'=>$cuentas['id']
                             ));
                     }
                 }
             }
-            $res['data'] =$data
+            $res['data']=$data;
             echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -198,7 +186,7 @@ class ReferenciasController extends \BaseController {
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
             $data_file = Archivo_referencias::leer($file);
-            //$respuesta_bancaria['']=Input::file('referencia_archivo')->getClientOriginalName();
+            //$respuesta_bancaria['nombre_archivo']=Input::file('referencia_archivo')->getClientOriginalName();
             //return json_encode($data_file);
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
