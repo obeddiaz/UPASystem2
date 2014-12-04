@@ -19,7 +19,7 @@ class ReferenciasController extends \BaseController {
      */
     public function create() {
         $commond = new Common_functions();
-        $parametros['adeudos'] = Input::get(); //Adeudos::obtener_adeudos_alumno(array('id_persona'=>838,'periodo'=>143));
+        $parametros = Input::get(); //Adeudos::obtener_adeudos_alumno(array('id_persona'=>838,'periodo'=>143));
 
         $reglas = array(
             'adeudos' => 'required'
