@@ -83,7 +83,7 @@ class AdeudosController extends \BaseController {
                     'importe' => $subconcepto['importe'],
                     'sub_concepto_id' => $subconcepto['id'],
                     'fecha_limite' =>  $parametros['fecha_limite'],
-                    'grado' => $alumno['grado']
+                    'grado' => $grado[0]['grado']
                 );
                $res = Adeudos::create($adeudo);
             }

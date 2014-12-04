@@ -31,10 +31,9 @@ class Adeudos extends \Eloquent {
                 "paquete_id" => Adeudos::$custom_data["paquete"]->id,
                 "recargo" => $subconcepto->recargo,
                 "tipo_recargo" => $subconcepto->tipo_recargo,
-                "grado" => $grado['grado'],
+                "grado" =>$grado[0]['grado'],
                 "status_adeudo" => 0
             );
-            var_dump($adeudo);
             Adeudos::create($adeudo);
             //echo json_encode(Adeudos::$custom_data["paquete"]);
             //echo json_encode($subconcepto->importe);
