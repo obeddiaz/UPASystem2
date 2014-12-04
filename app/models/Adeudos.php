@@ -2,11 +2,16 @@
 
 class Adeudos extends \Eloquent {
 
-    protected $fillable = ['fecha_limite', 'id', 'id_persona', 'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id'];
+    protected $fillable = ['fecha_limite', 'id', 'id_persona',
+     'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
     public static $custom_data;
+    public function paquete() {
+        return $this->belongsTo('Paquete', 'paquete_id');
+    }
+
 
     public static function referencias() {
         return $this

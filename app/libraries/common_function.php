@@ -22,7 +22,6 @@ class Common_functions {
     public function obtener_alumno_idPersona($personas) {
         $alumnos = $this->sii->new_request('POST', '/alumnos');
         $res = array();
-
         if (is_array($personas)) {
             foreach ($personas as $key_personas => $persona) {
                 foreach ($alumnos as $key_alumnos => $alumno) {

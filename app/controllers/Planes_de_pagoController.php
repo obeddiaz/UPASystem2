@@ -93,6 +93,28 @@ class Planes_de_pagoController extends \BaseController {
 		}
 	}
 
+	public function show_paquete()
+	{
+		$commond = new Common_functions();        
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',	
+			    'periodo'=>'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$paquete=Planes_de_pago::paquetes($parametros);
+			$res['data']=Paquete::personasPaquete($paquete['id']);
+			$res['data']=$commond->obtener_alumno_idPersona($res['data']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+	}
+
 	/**
 	 * Show the form for editing the specified resource.
 	 *

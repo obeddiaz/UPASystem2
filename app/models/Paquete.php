@@ -7,6 +7,9 @@ class Paquete extends \Eloquent {
     public static $subconceptos = 'sub_conceptos';
     public static $subconceptos_paquete = 'subconcepto_paqueteplandepago';
     public $timestamps = true;
+    public function adeudos() {
+        return $this->hasMany('Adeudos');
+    }
 
     public function plan_de_pago() {
         return $this->belongsTo('Planes_de_pago', 'id_plandepago');
@@ -34,6 +37,16 @@ class Paquete extends \Eloquent {
                 ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.sub_concepto_id')
                 ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento','scp.recargo','scp.tipo_recargo')
                 ->get();
+        return $query;
+    }
+    public static function personasPaquete($id) {
+        DB::setFetchMode(PDO::FETCH_ASSOC);
+        $table = DB::table('paqueteplandepago');
+        $query=$table
+                ->join('adeudos','adeudos.paquete_id','=','paqueteplandepago.id')
+                ->select('id_persona')
+                ->where('paqueteplandepago.id','=',$id)
+                ->groupBy('id_persona')->get();
         return $query;
     }
 
