@@ -61,16 +61,16 @@ class AdeudosController extends \BaseController {
             'subconcepto_id' => Input::get('subconcepto_id'),
             'periodo' => Input::get('periodo'),
             'id_personas' => Input::get('id_personas'),
-            'fecha_limite' => Input::get('fecha_limite'),
-            'grado' => 0
+            'fecha_limite' => Input::get('fecha_limite')
         );
         $reglas = array(
             'subconcepto_id' => 'required|integer',
             'periodo' => 'required|integer',
             'id_personas' => 'required|integer',
-            'fecha_limite' => 'date_format:Y-m-d',
-            'grado' => 'integer'
+            'fecha_limite' => 'date_format:Y-m-d'
         );
+        $commond = new Common_functions();
+        $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $alumno));
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             $periodo_actual=$commond->periodo_actual();
@@ -83,7 +83,7 @@ class AdeudosController extends \BaseController {
                     'importe' => $subconcepto['importe'],
                     'sub_concepto_id' => $subconcepto['id'],
                     'fecha_limite' =>  $parametros['fecha_limite'],
-                    'grado' => $parametros['grado']
+                    'grado' => $alumno['grado']
                 );
                $res = Adeudos::create($adeudo);
             }
