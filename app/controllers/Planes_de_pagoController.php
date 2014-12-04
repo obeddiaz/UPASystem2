@@ -75,6 +75,24 @@ class Planes_de_pagoController extends \BaseController {
 		}
 	}
 
+	public function show_byAgrupaciones()
+	{
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id_agrupaciones' => 'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Planes_de_pago::where('id_agrupaciones','=',$parametros['id_agrupaciones'])->get();
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+	}
+
 	/**
 	 * Show the form for editing the specified resource.
 	 *

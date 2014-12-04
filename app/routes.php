@@ -31,6 +31,8 @@ Route::group(array('before' => 'auth'), function() {
             Route::group(array('prefix' => '/generales'), function() {
                 Route::group(array('prefix' => '/planes_de_pago'), function() {
                     Route::get('/todos', array('as' => 'muestra_planes', 'uses' => 'Planes_de_pagoController@index'));
+                    Route::get('/todos_agrupaciones', array('as' => 'muestra_planes', 'uses' => 'Planes_de_pagoController@show_byAgrupaciones'));
+                    Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Planes_de_pagoController@show'));
                     Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Planes_de_pagoController@create'));
                     Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Planes_de_pagoController@update'));
                     Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Planes_de_pagoController@destroy'));
