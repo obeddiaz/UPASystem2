@@ -206,7 +206,7 @@ class ReferenciasController extends \BaseController {
                 if ($value['importe']>=$adeudo['adeudos']['importe']) {
                     Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('status_adeudo' => 1, 'fecha_pago' => date('Y-m-d')));
                 } else{
-                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('importe' => floatval($adeudo['impote'] - floatval($value['importe'])), 'fecha_pago' => date('Y-m-d')));
+                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 'fecha_pago' => date('Y-m-d')));
                 }
 
                 $personas[$i]['persona']=$commond->obtener_infoAlumno_idPersona(array('id_persona'=>$adeudo['adeudos']['id_persona']));

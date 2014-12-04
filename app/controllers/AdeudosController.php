@@ -18,6 +18,8 @@ class AdeudosController extends \BaseController {
      */
     public function create() {
         //var_dump(Input::get());
+        $commond = new Common_functions();        
+        
         $parametros = array(
             'paquete_id' => Input::get('paquete_id'),
             'id_personas' => Input::get('id_personas')
@@ -29,14 +31,22 @@ class AdeudosController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            $paquete = Paquete::find($parametros['paquete_id']);
-            $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
-            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
-            echo json_encode(Adeudos::$custom_data);
-            foreach ($parametros['id_personas'] as $alumno) {
-                Adeudos::agregar_adeudos($alumno);
+            $periodo_actual=$commond->periodo_actual();
+            $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
+                        ->where('periodo','!=',$periodo_actual['idperiodo'])
+                        ->where('status_adeudo','=',0)->count();
+            if ($adeudos_no_pagados==0) {
+                $paquete = Paquete::find($parametros['paquete_id']);
+                $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
+                Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+                echo json_encode(Adeudos::$custom_data);
+                foreach ($parametros['id_personas'] as $alumno) {
+                    Adeudos::agregar_adeudos($alumno);
+                }
+                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+            } else {
+                return json_encode(array('error' => true, 'mensaje' => 'Tiene adeudos sin pagas de otro periodo.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -59,19 +69,24 @@ class AdeudosController extends \BaseController {
             'periodo' => 'required|integer',
             'id_personas' => 'required|integer',
             'fecha_limite' => 'date_format:Y-m-d',
-            'grado' => 'required|integer'
+            'grado' => 'integer'
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-           $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
-           $adeudo = array(
-                'importe' => $subconcepto['importe'],
-                'sub_concepto_id' => $subconcepto['id'],
-                'fecha_limite' =>  $parametros['fecha_limite'],
-                'grado' => $parametros['grado']
-            );
-           $res = Adeudos::create($adeudo);
-            
+            $periodo_actual=$commond->periodo_actual();
+            $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
+                        ->where('periodo','!=',$periodo_actual['idperiodo'])
+                        ->where('status_adeudo','=',0)->count();
+            if ($adeudos_no_pagados==0) {
+               $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
+               $adeudo = array(
+                    'importe' => $subconcepto['importe'],
+                    'sub_concepto_id' => $subconcepto['id'],
+                    'fecha_limite' =>  $parametros['fecha_limite'],
+                    'grado' => $parametros['grado']
+                );
+               $res = Adeudos::create($adeudo);
+            }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
