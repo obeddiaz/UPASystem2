@@ -37,15 +37,17 @@ class Common_functions {
         }
         return $res;
     }
-    public function obtener_infoAlumno_idPersona($persona) {
+    public function obtener_alumno_No_idPersona($personas) {
         $alumnos = $this->sii->new_request('POST', '/alumnos');
         $res = array();
-        if (is_array($persona)) {
-            foreach ($alumnos as $key_alumnos => $alumno) {
-                if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
-                    $persona_info = $persona;
-                    unset($persona_info['id_persona']);
-                    $res[] = array_merge($alumno, $persona_info);
+        if (is_array($personas)) {
+            foreach ($personas as $key_personas => $persona) {
+                foreach ($alumnos as $key_alumnos => $alumno) {
+                    if ($alumno['idpersonas'] != intval($persona['id_persona'])) {
+                        $persona_info = $persona;
+                        unset($persona_info['id_persona']);
+                        $res[] = array_merge($alumno, $persona_info);
+                    }
                 }
             }
         } else {
@@ -53,12 +55,12 @@ class Common_functions {
         }
         return $res;
     }
-    public function obtener_infoAlumno_No_idPersona($persona) {
+    public function obtener_infoAlumno_idPersona($persona) {
         $alumnos = $this->sii->new_request('POST', '/alumnos');
         $res = array();
         if (is_array($persona)) {
             foreach ($alumnos as $key_alumnos => $alumno) {
-                if ($alumno['idpersonas'] != intval($persona['id_persona'])) {
+                if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
                     $persona_info = $persona;
                     unset($persona_info['id_persona']);
                     $res[] = array_merge($alumno, $persona_info);

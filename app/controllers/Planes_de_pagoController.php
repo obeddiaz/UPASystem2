@@ -142,7 +142,7 @@ class Planes_de_pagoController extends \BaseController {
 				$res['paquete']=$paquete;
 				$res['data']=Paquete::personasPaquete($paquete['id']);
 				if ($res['data'] || !empty($res['data'])) {
-					$res['data']=$commond->obtener_infoAlumno_No_idPersona($res['data']);
+					$res['data']=$commond->obtener_alumno_No_idPersona($res['data']);
 				} else {
 					$res['data']=array();
 				}
