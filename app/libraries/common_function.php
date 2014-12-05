@@ -40,7 +40,6 @@ class Common_functions {
     public function obtener_infoAlumno_idPersona($persona) {
         $alumnos = $this->sii->new_request('POST', '/alumnos');
         $res = array();
-
         if (is_array($persona)) {
             foreach ($alumnos as $key_alumnos => $alumno) {
                 if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
