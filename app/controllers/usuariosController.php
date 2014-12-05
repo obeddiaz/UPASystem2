@@ -52,7 +52,7 @@ class UsuariosController extends \BaseController {
         if (!$validator->fails())
         {
             $user = $sii->login($parametros['u'], $parametros['p']);
-            if ($user['persona']['alumno']) {
+            if (isset($user['persona']['alumno'])) {
                 $commond = new Common_functions();
                 $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $user['persona']['idpersonas']));
                 $user['persona']['grado'] = $grado[0]['grado'];
