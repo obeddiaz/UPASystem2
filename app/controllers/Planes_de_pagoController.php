@@ -154,6 +154,26 @@ class Planes_de_pagoController extends \BaseController {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 	}
+	
+	public function show_subconceptos()
+	{
+		$commond = new Common_functions();        
+		$parametros=Input::get();		
+		$reglas = 
+			array(
+			    'id' => 'required|integer',	
+			    'periodo'=>'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			$res['data']=Planes_de_pago::sub_conceptos($parametros);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}
+	}
 
 	/**
 	 * Show the form for editing the specified resource.
