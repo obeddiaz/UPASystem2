@@ -28,24 +28,23 @@ class AdeudosController extends \BaseController {
             'paquete_id' => 'required|integer',
             'id_personas' => 'required|array'
 
-        );
+        ); 
         $validator = Validator::make($parametros, $reglas);
-        if (!$validator->fails()) {
+        if (!$validator->fails()) {    
+            
             $periodo_actual=$commond->periodo_actual();
-            $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
-                        ->where('periodo','!=',$periodo_actual['idperiodo'])
-                        ->where('status_adeudo','=',0)->count();
-            if ($adeudos_no_pagados==0) {
                 $paquete = Paquete::find($parametros['paquete_id']);
                 $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
                 Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
-                echo json_encode(Adeudos::$custom_data);
                 foreach ($parametros['id_personas'] as $alumno) {
-                    Adeudos::agregar_adeudos($alumno);
+                    $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
+                        ->where('periodo','!=',$periodo_actual['idperiodo'])
+                        ->where('status_adeudo','=',0)->count();
+                    if ($adeudos_no_pagados==0) {
+                       Adeudos::agregar_adeudos($alumno);
+                    }
                 }
-                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
-            } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Tiene adeudos sin pagas de otro periodo.', 'respuesta' => null));
+                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => '');
             }
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
