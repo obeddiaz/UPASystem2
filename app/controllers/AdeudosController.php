@@ -37,7 +37,7 @@ class AdeudosController extends \BaseController {
                 $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
                 Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
                 foreach ($parametros['id_personas'] as $alumno) {
-                    $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
+                    $adeudos_no_pagados=Adeudos::where('id_persona','=',$alumno)
                         ->where('periodo','!=',$periodo_actual['idperiodo'])
                         ->where('status_adeudo','=',0)->count();
                     if ($adeudos_no_pagados==0) {
