@@ -107,9 +107,17 @@ class Planes_de_pagoController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$paquete=Planes_de_pago::paquetes($parametros);
-			$res['paquete']=$paquete;
-			$res['data']=Paquete::personasPaquete($paquete['id']);
-			$res['data']=$commond->obtener_alumno_idPersona($res['data']);
+			if ($paquete || !empty($paquete)) {			
+				$res['paquete']=$paquete;
+				$res['data']=Paquete::personasPaquete($paquete['id']);
+				if ($res['data'] || !empty($res['data'])) {
+					$res['data']=$commond->obtener_alumno_idPersona($res['data']);
+				} else {
+					$res['data']=array();
+				}
+			} else {
+				return json_encode(array('error' =>true,'mensaje'=>'No existe paquete en periodo actual.', 'respuesta'=>null ));	
+			}
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -130,9 +138,17 @@ class Planes_de_pagoController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$paquete=Planes_de_pago::paquetes($parametros);
-			$res['paquete']=$paquete;
-			$res['data']=Paquete::personasNoPaquete($paquete['id']);
-			$res['data']=$commond->obtener_alumno_idPersona($res['data']);
+			if ($paquete || !empty($paquete)) {			
+				$res['paquete']=$paquete;
+				$res['data']=Paquete::personasNoPaquete($paquete['id']);
+				if ($res['data'] || !empty($res['data'])) {
+					$res['data']=$commond->obtener_alumno_idPersona($res['data']);
+				} else {
+					$res['data']=array();
+				}
+			} else {
+				return json_encode(array('error' =>true,'mensaje'=>'No existe paquete en periodo actual.', 'respuesta'=>null ));	
+			}
 			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
