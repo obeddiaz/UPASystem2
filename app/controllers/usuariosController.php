@@ -57,7 +57,7 @@ class UsuariosController extends \BaseController {
                 return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
             } else {
                 Session::put('user', $user);
-                if (isset($user['persona']['alumno'])) {
+                if (isset($user['persona']['alumno']) &&  intval($user['persona']['alumno'])==1) {
                     $commond = new Common_functions();
                     $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $user['persona']['idpersonas']));
                     $user['persona']['grado'] = $grado[0]['grado'];
