@@ -49,6 +49,16 @@ class Paquete extends \Eloquent {
                 ->groupBy('id_persona')->get();
         return $query;
     }
+    public static function personasNoPaquete($id) {
+        DB::setFetchMode(PDO::FETCH_ASSOC);
+        $table = DB::table('paqueteplandepago');
+        $query=$table
+                ->join('adeudos','adeudos.paquete_id','=','paqueteplandepago.id')
+                ->select('id_persona')
+                ->where('paqueteplandepago.id','!=',$id)
+                ->groupBy('id_persona')->get();
+        return $query;
+    }
 
 }
 
