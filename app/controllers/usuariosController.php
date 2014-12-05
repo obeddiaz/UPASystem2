@@ -53,17 +53,15 @@ class UsuariosController extends \BaseController {
         {
             $user = $sii->login($parametros['u'], $parametros['p']);
 
-            if (isset($user['persona']['alumno'])) {
-                
-                Session::put('user', $user);
-                $commond = new Common_functions();
-                $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $user['persona']['idpersonas']));
-                $user['persona']['grado'] = $grado[0]['grado'];
-            }
             if (isset($user['error'])) {
                 return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
             } else {
                 Session::put('user', $user);
+                if (isset($user['persona']['alumno'])) {
+                    $commond = new Common_functions();
+                    $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $user['persona']['idpersonas']));
+                    $user['persona']['grado'] = $grado[0]['grado'];
+                }
                 return array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200));
             }
         } else {
