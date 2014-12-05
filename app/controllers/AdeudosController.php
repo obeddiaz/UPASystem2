@@ -31,7 +31,7 @@ class AdeudosController extends \BaseController {
         ); 
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {    
-            
+
             $periodo_actual=$commond->periodo_actual();
                 $paquete = Paquete::find($parametros['paquete_id']);
                 $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
@@ -44,8 +44,7 @@ class AdeudosController extends \BaseController {
                        Adeudos::agregar_adeudos($alumno);
                     }
                 }
-                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => '');
-            }
+                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
