@@ -53,6 +53,22 @@ class Common_functions {
         }
         return $res;
     }
+    public function obtener_infoAlumno_No_idPersona($persona) {
+        $alumnos = $this->sii->new_request('POST', '/alumnos');
+        $res = array();
+        if (is_array($persona)) {
+            foreach ($alumnos as $key_alumnos => $alumno) {
+                if ($alumno['idpersonas'] != intval($persona['id_persona'])) {
+                    $persona_info = $persona;
+                    unset($persona_info['id_persona']);
+                    $res[] = array_merge($alumno, $persona_info);
+                }
+            }
+        } else {
+            return null;
+        }
+        return $res;
+    }
 
     public function calcular_importe_por_tipo($importe, $rob, $tipo) {
         $res = null;
