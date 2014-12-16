@@ -26,10 +26,9 @@ class Planes_de_pago extends \Eloquent {
 
     public static function sub_conceptos($data) {
         DB::setFetchMode(PDO::FETCH_ASSOC);
-        $query = Planes_de_pago::join('paqueteplandepago', 'plan_de_pago.id', '=', 'paqueteplandepago.id_plandepago')
-                ->join('subconcepto_paqueteplandepago', 'subconcepto_paqueteplandepago.paquete_id', '=', 'paqueteplandepago.id')
+        $query = Paquete::join('subconcepto_paqueteplandepago', 'subconcepto_paqueteplandepago.paquete_id', '=', 'paqueteplandepago.id')
                 ->join('sub_conceptos', 'sub_conceptos.id', '=', 'subconcepto_paqueteplandepago.sub_concepto_id')
-                ->where('id_plandepago', '=', $data['id'])
+                ->where('paqueteplandepago.id', '=', $data['id'])
                 ->where('paqueteplandepago.periodo', '=', $data['periodo'])
                 ->select('paqueteplandepago.id', 'sub_conceptos.*', 'subconcepto_paqueteplandepago.fecha_de_vencimiento', 'subconcepto_paqueteplandepago.recargo')
                 ->get();
