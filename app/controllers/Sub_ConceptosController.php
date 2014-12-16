@@ -40,7 +40,8 @@ class Sub_ConceptosController extends \BaseController {
             'conceptos_id' => Input::get('conceptos_id'),
             'importe' => Input::get('importe'),
             'periodo' => Input::get('periodo'),
-            'nivel_id' => Input::get('nivel_id')
+            'nivel_id' => Input::get('nivel_id'),
+            'tipo_adeudo' => Input::get('tipo_adeudo')
         );
         $reglas = array(
             'descripcion' => 'required',
@@ -48,7 +49,8 @@ class Sub_ConceptosController extends \BaseController {
             'conceptos_id' => 'required|integer',
             'importe' => 'required|numeric',
             'periodo' => 'required',
-            'nivel_id' => 'required|integer'
+            'nivel_id' => 'required|integer',
+            'tipo_adeudo' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
