@@ -8,6 +8,17 @@ class Adeudos extends \Eloquent {
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
     public static $custom_data;
+
+    public static function obtener_adeudos_periodo($periodo) {
+        DB::setFetchMode(PDO::FETCH_ASSOC);
+        $Temporaltable = DB::table('adeudos');
+        $query = $Temporaltable->join('sub_conceptos','adeudos.sub_concepto_id','=','sub_conceptos.id')
+                ->where('adeudos.periodo', '=', $periodo)
+                ->select('sub_conceptos.sub_concepto','adeudos.*')
+                ->get();
+        return $query;
+    }
+
     public function paquete() {
         return $this->belongsTo('Paquete', 'paquete_id');
     }
