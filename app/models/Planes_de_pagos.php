@@ -30,7 +30,9 @@ class Planes_de_pago extends \Eloquent {
                 ->join('sub_conceptos', 'sub_conceptos.id', '=', 'subconcepto_paqueteplandepago.sub_concepto_id')
                 ->where('paqueteplandepago.id', '=', $data['id'])
                 ->where('paqueteplandepago.periodo', '=', $data['periodo'])
-                ->select('paqueteplandepago.id', 'sub_conceptos.*', 'subconcepto_paqueteplandepago.fecha_de_vencimiento', 'subconcepto_paqueteplandepago.recargo')
+                ->select(
+                        'paqueteplandepago.id', 'sub_conceptos.*', 'subconcepto_paqueteplandepago.fecha_de_vencimiento', 'subconcepto_paqueteplandepago.recargo', 'subconcepto_paqueteplandepago.tipo_recargo'
+                )
                 ->get();
         return $query;
     }
