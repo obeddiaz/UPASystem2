@@ -121,6 +121,7 @@ Route::group(array('before' => 'auth'), function() {
             Route::get('/', array('as' => 'muestra_cuentas', 'uses' => 'CuentasController@index'));
             Route::post('/agregar', array('as' => 'crear_cuenta', 'uses' => 'CuentasController@create'));
             Route::put('/guardar', array('as' => 'actualizar_valor_cuenta', 'uses' => 'CuentasController@update'));
+            Route::put('/activar', array('as' => 'actualizar_valor_cuenta', 'uses' => 'CuentasController@update_activo'));
             Route::delete('/eliminar', array('as' => 'eliminar_cuenta', 'uses' => 'CuentasController@destroy'));
         });
         Route::group(array('prefix' => '/resbancaria'), function() {

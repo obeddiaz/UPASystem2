@@ -106,6 +106,29 @@ class CuentasController extends \BaseController {
 		}
 	}
 
+	public function update_activo() {
+		$parametros= Input::get();	
+		$reglas = 
+			array(
+			    'id' => 'required|integer'
+			);
+    	$validator = Validator::make($parametros,$reglas);
+
+		if (!$validator->fails())
+		{
+			foreach ($parametros as $key => $value) {
+				if (!array_key_exists($key,$reglas)) {
+					unset($parametros[$key]);	
+				}
+			}
+			Cuentas::where('id','=',$parametros['id'])->update(array('activo_cobros'=>1));
+			Cuentas::where('id','!=',$parametros['id'])->update(array('activo_cobros'=>0));
+			$res['data']=Cuentas::find($parametros['id']);
+			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		} else {
+			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+		}	
+	}
 
 	/**
 	 * Remove the specified resource from storage.

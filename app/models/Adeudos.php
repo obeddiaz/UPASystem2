@@ -50,12 +50,14 @@ class Adeudos extends \Eloquent {
                 "grado" =>$grado[0]['grado'],
                 "status_adeudo" => 0
             );
-            Adeudos::create($adeudo);
-            //echo json_encode(Adeudos::$custom_data["paquete"]);
-            //echo json_encode($subconcepto->importe);
-            //break;
+            $adeudo=Adeudos::create($adeudo);
+            foreach (json_decode($subconcepto['tipos_pago']) as $key => $value) {
+                $adeudo_tipopago['adeudos_id']=$adeudo['id'];
+                $adeudo_tipopago['tipo_pago_id']=$value;
+                Adeudos_tipopago::create($adeudo_tipopago);
+            }
+
         }
-        //return $this->belongsTo('Adeudos_tipopago', 'adeudos_id');
     }
 
     public static function obtener_adeudos_alumno($data) {
@@ -70,6 +72,8 @@ class Adeudos extends \Eloquent {
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data);
         $sub_cont = array();
         foreach ($query as $key => $adeudo) {
+            $query[$key]['tipos_pago']=Adeudos_tipopago::where('adeudos_id','=',$adeudo['id'])->get();
+
             $query[$key]['importe_inicial'] = $query[$key]['importe'];
             if (isset($sub_cont[$adeudo['sub_concepto_id']])) {
                 $sub_cont[$adeudo['sub_concepto_id']]+=1;
