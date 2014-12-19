@@ -59,22 +59,24 @@ class AdeudosController extends \BaseController {
             'subconcepto_id' => Input::get('subconcepto_id'),
             'periodo' => Input::get('periodo'),
             'id_personas' => Input::get('id_personas'),
-            'fecha_limite' => Input::get('fecha_limite')
+            'fecha_limite' => Input::get('fecha_limite'),
+            'tipos_pago' => Input::get('tipos_pago')
         );
         $reglas = array(
             'subconcepto_id' => 'required|integer',
             'periodo' => 'required|integer',
             'id_personas' => 'required|integer',
-            'fecha_limite' => 'date_format:Y-m-d'
+            'fecha_limite' => 'date_format:Y-m-d',
+            'tipos_pago' => 'required|array'
         );
         $commond = new Common_functions();
-        $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $alumno));
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             $periodo_actual=$commond->periodo_actual();
             $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
                         ->where('periodo','!=',$periodo_actual['idperiodo'])
                         ->where('status_adeudo','=',0)->count();
+            $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $parametros['id_personas']));
             if ($adeudos_no_pagados==0) {
                $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
                $adeudo = array(
