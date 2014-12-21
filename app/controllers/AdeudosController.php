@@ -18,8 +18,8 @@ class AdeudosController extends \BaseController {
      */
     public function create() {
         //var_dump(Input::get());
-        $commond = new Common_functions();        
-        
+        $commond = new Common_functions();
+
         $parametros = array(
             'paquete_id' => Input::get('paquete_id'),
             'id_personas' => Input::get('id_personas')
@@ -27,24 +27,23 @@ class AdeudosController extends \BaseController {
         $reglas = array(
             'paquete_id' => 'required|integer',
             'id_personas' => 'required|array'
-
-        ); 
+        );
         $validator = Validator::make($parametros, $reglas);
-        if (!$validator->fails()) {    
+        if (!$validator->fails()) {
 
-            $periodo_actual=$commond->periodo_actual();
-                $paquete = Paquete::find($parametros['paquete_id']);
-                $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
-                Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
-                foreach ($parametros['id_personas'] as $alumno) {
-                    $adeudos_no_pagados=Adeudos::where('id_persona','=',$alumno)
-                        ->where('periodo','!=',$periodo_actual['idperiodo'])
-                        ->where('status_adeudo','=',0)->count();
-                    if ($adeudos_no_pagados==0) {
-                       Adeudos::agregar_adeudos($alumno);
-                    }
+            $periodo_actual = $commond->periodo_actual();
+            $paquete = Paquete::find($parametros['paquete_id']);
+            $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
+            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            foreach ($parametros['id_personas'] as $alumno) {
+                $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
+                                ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                                ->where('status_adeudo', '=', 0)->count();
+                if ($adeudos_no_pagados == 0) {
+                    Adeudos::agregar_adeudos($alumno);
                 }
-                return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
+            }
+            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -72,20 +71,22 @@ class AdeudosController extends \BaseController {
         $commond = new Common_functions();
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            $periodo_actual=$commond->periodo_actual();
-            $adeudos_no_pagados=Adeudos::where('id_persona','=',$parametros('id_personas'))
-                        ->where('periodo','!=',$periodo_actual['idperiodo'])
-                        ->where('status_adeudo','=',0)->count();
+            $periodo_actual = $commond->periodo_actual();
+            $adeudos_no_pagados = Adeudos::where('id_persona', '=', $parametros['id_personas'])
+                            ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                            ->where('status_adeudo', '=', 0)->count();
             $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $parametros['id_personas']));
-            if ($adeudos_no_pagados==0) {
-               $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
-               $adeudo = array(
+            if ($adeudos_no_pagados == 0) {
+                $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
+                $adeudo = array(
                     'importe' => $subconcepto['importe'],
                     'sub_concepto_id' => $subconcepto['id'],
-                    'fecha_limite' =>  $parametros['fecha_limite'],
-                    'grado' => $grado[0]['grado']
+                    'fecha_limite' => $parametros['fecha_limite'],
+                    'grado' => $grado[0]['grado'],
+                    'id_persona' =>  $parametros['id_personas'],
+                    'periodo'=>$parametros['periodo']
                 );
-               $res = Adeudos::create($adeudo);
+                $res = Adeudos::create($adeudo);
             }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
@@ -134,7 +135,7 @@ class AdeudosController extends \BaseController {
      * @return Response
      */
     public function show_by_periodo() {
-        $commond = new Common_functions();        
+        $commond = new Common_functions();
         $parametros = Input::get();
         $reglas = array(
             'periodo' => 'required|integer'
@@ -143,7 +144,7 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
-            $res['data']=$commond->obtener_alumno_idPersona($res['data']);
+            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
@@ -179,7 +180,5 @@ class AdeudosController extends \BaseController {
     public function destroy($id) {
         //
     }
-
-
 
 }
