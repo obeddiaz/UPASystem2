@@ -87,6 +87,11 @@ class AdeudosController extends \BaseController {
                     'periodo'=>$parametros['periodo']
                 );
                 $res = Adeudos::create($adeudo);
+                foreach ($parametros['tipos_pago'] as $key => $value) {
+                    $adeudo_tipopago['adeudos_id']=$res['id'];
+                    $adeudo_tipopago['tipo_pago_id']=$value;
+                    Adeudos_tipopago::create($adeudo_tipopago);
+                }
             }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
