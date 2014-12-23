@@ -42,30 +42,33 @@ class UsuariosController extends \BaseController {
      */
     public function login() {
         $sii = new Sii();
-        $parametros= Input::get();
-        $reglas = array( 
-            'u'  => 'required',
+        $parametros = Input::get();
+        $reglas = array(
+            'u' => 'required',
             'p' => 'required'
         );
-        $validator = Validator::make($parametros,$reglas);
+        $validator = Validator::make($parametros, $reglas);
 
-        if (!$validator->fails())
-        {
+        if (!$validator->fails()) {
             $user = $sii->login($parametros['u'], $parametros['p']);
 
             if (isset($user['error'])) {
-                return json_encode(array('error' => true,'mensaje'=>'User or password Incorrect','respuesta'=>'' ));
+                return json_encode(array('error' => true, 'mensaje' => 'User or password Incorrect', 'respuesta' => ''));
             } else {
                 Session::put('user', $user);
-                if (isset($user['persona']['alumno']) &&  intval($user['persona']['alumno'])==1) {
+                if (isset($user['persona']['alumno']) && intval($user['persona']['alumno']) == 1) {
                     $commond = new Common_functions();
                     $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $user['persona']['idpersonas']));
-                    $user['persona']['grado'] = $grado[0]['grado'];
+                    if (isset($grado[0])) {
+                        $user['persona']['grado'] = $grado[0]['grado'];
+                    } else {
+                        $user['persona']['grado'] = null;
+                    }
                 }
                 return array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200));
             }
         } else {
-            return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
 

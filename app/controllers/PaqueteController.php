@@ -42,7 +42,7 @@ class PaqueteController extends \BaseController {
             'sub_concepto' => Input::get('sub_concepto'),
             'recargo' => Input::get('recargo'),
             'tipo_recargo' => Input::get('tipo_recargo'),
-            'tipos_pago' => Input::get('tipo_pagos')
+            'tipos_pago' => Input::get('tipos_pago')
         );
         $reglas = array(
             'paquete_id' => 'required|integer',
