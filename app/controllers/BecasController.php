@@ -114,6 +114,14 @@ class BecasController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
+    public function show_catalogos() {
+        
+            $res['data']['tipo_importe'] = Becas::obtenerTipoImporte();
+            $res['data']['periodicidades'] = Becas::obtenerPerodicidades();
+            $res['data']['subcidios'] = Becas::obtenerSubcidios();
+
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+    }
 
     public function show_alumno() {
         $commond = new Common_functions();
