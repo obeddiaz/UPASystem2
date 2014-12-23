@@ -35,14 +35,16 @@ App::after(function($request, $response)
 Route::filter('permisos', function() {
   $user=Session::get('user');
   if (intval($user['persona']['alumno'])==1) {
-    return json_encode(array('error' => true, 'message' => 'Este Usuario no tiene permisos para consumir este servicio','respuesta'=>''));
+    return json_encode(array('error' => true, 'message' => 'Este Usuario no tiene permisos para consumir este servicio','respuesta'=>'','error_type'=>1));
   }
 });
 
 Route::filter('auth', function()
 {
+	$sii= new Sii();
+	$keepalive=$sii->new_request('POST','/persona/keepalive');
 	if (!Session::has('user')) {
-          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>''));
+          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0));
     }
 });
 

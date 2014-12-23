@@ -173,7 +173,57 @@ class AdeudosController extends \BaseController {
      * @return Response
      */
     public function update($id) {
-        //
+        $parametros = Input::get();
+        $reglas = array(
+            'id' => 'required',
+            'fecha_limite'=>'date_format:Y-m-d',
+            'id_persona'=>'integer',
+            'importe' => 'numeric',
+            'periodo'=>'integer', 
+            'status_adeudo'=>'integer', 
+            'sub_concepto_id'=>'integer', 
+            'grado' => 'integer', 
+            'recargo' => 'numeric',
+            'tipo_recargo' => 'integer', 
+            'paquete_id' => 'integer'
+            
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key, $reglas)) {
+                    unset($parametros[$key]);
+                }
+            }
+            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+            $res['data'] = Adeudos::find($parametros['id']);
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+    }
+    
+    public function update_status() {
+        $parametros = Input::get();
+        $reglas = array(
+            'id' => 'required',
+            'status_adeudo'=>'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key, $reglas)) {
+                    unset($parametros[$key]);
+                }
+            }
+            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+            $res['data'] = Adeudos::find($parametros['id']);
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
     }
 
     /**
