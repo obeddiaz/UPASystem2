@@ -145,6 +145,29 @@ class BecasController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
         }
     }
+    
+    public function show_alumno_nobeca() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            //'id_persona' => 'required', 
+            'idbeca' => 'required|numeric',
+            'idnivel' => 'required|integer',
+            'periodo' => 'required|integer',
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $personasBeca = Becas::obtenerAlumnosBecas($parametros);
+            $res['data'] = $commond->obtener_alumno_No_idPersona($personasBeca);
+            if ($res['data'] == null) {
+                return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+            }
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+        }
+    }
 
     /**
      * Show the form for editing the specified resource.
