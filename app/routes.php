@@ -57,7 +57,7 @@ Route::group(array('before' => 'auth'), function() {
                     Route::put('/alumnos/asignar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
                     Route::put('/alumnos/cancelar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
                     Route::delete('/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy'));
-                    Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy'));
+                    Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy_alumno'));
                 });
             });
         });
