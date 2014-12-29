@@ -37,7 +37,7 @@ class BecasController extends \BaseController {
             'tipobeca' => 'integer'
         );
         $validator = Validator::make($parametros, $reglas);
-
+  
         if (!$validator->fails()) {
             $res['data'] = Becas::create($parametros);
             return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));

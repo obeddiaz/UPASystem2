@@ -13,7 +13,7 @@
 
 Route::get('/', function() {
     return View::make('hello');
-});
+});  
 Route::group(array('before' => 'auth'), function() {
     Route::group(array( 'before' => 'permisos'), function() {
         Route::group(array('prefix' => '/administracion'), function() {
