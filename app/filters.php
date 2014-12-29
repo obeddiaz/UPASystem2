@@ -42,7 +42,7 @@ Route::filter('permisos', function() {
 Route::filter('auth', function()
 {
 	$sii= new Sii();
-	$keepalive=$sii->new_request('POST','/persona/keepalive');
+	$keepalive=$sii->new_request('POST','/niveles');	
 	if (!Session::has('user')) {
           return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0));
     }
