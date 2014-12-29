@@ -227,6 +227,43 @@ class BecasController extends \BaseController {
             'idbeca' => 'required|numeric',
             'idnivel' => 'integer',
             'periodo' => 'required|integer',
+            'status' => 1
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $array_insert = $parametros;
+            unset($array_insert['id_persona']);
+            $data_todos = $array_insert;
+            unset($data_todos['status']);
+
+            foreach ($parametros['id_persona'] as $key => $value) {
+                $array_insert['id_persona'] = $value;
+                Becas::update_status_beca_alumno($array_insert);
+            }
+
+            $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
+            $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
+            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+    }
+
+    public function update_alumno_desactivar() {
+        $commond = new Common_functions();
+        $parametros = array(
+            'id_persona' => Input::get('id_persona'),
+            'idbeca' => Input::get('idbeca'),
+            'idnivel' => Input::get('idnivel'),
+            'periodo' => Input::get('periodo'),
+            'status' => 0
+        );
+        $reglas = array(
+            'id_persona' => 'required|array',
+            'idbeca' => 'required|numeric',
+            'idnivel' => 'integer',
+            'periodo' => 'required|integer',
             'status' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
