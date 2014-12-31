@@ -51,7 +51,7 @@ class Adeudos extends \Eloquent {
                 "status_adeudo" => 0
             );
             $adeudo=Adeudos::create($adeudo);
-            foreach (json_decode($subconcepto['tipos_pago']) as $key => $value) {
+            foreach (json_decode($subconcepto->tipos_pago) as $key => $value) {
                 $adeudo_tipopago['adeudos_id']=$adeudo['id'];
                 $adeudo_tipopago['tipo_pago_id']=$value;
                 Adeudos_tipopago::create($adeudo_tipopago);

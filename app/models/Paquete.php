@@ -40,7 +40,7 @@ class Paquete extends \Eloquent {
         $query = $table
                 ->where('paquete_id', '=', $id)
                 ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.sub_concepto_id')
-                ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento','scp.recargo','scp.tipo_recargo')
+                ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento','scp.recargo','scp.tipo_recargo','scp.tipos_pago')
                 ->get();
         return $query;
     }
