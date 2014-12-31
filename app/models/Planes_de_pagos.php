@@ -32,7 +32,7 @@ class Planes_de_pago extends \Eloquent {
                 ->where('paqueteplandepago.periodo', '=', $data['periodo'])
                 ->select(
                         'paqueteplandepago.id', 
-                        'sub_conceptos.*', 
+                        'sub_conceptos.*',   
                         'subconcepto_paqueteplandepago.fecha_de_vencimiento', 
                         'subconcepto_paqueteplandepago.recargo', 
                         'subconcepto_paqueteplandepago.tipo_recargo',
