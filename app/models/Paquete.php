@@ -14,7 +14,11 @@ class Paquete extends \Eloquent {
     public function plan_de_pago() {
         return $this->belongsTo('Planes_de_pago', 'id_plandepago');
     }
-
+    public static function delete_subconceptos_paquetes($paquete_id) {
+        $table = DB::table(Paquete::$subconceptos_paquete);
+        $table->where('paquete_id', '=', $paquete_id)->delete();
+        return TRUE;
+    }
     public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
         foreach ($data['sub_concepto'] as $subconcepto) {

@@ -53,8 +53,13 @@ class PaqueteController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            $res = Paquete::create_subconceptos_paquetes($parametros);
-            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+            $delete_res=Paquete::delete_subconceptos_paquetes($parametros['paquete_id']);
+            if ($delete_res==true) {
+               $res = Paquete::create_subconceptos_paquetes($parametros);
+               return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+            } else {
+                return json_encode(array('error' => true, 'mensaje' => 'Hay algo mal con el servicio.', 'respuesta' => null));    
+            }
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
