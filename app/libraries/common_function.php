@@ -46,10 +46,14 @@ class Common_functions {
             foreach ($personas as $persona) {
                 $per_temp[] = $persona['id_persona'];
             }
-            foreach ($alumnos as $alumno) {
-                if (!in_array($alumno['idpersonas'], $per_temp)) {
-                    $res[] = $alumno;
+            if (isset($per_temp)) {
+                foreach ($alumnos as $alumno) {
+                    if (!in_array($alumno['idpersonas'], $per_temp)) {
+                        $res[] = $alumno;
+                    }
                 }
+            } else {
+                $res = $alumnos;
             }
         } else {
             return null;
