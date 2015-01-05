@@ -230,7 +230,7 @@ class AdeudosController extends \BaseController {
         $parametros = Input::get();
         $reglas = array(
             'id' => 'required|integer',
-            'tipo_pago'=>'required|integer'
+            'tipo_pago'=>'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -240,8 +240,12 @@ class AdeudosController extends \BaseController {
                     unset($parametros[$key]);
                 }
             }
-            Adeudos_tipopago::where('adeudos_id', '=', $parametros['id'])
-                              ->update(array('tipo_pago_id' => $parametros['tipo_pago']));
+            Adeudos_tipopago::destroy($parametros['id']);
+            foreach ($parametros['tipos_pago'] as $key => $value) {
+                $adeudo_tipopago['adeudos_id']=$parametros['id'];
+                $adeudo_tipopago['tipo_pago_id']=$value;
+                Adeudos_tipopago::create($adeudo_tipopago);
+            }
             $res['data'] = Adeudos::find($parametros['id']);
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
