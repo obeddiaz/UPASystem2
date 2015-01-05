@@ -240,7 +240,7 @@ class AdeudosController extends \BaseController {
                     unset($parametros[$key]);
                 }
             }
-            Adeudos_tipopago::destroy($parametros['id']);
+            Adeudos_tipopago::where('adeudos_id', '=', $parametros['id'])->delete();
             foreach ($parametros['tipos_pago'] as $key => $value) {
                 $adeudo_tipopago['adeudos_id']=$parametros['id'];
                 $adeudo_tipopago['tipo_pago_id']=$value;
