@@ -67,7 +67,7 @@ Route::group(array('before' => 'auth'), function() {
             Route::post('/agregar_subconcepto', array('as' => 'agregar_subconcepto', 'uses' => 'AdeudosController@createSubconcepto'));
             Route::put('/guardar', array('as' => 'actualizar_valor_becas', 'uses' => 'AdeudosController@update'));
             Route::put('/status', array('as' => 'actualizar_status_valor_becas', 'uses' => 'AdeudosController@update_status'));
-
+            Route::put('/tipo_pago', array('as' => 'actualizar_valor_becas', 'uses' => 'AdeudosController@update_tipospago'));
         });
         Route::get('/prueba', array('as' => 'prueba_api', 'uses' => 'PruebaAPIController@index'));
         Route::group(array('prefix' => '/caja'), function() {

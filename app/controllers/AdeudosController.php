@@ -226,6 +226,29 @@ class AdeudosController extends \BaseController {
         }
     }
 
+    public function update_tipospago() {
+        $parametros = Input::get();
+        $reglas = array(
+            'id' => 'required|integer',
+            'tipo_pago'=>'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key, $reglas)) {
+                    unset($parametros[$key]);
+                }
+            }
+            Adeudos_tipopago::where('adeudos_id', '=', $parametros['id'])
+                              ->update(array('tipo_pago_id' => $parametros['tipo_pago']));
+            $res['data'] = Adeudos::find($parametros['id']);
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
