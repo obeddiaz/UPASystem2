@@ -97,6 +97,7 @@ class AdeudosController extends \BaseController {
                     $adeudo_tipopago['tipo_pago_id']=$value;
                     Adeudos_tipopago::create($adeudo_tipopago);
                 }
+                $res = array_merge($res,Sub_conceptos::where('id','=',$res['sub_concepto_id'])->first());
             }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
