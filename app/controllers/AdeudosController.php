@@ -91,13 +91,20 @@ class AdeudosController extends \BaseController {
                     'id_persona' =>  $parametros['id_personas'],
                     'periodo'=>$parametros['periodo']
                 );
-                $res = Adeudos::create($adeudo);
+                $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
-                    $adeudo_tipopago['adeudos_id']=$res['id'];
+                    $adeudo_tipopago['adeudos_id']=$adeudo_creado['id'];
                     $adeudo_tipopago['tipo_pago_id']=$value;
                     Adeudos_tipopago::create($adeudo_tipopago);
                 }
-                $res = array_merge($res,Sub_conceptos::where('id','=',$res['sub_concepto_id'])->first());
+                $subconcepto_adeudo=Sub_conceptos::where('id','=',$res['sub_concepto_id'])->first();
+                if (!is_array($subconcepto_adeudo)) {
+                    $subconcepto_adeudo=get_object_vars($subconcepto_adeudo);
+                }
+                if (!is_array($adeudo_creado)) {
+                    $adeudo_creado=get_object_vars($adeudo_creado);
+                }
+                $res = array_merge($adeudo_creado,$subconcepto_adeudo);
             }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
