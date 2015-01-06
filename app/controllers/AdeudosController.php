@@ -97,7 +97,7 @@ class AdeudosController extends \BaseController {
                     $adeudo_tipopago['tipo_pago_id']=$value;
                     Adeudos_tipopago::create($adeudo_tipopago);
                 }
-                $subconcepto_adeudo=Sub_conceptos::where('id','=',$adeudo_creado['sub_concepto_id'])->first();
+                $subconcepto_adeudo=Sub_conceptos::find($adeudo_creado['sub_concepto_id']);
                 if (!is_array($subconcepto_adeudo)) {
                     $subconcepto_adeudo=get_object_vars($subconcepto_adeudo);
                 }
