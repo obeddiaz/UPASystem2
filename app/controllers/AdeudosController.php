@@ -76,13 +76,18 @@ class AdeudosController extends \BaseController {
                             ->where('periodo', '!=', $periodo_actual['idperiodo'])
                             ->where('status_adeudo', '=', 0)->count();
             $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $parametros['id_personas']));
+            if (isset($grado[0]['grado'])) {
+                $grado=$grado[0]['grado'];
+            } else {
+                $grado=null;
+            }
             if ($adeudos_no_pagados == 0) {
                 $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
                 $adeudo = array(
                     'importe' => $subconcepto['importe'],
                     'sub_concepto_id' => $subconcepto['id'],
                     'fecha_limite' => $parametros['fecha_limite'],
-                    'grado' => $grado[0]['grado'],
+                    'grado' => $grado,
                     'id_persona' =>  $parametros['id_personas'],
                     'periodo'=>$parametros['periodo']
                 );

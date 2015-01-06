@@ -37,6 +37,11 @@ class Adeudos extends \Eloquent {
     public static function agregar_adeudos($alumno) {
         $commond = new Common_functions();
         $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $alumno));
+        if (isset($grado[0]['grado'])) {
+            $grado=$grado[0]['grado'];
+        } else {
+            $grado=null;
+        }
         foreach (Adeudos::$custom_data["subconcepto"] as $subconcepto) {
             $adeudo = array(
                 "sub_concepto_id" => $subconcepto->id,
@@ -47,7 +52,7 @@ class Adeudos extends \Eloquent {
                 "paquete_id" => Adeudos::$custom_data["paquete"]->id,
                 "recargo" => $subconcepto->recargo,
                 "tipo_recargo" => $subconcepto->tipo_recargo,
-                "grado" =>$grado[0]['grado'],
+                "grado" =>$grado,
                 "status_adeudo" => 0
             );
             $adeudo=Adeudos::create($adeudo);
