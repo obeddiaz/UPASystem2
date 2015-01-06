@@ -77,9 +77,9 @@ class AdeudosController extends \BaseController {
                             ->where('status_adeudo', '=', 0)->count();
             $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $parametros['id_personas']));
             if (isset($grado[0]['grado'])) {
-                $grado=$grado[0]['grado'];
+                $grado = $grado[0]['grado'];
             } else {
-                $grado=null;
+                $grado = null;
             }
             if ($adeudos_no_pagados == 0) {
                 $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
@@ -88,23 +88,23 @@ class AdeudosController extends \BaseController {
                     'sub_concepto_id' => $subconcepto['id'],
                     'fecha_limite' => $parametros['fecha_limite'],
                     'grado' => $grado,
-                    'id_persona' =>  $parametros['id_personas'],
-                    'periodo'=>$parametros['periodo']
+                    'id_persona' => $parametros['id_personas'],
+                    'periodo' => $parametros['periodo']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
-                    $adeudo_tipopago['adeudos_id']=$adeudo_creado['id'];
-                    $adeudo_tipopago['tipo_pago_id']=$value;
+                    $adeudo_tipopago['adeudos_id'] = $adeudo_creado['id'];
+                    $adeudo_tipopago['tipo_pago_id'] = $value;
                     Adeudos_tipopago::create($adeudo_tipopago);
                 }
-                $subconcepto_adeudo=Sub_conceptos::find($adeudo_creado['sub_concepto_id']);
+                $subconcepto_adeudo = Sub_conceptos::find($adeudo_creado['sub_concepto_id']);
                 if (!is_array($subconcepto_adeudo)) {
-                    $subconcepto_adeudo=get_object_vars($subconcepto_adeudo);
+                    $subconcepto_adeudo = $subconcepto_adeudo->toArray();
                 }
                 if (!is_array($adeudo_creado)) {
-                    $adeudo_creado=get_object_vars($adeudo_creado);
+                    $adeudo_creado = $adeudo_creado->toArray();
                 }
-                $res = array_merge($adeudo_creado,$subconcepto_adeudo);
+                $res = array_merge($adeudo_creado, $subconcepto_adeudo);
             }
             return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
@@ -189,17 +189,16 @@ class AdeudosController extends \BaseController {
         $parametros = Input::get();
         $reglas = array(
             'id' => 'required',
-            'fecha_limite'=>'date_format:Y-m-d',
-            'id_persona'=>'integer',
+            'fecha_limite' => 'date_format:Y-m-d',
+            'id_persona' => 'integer',
             'importe' => 'numeric',
-            'periodo'=>'integer', 
-            'status_adeudo'=>'integer', 
-            'sub_concepto_id'=>'integer', 
-            'grado' => 'integer', 
+            'periodo' => 'integer',
+            'status_adeudo' => 'integer',
+            'sub_concepto_id' => 'integer',
+            'grado' => 'integer',
             'recargo' => 'numeric',
-            'tipo_recargo' => 'integer', 
+            'tipo_recargo' => 'integer',
             'paquete_id' => 'integer'
-            
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -216,12 +215,12 @@ class AdeudosController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
-    
+
     public function update_status() {
         $parametros = Input::get();
         $reglas = array(
             'id' => 'required',
-            'status_adeudo'=>'required|integer'
+            'status_adeudo' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -243,7 +242,7 @@ class AdeudosController extends \BaseController {
         $parametros = Input::get();
         $reglas = array(
             'id' => 'required|integer',
-            'tipo_pago'=>'required|array'
+            'tipo_pago' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
 
@@ -255,8 +254,8 @@ class AdeudosController extends \BaseController {
             }
             Adeudos_tipopago::where('adeudos_id', '=', $parametros['id'])->delete();
             foreach ($parametros['tipos_pago'] as $key => $value) {
-                $adeudo_tipopago['adeudos_id']=$parametros['id'];
-                $adeudo_tipopago['tipo_pago_id']=$value;
+                $adeudo_tipopago['adeudos_id'] = $parametros['id'];
+                $adeudo_tipopago['tipo_pago_id'] = $value;
                 Adeudos_tipopago::create($adeudo_tipopago);
             }
             $res['data'] = Adeudos::find($parametros['id']);
