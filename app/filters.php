@@ -32,6 +32,7 @@ App::after(function($request, $response)
 | integrates HTTP Basic authentication for quick, simple checking.
 |
 */
+
 Route::filter('permisos', function() {
   $user=Session::get('user');
   if (intval($user['persona']['alumno'])==1) {
@@ -48,6 +49,9 @@ Route::filter('auth', function()
     }
 });
 
+Route::filter('login_api', function() {
+
+});
 
 Route::filter('auth.basic', function()
 {

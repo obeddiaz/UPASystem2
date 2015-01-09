@@ -152,3 +152,18 @@ Route::group(array('prefix' => '/user'), function() {
     Route::post('/login', array('as' => 'user', 'uses' => 'usuariosController@login'));
     Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
 });
+Route::group(array('prefix' => '/api'), function() {
+    Route::post('/login',array('as'=>'login','uses'=>'APIServicesController@local_api_login'));
+    Route::get('/alumnos_adeudos_pagados',
+        array(
+            'as' => 'alumnosAdeudosPagadosSubconcepto',
+            'before' => 'login_api',
+            'uses' => 'APIServicesController@alumnos_adeudos_pagados_subconcepto')
+        );
+    Route::get('/sub_conceptos',
+        array(
+            'as' => 'sub_conceptos', 
+            'before' => 'login_api',
+            'uses' => 'APIServicesController@subconceptos_periodo')
+        );
+});

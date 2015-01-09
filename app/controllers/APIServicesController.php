@@ -145,4 +145,15 @@ class APIServicesController extends \BaseController {
         }
     }
 
+    public function alumnos_adeudos_pagados_subconcepto() {
+        return json_encode(array('error' => false, 'mensaje' => 'It works', 'respuesta' => true));
+    }
+
+    public function subconceptos_periodo() {
+        return json_encode(array('error' => false, 'mensaje' => 'It works', 'respuesta' => true));
+    }
+
+    public function local_api_login() {
+        return json_encode(array('error' => false, 'mensaje' => 'It works', 'respuesta' => true));
+    }
 }

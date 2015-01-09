@@ -31,7 +31,8 @@ class CuentasController extends \BaseController {
 
 		if (!$validator->fails())
 		{
-			$res['data']=Cuentas::create($parametros);
+			$new=Cuentas::create($parametros);
+			$res['data']=Cuentas::find($new['id']);
 			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
 			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
