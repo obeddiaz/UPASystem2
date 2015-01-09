@@ -153,7 +153,9 @@ Route::group(array('prefix' => '/user'), function() {
     Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
 });
 Route::group(array('prefix' => '/api'), function() {
+    
     Route::post('/login',array('as'=>'login','uses'=>'APIServicesController@local_api_login'));
+    Route::post('/create_user', array('as' => 'create', 'uses' => 'APIServicesController@create_user_api'));
     Route::get('/alumnos_adeudos_pagados',
         array(
             'as' => 'alumnosAdeudosPagadosSubconcepto',

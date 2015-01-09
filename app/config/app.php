@@ -80,6 +80,7 @@ return array(
       |
      */
     'providers' => array(
+        'Cartalyst\Sentry\SentryServiceProvider',
         'Illuminate\Foundation\Providers\ArtisanServiceProvider',
         'Illuminate\Auth\AuthServiceProvider',
         'Illuminate\Cache\CacheServiceProvider',
@@ -130,6 +131,7 @@ return array(
       |
      */
     'aliases' => array(
+        'Sentry' => 'Cartalyst\Sentry\Facades\Laravel\Sentry',
         'App' => 'Illuminate\Support\Facades\App',
         'Artisan' => 'Illuminate\Support\Facades\Artisan',
         'Auth' => 'Illuminate\Support\Facades\Auth',
