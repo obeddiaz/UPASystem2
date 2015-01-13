@@ -204,14 +204,21 @@ class ReferenciasController extends \BaseController {
                         ->where('referencia','=',$value['referencia'])->first(); 
                         
                 if ($value['importe']>=$adeudo['adeudos']['importe']) {
-                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('status_adeudo' => 1, 'fecha_pago' => date('Y-m-d')));
+                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
+                        array(
+                            'status_adeudo' => 1, 
+                            'fecha_pago' => $value['fecha_de_pago']
+                            ));
                 } else{
-                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(array('importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 'fecha_pago' => date('Y-m-d')));
+                    Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
+                        array(
+                            'importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 
+                            'fecha_pago' => $value['fecha_de_pago']
+                            ));
                 }
 
                 $personas[$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
-                $personas[$i]['referencia'] = $value['referencia'];
-
+                $personas[$i]['referencia'] = $value;
                 $i++;
             }
             $res['data'] = $personas;
