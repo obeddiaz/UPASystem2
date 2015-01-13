@@ -215,7 +215,7 @@ class ReferenciasController extends \BaseController {
                             'importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 
                             'fecha_pago' => $value['fecha_de_pago']
                             ));
-                } 
+                }  
                 $referencia_pagada= 
                     array(
                         'fecha_de_pago' =>$value['fecha_de_pago'],
