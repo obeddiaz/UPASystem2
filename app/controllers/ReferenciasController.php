@@ -202,7 +202,7 @@ class ReferenciasController extends \BaseController {
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
                         ->where('referencia','=',$value['referencia'])->first(); 
-                        
+                $referencia_info = Referencia::where('referencia','=',$value['referencia'])->first();
                 if ($value['importe']>=$adeudo['adeudos']['importe']) {
                     Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
                         array(
@@ -218,6 +218,7 @@ class ReferenciasController extends \BaseController {
                 }  
                 $referencia_pagada= 
                     array(
+                        'id_referencia' =>$referencia_info['id'],
                         'fecha_de_pago' =>$value['fecha_de_pago'],
                         'importe' => $value['importe'],
                         'estado' => $value['estado'] 
