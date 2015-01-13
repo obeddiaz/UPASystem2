@@ -215,8 +215,14 @@ class ReferenciasController extends \BaseController {
                             'importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 
                             'fecha_pago' => $value['fecha_de_pago']
                             ));
-                }
-
+                } 
+                $referencia_pagada= 
+                    array(
+                        'fecha_de_pago' =>$value['fecha_de_pago'],
+                        'importe' => $value['importe'],
+                        'estado' => $value['estado'] 
+                        );
+                Referencia::create_referencia_pagada($referencia_pagada);
                 $personas[$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
                 $personas[$i]['referencia'] = $value;
                 $i++;

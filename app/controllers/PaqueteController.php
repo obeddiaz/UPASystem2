@@ -42,7 +42,8 @@ class PaqueteController extends \BaseController {
             'sub_concepto' => Input::get('sub_concepto'),
             'recargo' => Input::get('recargo'),
             'tipo_recargo' => Input::get('tipo_recargo'),
-            'tipos_pago' => Input::get('tipos_pago')
+            'tipos_pago' => Input::get('tipos_pago'),
+            'descripcion_spaquete' => Input::get('descripcion_spaquete')
         );
         $reglas = array(
             'paquete_id' => 'required|integer',
@@ -50,6 +51,7 @@ class PaqueteController extends \BaseController {
             'recargo' => 'required|array',
             'tipo_recargo' => 'required|array',
             'tipos_pago'=> 'required|array'
+            'descripcion_spaquete' => 'required'
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {

@@ -28,6 +28,7 @@ class Paquete extends \Eloquent {
                 "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
                 "fecha_de_vencimiento" => $subconcepto['fecha'],
                 "paquete_id" => $data['paquete_id'],
+                "descripcion_spaquete" =>$data['descripcion_spaquete'],
                 "tipos_pago"=>json_encode($data['tipos_pago']),
             );
             $table->insert($data_subconcepto);
@@ -40,7 +41,15 @@ class Paquete extends \Eloquent {
         $query = $table
                 ->where('paquete_id', '=', $id)
                 ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.sub_concepto_id')
-                ->select('sc.id', 'sc.importe', 'scp.fecha_de_vencimiento','scp.recargo','scp.tipo_recargo','scp.tipos_pago')
+                ->select(
+                    'sc.id', 
+                    'sc.importe', 
+                    'scp.fecha_de_vencimiento',
+                    'scp.recargo',
+                    'scp.tipo_recargo',
+                    'scp.tipos_pago'
+                    'scp.descripcion_spaquete'
+                    )
                 ->get();
         return $query;
     }

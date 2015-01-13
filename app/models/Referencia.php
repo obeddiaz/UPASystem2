@@ -8,4 +8,10 @@ class Referencia extends \Eloquent {
 	public function Adeudos() {
 		return $this->belongsTo('Adeudos', 'adeudos_id');
 	}
+
+    public static function create_referencia_pagada($data) {
+	    $new_insert = DB::table('referencias_pagadas')->insert($data);
+	    return $new_insert;
+	}
+
 }
