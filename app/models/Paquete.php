@@ -28,7 +28,7 @@ class Paquete extends \Eloquent {
                 "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
                 "fecha_de_vencimiento" => $subconcepto['fecha'],
                 "paquete_id" => $data['paquete_id'],
-                "descripcion_spaquete" =>$data['descripcion_spaquete'],
+                "descripcion_spaquete" =>$subconcepto['descripcion_spaquete'],
                 "tipos_pago"=>json_encode($data['tipos_pago']),
             );
             $table->insert($data_subconcepto);
@@ -47,7 +47,7 @@ class Paquete extends \Eloquent {
                     'scp.fecha_de_vencimiento',
                     'scp.recargo',
                     'scp.tipo_recargo',
-                    'scp.tipos_pago'
+                    'scp.tipos_pago', 
                     'scp.descripcion_spaquete'
                     )
                 ->get();

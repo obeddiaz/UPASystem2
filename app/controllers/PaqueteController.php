@@ -43,7 +43,6 @@ class PaqueteController extends \BaseController {
             'recargo' => Input::get('recargo'),
             'tipo_recargo' => Input::get('tipo_recargo'),
             'tipos_pago' => Input::get('tipos_pago'),
-            'descripcion_spaquete' => Input::get('descripcion_spaquete')
         );
         $reglas = array(
             'paquete_id' => 'required|integer',
@@ -51,8 +50,7 @@ class PaqueteController extends \BaseController {
             'recargo' => 'required|array',
             'tipo_recargo' => 'required|array',
             'tipos_pago'=> 'required|array'
-            'descripcion_spaquete' => 'required'
-        );
+        ); 
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             $delete_res=Paquete::delete_subconceptos_paquetes($parametros['paquete_id']);
