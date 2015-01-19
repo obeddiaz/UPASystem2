@@ -144,38 +144,17 @@ class APIServicesController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
     }
-
+    /*
     public function create_user_api() {
         $parametros=Input::get();
-        $reglas = array(
-            'key' => 'required',
-        );
+        $user = Sentry::createUser(array(
+            'email'     => 'api.pagos@pagos.com',
+            'password'  => 'pagos2015',
+            'activated' => true,
+        ));
+        return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
 
-        $validator = Validator::make($parametros, $reglas);
-
-        if (!$validator->fails()) {
-            if ($parametros['key']=='pagos2015') {
-                $user = Sentry::createUser(array(
-                    'email'       => 'upa.api@pagos.upa.mx',
-                    'password'    => 'pagos2015',
-                    'activated'   => true,
-                    'permissions' => array(
-                        'user.create' => -1,
-                        'user.delete' => -1,
-                        'user.view'   => 1,
-                        'user.update' => -1,
-                    ),
-                ));
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
-            } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Clave erronea.', 'respuesta' => null));    
-            }
-
-        } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-        }
-
-    }
+    }*/
 
     public function alumnos_adeudos_pagados_subconcepto() {
         $parametros=Input::get();
@@ -210,29 +189,6 @@ class APIServicesController extends \BaseController {
         if (!$validator->fails()) {
             $res=Sub_conceptos::where('periodo','=',$parametros['periodo'])->get();
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-        } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-        }
-    }
-
-    public function local_api_login() {
-        $parametros=Input::get();
-
-        $reglas = array(
-            'email' => 'required',
-            'password' => 'required'
-        );
-        $validator = Validator::make($parametros, $reglas);
-
-
-        $credentials = array(
-            'email'    => $parametros['email'],
-            'password' => $parametros['password'],
-        );
-        if (!$validator->fails()) {
-            // Authenticate the user
-            $user = Sentry::authenticateAndRemember($credentials, false);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }

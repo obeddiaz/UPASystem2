@@ -49,25 +49,34 @@ Route::filter('auth', function()
     }
 });
 
-Route::filter('login_api', function() {
-	if (!Sentry::check()) {
-        return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0));
-    } else {
-    	$user=Sentry::getUser();
-    	$last=$user->last_login;
-    	$minutos=(strtotime('now')-strtotime($last))/60;
-    	if (intval($minutos>20)) {
-    		Sentry::logout();
-    		return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0));
-    	}
-    }
-});
-
 Route::filter('auth.basic', function()
 {
 	return Auth::basic();
 });
+/*
+Route::filter('auth.token', function($route, $request)
+{
+    $payload = $request->header('X-Auth-Token');
 
+    $userModel = Sentry::getUserProvider()->createModel();
+
+    $user =  $userModel->where('api_token',$payload)->first();
+
+    if(!$payload || !$user) {
+
+        $response = Response::json([
+            'error' => true,
+            'message' => 'Not authenticated',
+            'code' => 401],
+            401
+        );
+
+        $response->header('Content-Type', 'application/json');
+    return $response;
+    }
+
+});
+*/
 /*
 |--------------------------------------------------------------------------
 | Guest Filter
