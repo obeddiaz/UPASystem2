@@ -144,7 +144,7 @@ class APIServicesController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
     }
-    /*
+    
     public function create_user_api() {
         $parametros=Input::get();
         $user = Sentry::createUser(array(
@@ -154,7 +154,7 @@ class APIServicesController extends \BaseController {
         ));
         return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
 
-    }*/
+    }
 
     public function alumnos_adeudos_pagados_subconcepto() {
         $parametros=Input::get();

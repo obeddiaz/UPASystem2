@@ -152,8 +152,9 @@ Route::group(array('prefix' => '/user'), function() {
     Route::post('/login', array('as' => 'user', 'uses' => 'usuariosController@login'));
     Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
 });
+
 Route::group(array('prefix' => '/api'), function() {
-    /*
+    
     Route::group(array('prefix' => '/services', 'before' => 'auth.token'), function() {
         Route::get('/alumnos_adeudos_pagados',
             array(
@@ -190,5 +191,4 @@ Route::group(array('prefix' => '/api'), function() {
     });
 
     Route::post('/create', array('as' => 'create', 'uses' => 'APIServicesController@create_user_api'));
-    */
 });

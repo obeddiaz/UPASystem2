@@ -53,7 +53,7 @@ Route::filter('auth.basic', function()
 {
 	return Auth::basic();
 });
-/*
+
 Route::filter('auth.token', function($route, $request)
 {
     $payload = $request->header('X-Auth-Token');
@@ -76,7 +76,7 @@ Route::filter('auth.token', function($route, $request)
     }
 
 });
-*/
+
 /*
 |--------------------------------------------------------------------------
 | Guest Filter
