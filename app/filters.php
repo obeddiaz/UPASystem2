@@ -60,9 +60,12 @@ Route::filter('auth.token', function($route, $request)
 
     $userModel = Sentry::getUserProvider()->createModel();
 
-    $user =  $userModel->where('api_token',$payload)->first();
+    $user =  $userModel
+              ->where('api_token',$payload)
+              ->select(DB::raw('updated_at + INTERVAL ' . Config::get('app.token_life') . ' MINUTE as limit_life'),'users.*')
+              ->first();
 
-    if(!$payload || !$user) {
+    if(!$payload || !$user || ($user['limit_life']<=date('Y-m-d H:i:s'))) {
 
         $response = Response::json([
             'error' => true,
@@ -73,6 +76,11 @@ Route::filter('auth.token', function($route, $request)
 
         $response->header('Content-Type', 'application/json');
     return $response;
+    } else {
+      $date=date('Y-m-d H:i:s');
+      DB::table('users')
+      ->where('api_token',$user['token'])
+      ->update(array('updated_at' => $date));
     }
 
 });
