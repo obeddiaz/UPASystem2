@@ -52,14 +52,9 @@ class PaqueteController extends \BaseController {
             'tipos_pago'=> 'required|array'
         ); 
         $validator = Validator::make($parametros, $reglas);
-        if (!$validator->fails()) {
-            $delete_res=Paquete::delete_subconceptos_paquetes($parametros['paquete_id']);
-            if ($delete_res==true) {
-               $res = Paquete::create_subconceptos_paquetes($parametros);
-               return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
-            } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Hay algo mal con el servicio.', 'respuesta' => null));    
-            }
+        if (!$validator->fails()) {            
+           $res = Paquete::create_subconceptos_paquetes($parametros);
+           return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -137,6 +132,7 @@ class PaqueteController extends \BaseController {
             'periodo' => Input::get('periodo'),
             'recargo' => Input::get('recargo'),
             'recargo_inscripcion' => Input::get('recargo_inscripcion'),
+            'sub_concepto' => Input::get('sub_concepto'),
         );
         $reglas = array(
             'id' => 'required|integer',
@@ -145,11 +141,15 @@ class PaqueteController extends \BaseController {
             'nivel' => 'alpha_dash',
             'periodo' => 'integer',
             'recargo' => 'numeric',
-            'recargo_inscripcion' => 'numeric'
+            'recargo_inscripcion' => 'numeric',
+            'sub_concepto' => 'array',
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-
+            $subconceptos_paquete=array();
+            if (isset($parametros['sub_concepto'])) {
+                Paquete::update_subconceptos_paquetes($parametros);
+            }
             $res = Paquete::where('id', '=', $parametros['id'])->update($parametros);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

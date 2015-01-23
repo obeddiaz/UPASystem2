@@ -3,7 +3,7 @@
 class Adeudos extends \Eloquent {
 
     protected $fillable = ['fecha_limite', 'id', 'id_persona',
-     'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id'];
+     'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id','subconcepto_paquete_id'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -52,6 +52,7 @@ class Adeudos extends \Eloquent {
                 "paquete_id" => Adeudos::$custom_data["paquete"]->id,
                 "recargo" => $subconcepto->recargo,
                 "tipo_recargo" => $subconcepto->tipo_recargo,
+                "subconcepto_paquete_id" => $subconcepto->idsub_paqueteplan,
                 "grado" =>$grado,
                 "status_adeudo" => 0
             );

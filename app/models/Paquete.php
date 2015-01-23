@@ -19,6 +19,64 @@ class Paquete extends \Eloquent {
         $table->where('paquete_id', '=', $paquete_id)->delete();
         return TRUE;
     }
+    public static function update_subconceptos_paquetes($data) {
+        $table = DB::table(Paquete::$subconceptos_paquete);
+        $ids_sub=array();
+        $paquete=null;
+        foreach ($data['sub_concepto'] as $subconcepto) {
+            $paquete=$data['paquete_id'];
+            $data_subconcepto = array(
+                "sub_concepto_id" => $subconcepto['id'],
+                "recargo" => $data['recargo'][$subconcepto['id']],
+                "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
+                "fecha_de_vencimiento" => $subconcepto['fecha'],
+                "paquete_id" => $data['paquete_id'],
+                "tipos_pago"=>json_encode($data['tipos_pago']),
+            );
+            if ($subconcepto['idsub_paqueteplan']) {
+                $ids_sub[]=$sub_concepto['idsub_paqueteplan'];
+                $id=$sub_concepto['idsub_paqueteplan'];
+                $table->where('id',$id)
+                  ->update($data_subconcepto);
+                $adeudos=Adeudos::where('subconcepto_paquete',$sub_concepto['idsub_paqueteplan'])
+                        ->get();
+                foreach ($adeudos as $key => $adeudo) {
+                    DB::table('adeudos')->where('id',$adeudo['id'])
+                        ->update(array(
+                            'recargo'=>$data['recargo'][$subconcepto['id']],
+                            "sub_concepto_id" => $subconcepto['id'],
+                            "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
+                            "fecha_limite" => $subconcepto['fecha'],
+                            "paquete_id" => $data['paquete_id']
+                        ));   
+                    foreach ($data['tipos_pago'] as $key => $value) {
+                        $adeudo_tipopago['adeudos_id']=$adeudo['id'];
+                        $adeudo_tipopago['tipo_pago_id']=$value;
+                        Adeudos_tipopago::where('adeudos_id',$adeudo['id'])
+                                        ->update($adeudo_tipopago);
+                    }
+                }
+            } else {
+                $table->insert($data_subconcepto);    
+            }
+        }
+
+        $query = $table
+                ->where('paquete_id', '=', $paquete)
+                ->select('id')
+                ->get();
+        foreach ($query as $key => $i) {
+            if (!in_array($i, $ids_sub)) {
+                 $table
+                 ->where('id', '=', $i)
+                 ->delete();
+                 DB::table('adeudos')->where('id',$adeudo['id'])
+                        ->delete();
+            }
+        }
+        return TRUE;
+    }
+
     public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
         foreach ($data['sub_concepto'] as $subconcepto) {
@@ -28,7 +86,6 @@ class Paquete extends \Eloquent {
                 "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
                 "fecha_de_vencimiento" => $subconcepto['fecha'],
                 "paquete_id" => $data['paquete_id'],
-                "descripcion_spaquete" =>$subconcepto['descripcion_spaquete'],
                 "tipos_pago"=>json_encode($data['tipos_pago']),
             );
             $table->insert($data_subconcepto);
@@ -47,8 +104,8 @@ class Paquete extends \Eloquent {
                     'scp.fecha_de_vencimiento',
                     'scp.recargo',
                     'scp.tipo_recargo',
-                    'scp.tipos_pago', 
-                    'scp.descripcion_spaquete'
+                    'scp.tipos_pago',
+                    'scp.id as idsub_paqueteplan'
                     )
                 ->get();
         return $query;
