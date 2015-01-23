@@ -34,11 +34,11 @@ class Paquete extends \Eloquent {
                 "tipos_pago"=>json_encode($data['tipos_pago']),
             );
             if ($subconcepto['idsub_paqueteplan']) {
-                $ids_sub[]=$sub_concepto['idsub_paqueteplan'];
-                $id=$sub_concepto['idsub_paqueteplan'];
+                $ids_sub[]=$subconcepto['idsub_paqueteplan'];
+                $id=$subconcepto['idsub_paqueteplan'];
                 $table->where('id',$id)
                   ->update($data_subconcepto);
-                $adeudos=Adeudos::where('subconcepto_paquete',$sub_concepto['idsub_paqueteplan'])
+                $adeudos=Adeudos::where('subconcepto_paquete',$subconcepto['idsub_paqueteplan'])
                         ->get();
                 foreach ($adeudos as $key => $adeudo) {
                     DB::table('adeudos')->where('id',$adeudo['id'])
