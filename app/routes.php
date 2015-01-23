@@ -43,7 +43,7 @@ Route::group(array('before' => 'auth'), function() {
                         Route::get('/', array('as' => 'muestra_planes', 'uses' => 'PaqueteController@show_nivel_periodo'));
                         Route::post('/agregar', array('as' => 'agrega_paquetes', 'uses' => 'PaqueteController@create'));
                         Route::post('/agregar_subconceptos', array('as' => 'agrega_subconcepto_paquete', 'uses' => 'PaqueteController@create_subconcepto'));
-                        Route::put('/guardar', array('as' => 'actualizar_valor_paquete', 'uses' => 'PaqueteController@update'));
+                        Route::put('/guardar', array('as' => 'actualizar_valor_paquete', 'uses' => 'PaqueteController@update_subconceptos_paquetes'));
                         Route::delete('/eliminar', array('as' => 'eliminar_paquete', 'uses' => 'PaqueteController@destroy'));
                     });
                 });
