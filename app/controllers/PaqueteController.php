@@ -123,6 +123,7 @@ class PaqueteController extends \BaseController {
      * @param  int  $id
      * @return Response
      */
+    /*
     public function update() {
         $parametros = array(
             'id' => Input::get('id'),
@@ -155,7 +156,7 @@ class PaqueteController extends \BaseController {
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
-    }
+    }*/
 
     /**
      * Remove the specified resource from storage.

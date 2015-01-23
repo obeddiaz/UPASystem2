@@ -19,7 +19,7 @@ class Paquete extends \Eloquent {
         $table->where('paquete_id', '=', $paquete_id)->delete();
         return TRUE;
     }
-    public static function update_subconceptos_paquetes($data) {
+    public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
         $ids_sub=array();
         $paquete=null;
@@ -76,7 +76,7 @@ class Paquete extends \Eloquent {
         }
         return TRUE;
     }
-
+/*
     public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
         foreach ($data['sub_concepto'] as $subconcepto) {
@@ -92,7 +92,7 @@ class Paquete extends \Eloquent {
         }
         return TRUE;
     }
-
+*/
     public static function show_paquete_subconceptos($id) {
         $table = DB::table(Paquete::$subconceptos_paquete . ' as scp');
         $query = $table
