@@ -33,6 +33,7 @@ class Planes_de_pago extends \Eloquent {
                 ->select(
                         'paqueteplandepago.id', 
                         'sub_conceptos.*',   
+                        'subconcepto_paqueteplandepago.id as scpp_id', 
                         'subconcepto_paqueteplandepago.fecha_de_vencimiento', 
                         'subconcepto_paqueteplandepago.recargo', 
                         'subconcepto_paqueteplandepago.tipo_recargo',
