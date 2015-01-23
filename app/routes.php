@@ -10,12 +10,12 @@
   | and give it the Closure to execute when that URI is requested.
   |
  */
-
+header('Access-Control-Allow-Origin: *');
 Route::get('/', function() {
     return View::make('hello');
-});  
+});
 Route::group(array('before' => 'auth'), function() {
-    Route::group(array( 'before' => 'permisos'), function() {
+    Route::group(array('before' => 'permisos'), function() {
         Route::group(array('prefix' => '/administracion'), function() {
 
             Route::group(array('prefix' => '/agrupaciones'), function() {
@@ -149,46 +149,40 @@ Route::group(array('before' => 'auth'), function() {
         Route::get('/adeudos', array('as' => 'Adeudos_por_alumno_periodo', 'uses' => 'AdeudosController@show_adeudos_alumno'));
         Route::post('/referencias', array('as' => 'crear_referencia', 'uses' => 'ReferenciasController@create'));
     });
-});    
+});
 Route::group(array('prefix' => '/user'), function() {
     Route::post('/login', array('as' => 'user', 'uses' => 'usuariosController@login'));
     Route::get('/show', array('as' => 'user', 'uses' => 'usuariosController@show'));
 });
 
 Route::group(array('prefix' => '/api'), function() {
-    
+
     Route::group(array('prefix' => '/services', 'before' => 'auth.token'), function() {
-        Route::get('/alumnos_adeudos_pagados',
-            array(
-                'as' => 'alumnosAdeudosPagadosSubconcepto',
-                'before' => 'login_api',
-                'uses' => 'APIServicesController@alumnos_adeudos_pagados_subconcepto')
-            );
-        Route::get('/sub_conceptos',
-            array(
-                'as' => 'sub_conceptos', 
-                'before' => 'login_api',
-                'uses' => 'APIServicesController@subconceptos_periodo')
+        Route::get('/alumnos_adeudos_pagados', array(
+            'as' => 'alumnosAdeudosPagadosSubconcepto',
+            'before' => 'login_api',
+            'uses' => 'APIServicesController@alumnos_adeudos_pagados_subconcepto')
         );
-    });  
- 
-    Route::post('login',function()
-    {
-        try
-        {
+        Route::get('/sub_conceptos', array(
+            'as' => 'sub_conceptos',
+            'before' => 'login_api',
+            'uses' => 'APIServicesController@subconceptos_periodo')
+        );
+    });
+
+    Route::post('login', function() {
+        try {
             $user = Sentry::authenticate(Input::all(), false);
 
-            $token = hash('sha256',Str::random(10),false);
+            $token = hash('sha256', Str::random(10), false);
 
             $user->api_token = $token;
 
             $user->save();
 
             return Response::json(array('token' => $token, 'user' => $user->toArray()));
-        }
-        catch(Exception $e)
-        {
-            App::abort(404,$e->getMessage());
+        } catch (Exception $e) {
+            App::abort(404, $e->getMessage());
         }
     });
 
