@@ -32,14 +32,15 @@ class Paquete extends \Eloquent {
                 "fecha_de_vencimiento" => $subconcepto['fecha'],
                 "paquete_id" => $data['paquete_id'],
                 "tipos_pago"=>json_encode($data['tipos_pago']),
+                "digito_referencia"=>$subconcepto['digito_referencia']
             );
-            if ($subconcepto['idsub_paqueteplan']) {
+            if (isset($subconcepto['idsub_paqueteplan'])) {
                 $ids_sub[]=$subconcepto['idsub_paqueteplan'];
-                $id=$subconcepto['idsub_paqueteplan'];
+                $id=$subconcepto['idsub_paqueteplan']; // obtiene el id del registro subconcepto_paqueteplandepago
                 $table->where('id',$id)
-                  ->update($data_subconcepto);
-                $adeudos=Adeudos::where('subconcepto_paquete',$subconcepto['idsub_paqueteplan'])
-                        ->get();
+                  ->update($data_subconcepto); //actualiza los datos del registro con el id anterior
+                $adeudos=Adeudos::where('subconcepto_paquete_id',$subconcepto['idsub_paqueteplan'])
+                        ->get(); // busca los adeudos del registro con ese id 
                 foreach ($adeudos as $key => $adeudo) {
                     DB::table('adeudos')->where('id',$adeudo['id'])
                         ->update(array(
@@ -47,7 +48,8 @@ class Paquete extends \Eloquent {
                             "sub_concepto_id" => $subconcepto['id'],
                             "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
                             "fecha_limite" => $subconcepto['fecha'],
-                            "paquete_id" => $data['paquete_id']
+                            "paquete_id" => $data['paquete_id'],
+                            "digito_referencia"=>$subconcepto['digito_referencia']
                         ));   
                     foreach ($data['tipos_pago'] as $key => $value) {
                         $adeudo_tipopago['adeudos_id']=$adeudo['id'];
@@ -65,12 +67,13 @@ class Paquete extends \Eloquent {
                 ->where('paquete_id', '=', $paquete)
                 ->select('id')
                 ->get();
+
         foreach ($query as $key => $i) {
             if (!in_array($i, $ids_sub)) {
                  $table
                  ->where('id', '=', $i)
                  ->delete();
-                 DB::table('adeudos')->where('id',$adeudo['id'])
+                 DB::table('adeudos')->where('subconcepto_paquete_id',$i)
                         ->delete();
             }
         }
@@ -90,7 +93,7 @@ class Paquete extends \Eloquent {
             );
             $table->insert($data_subconcepto);
         }
-        return TRUE;
+        return TRUE; 
     }
 */
     public static function show_paquete_subconceptos($id) {

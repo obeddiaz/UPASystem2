@@ -45,11 +45,12 @@ class ReferenciasController extends \BaseController {
                             }
                         }
                     }
+
                     $subconcepto = Sub_conceptos::find($value['sub_concepto_id']);
                     $referencia = sprintf('%05d', $value['id_persona']) .
                             sprintf('%03d', $value['periodo']) .
                             sprintf('%03d', $value['sub_concepto_id']) .
-                            sprintf('%01d', $value['contador']);
+                            sprintf('%01d', $value['digito_referencia']);
                     $data['referencias'][$key]['referencia'] = $libereriaReferencia->Generar($referencia, $value['importe'], $fecha_limite);
                     $data['referencias'][$key]['importe'] = json_decode($value['importe']);
                     $data['referencias'][$key]['sub_concepto'] = $subconcepto['sub_concepto'];

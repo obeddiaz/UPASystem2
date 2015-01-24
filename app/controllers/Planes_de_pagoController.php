@@ -161,8 +161,7 @@ class Planes_de_pagoController extends \BaseController {
 		$parametros=Input::get();		
 		$reglas = 
 			array(
-			    'id' => 'required|integer',	
-			    'periodo'=>'required|integer'
+			    'id' => 'required|integer'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
@@ -171,7 +170,7 @@ class Planes_de_pagoController extends \BaseController {
 			$paquete=Planes_de_pago::paquetes($parametros);
 			if ($paquete || !empty($paquete)) {			
 				$res['paquete']=$paquete;
-				$res['data']=Planes_de_pago::sub_conceptos(array('id' =>$paquete['id'],'periodo'=>$parametros['periodo']));
+				$res['data']=Planes_de_pago::sub_conceptos(array('id' =>$paquete['id']));
 			} else {
 				return json_encode(array('error' =>true,'mensaje'=>'No existe paquete en periodo actual.', 'respuesta'=>null ));	
 			}

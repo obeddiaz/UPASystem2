@@ -29,7 +29,6 @@ class Planes_de_pago extends \Eloquent {
         $query = Paquete::join('subconcepto_paqueteplandepago', 'subconcepto_paqueteplandepago.paquete_id', '=', 'paqueteplandepago.id')
                 ->join('sub_conceptos', 'sub_conceptos.id', '=', 'subconcepto_paqueteplandepago.sub_concepto_id')
                 ->where('paqueteplandepago.id', '=', $data['id'])
-                ->where('paqueteplandepago.periodo', '=', $data['periodo'])
                 ->select(
                         'paqueteplandepago.id', 
                         'sub_conceptos.*',   

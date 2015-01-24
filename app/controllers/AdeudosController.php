@@ -83,13 +83,21 @@ class AdeudosController extends \BaseController {
             }
             if ($adeudos_no_pagados == 0) {
                 $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
+
+                $parametros['digito_referencia']= intval(DB::table('subconcepto_paqueteplandepago')
+                                    ->where('sub_concepto_id',$parametros['subconcepto_id'])
+                                    ->max('digito_referencia'));
+                if ($parametros['digito_referencia']>9) {
+                    $parametros['digito_referencia']=9;
+                }
                 $adeudo = array(
                     'importe' => $subconcepto['importe'],
                     'sub_concepto_id' => $subconcepto['id'],
                     'fecha_limite' => $parametros['fecha_limite'],
                     'grado' => $grado,
                     'id_persona' => $parametros['id_personas'],
-                    'periodo' => $parametros['periodo']
+                    'periodo' => $parametros['periodo'],
+                    'digito_referencia'=>$parametros['digito_referencia']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {

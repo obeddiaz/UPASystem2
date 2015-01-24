@@ -53,6 +53,7 @@ class Adeudos extends \Eloquent {
                 "recargo" => $subconcepto->recargo,
                 "tipo_recargo" => $subconcepto->tipo_recargo,
                 "subconcepto_paquete_id" => $subconcepto->idsub_paqueteplan,
+                "digito_referencia"=> $subconcepto->digito_referencia,
                 "grado" =>$grado,
                 "status_adeudo" => 0
             );
