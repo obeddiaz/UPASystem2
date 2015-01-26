@@ -33,11 +33,14 @@ class Planes_de_pago extends \Eloquent {
                         'paqueteplandepago.id', 
                         'sub_conceptos.*',   
                         'subconcepto_paqueteplandepago.id as scpp_id', 
+                        'subconcepto_paqueteplandepago.digito_referencia', 
+                        'subconcepto_paqueteplandepago.descripcion_sc',
                         'subconcepto_paqueteplandepago.fecha_de_vencimiento', 
                         'subconcepto_paqueteplandepago.recargo', 
                         'subconcepto_paqueteplandepago.tipo_recargo',
                         'subconcepto_paqueteplandepago.tipos_pago'
                         )
+                ->orderBy('subconcepto_paqueteplandepago.id', 'ASC')
                 ->get();
         return $query;
     }

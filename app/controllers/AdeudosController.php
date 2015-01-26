@@ -88,7 +88,7 @@ class AdeudosController extends \BaseController {
                                     ->where('sub_concepto_id',$parametros['subconcepto_id'])
                                     ->max('digito_referencia'));
                 if ($parametros['digito_referencia']>9) {
-                    $parametros['digito_referencia']=9;
+                    $parametros['digito_referencia']=8;
                 }
                 $adeudo = array(
                     'importe' => $subconcepto['importe'],
@@ -97,7 +97,7 @@ class AdeudosController extends \BaseController {
                     'grado' => $grado,
                     'id_persona' => $parametros['id_personas'],
                     'periodo' => $parametros['periodo'],
-                    'digito_referencia'=>$parametros['digito_referencia']
+                    'digito_referencia'=>$parametros['digito_referencia']+1
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {

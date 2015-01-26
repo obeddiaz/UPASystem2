@@ -3,7 +3,7 @@
 class Adeudos extends \Eloquent {
 
     protected $fillable = ['fecha_limite', 'id', 'id_persona',
-     'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id','subconcepto_paquete_id','digito_referencia'];
+        'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id', 'digito_referencia', 'descripcion_sc'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -12,9 +12,9 @@ class Adeudos extends \Eloquent {
     public static function obtener_adeudos_periodo($periodo) {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $Temporaltable = DB::table('adeudos');
-        $query = $Temporaltable->join('sub_conceptos','adeudos.sub_concepto_id','=','sub_conceptos.id')
+        $query = $Temporaltable->join('sub_conceptos', 'adeudos.sub_concepto_id', '=', 'sub_conceptos.id')
                 ->where('adeudos.periodo', '=', $periodo)
-                ->select('sub_conceptos.sub_concepto','adeudos.*')
+                ->select('sub_conceptos.sub_concepto', 'adeudos.*')
                 ->get();
         return $query;
     }
@@ -22,7 +22,6 @@ class Adeudos extends \Eloquent {
     public function paquete() {
         return $this->belongsTo('Paquete', 'paquete_id');
     }
-
 
     public static function referencias() {
         return $this
@@ -38,9 +37,9 @@ class Adeudos extends \Eloquent {
         $commond = new Common_functions();
         $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $alumno));
         if (isset($grado[0]['grado'])) {
-            $grado=$grado[0]['grado'];
+            $grado = $grado[0]['grado'];
         } else {
-            $grado=null;
+            $grado = null;
         }
         foreach (Adeudos::$custom_data["subconcepto"] as $subconcepto) {
             $adeudo = array(
@@ -53,17 +52,17 @@ class Adeudos extends \Eloquent {
                 "recargo" => $subconcepto->recargo,
                 "tipo_recargo" => $subconcepto->tipo_recargo,
                 "subconcepto_paquete_id" => $subconcepto->idsub_paqueteplan,
-                "digito_referencia"=> $subconcepto->digito_referencia,
-                "grado" =>$grado,
-                "status_adeudo" => 0
+                "digito_referencia" => $subconcepto->digito_referencia,
+                "grado" => $grado,
+                "status_adeudo" => 0,
+                "descripcion_sc" => $subconcepto->descripcion_sc
             );
-            $adeudo=Adeudos::create($adeudo);
+            $adeudo = Adeudos::create($adeudo);
             foreach (json_decode($subconcepto->tipos_pago) as $key => $value) {
-                $adeudo_tipopago['adeudos_id']=$adeudo['id'];
-                $adeudo_tipopago['tipo_pago_id']=$value;
+                $adeudo_tipopago['adeudos_id'] = $adeudo['id'];
+                $adeudo_tipopago['tipo_pago_id'] = $value;
                 Adeudos_tipopago::create($adeudo_tipopago);
             }
-
         }
     }
 
@@ -79,7 +78,7 @@ class Adeudos extends \Eloquent {
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data);
         $sub_cont = array();
         foreach ($query as $key => $adeudo) {
-            $query[$key]['tipos_pago']=Adeudos_tipopago::where('adeudos_id','=',$adeudo['id'])->get();
+            $query[$key]['tipos_pago'] = Adeudos_tipopago::where('adeudos_id', '=', $adeudo['id'])->get();
 
             $query[$key]['importe_inicial'] = $query[$key]['importe'];
             if (isset($sub_cont[$adeudo['sub_concepto_id']])) {
@@ -92,14 +91,14 @@ class Adeudos extends \Eloquent {
             if ($adeudo['status_adeudo'] == 0) {
                 $fecha_limite = strtotime($adeudo['fecha_limite']);
                 $day = date('d', $fecha_limite);
-                $descuentos=array();
-                foreach ($tiene_desceunto as $key_d =>  $descuentodata) {
+                $descuentos = array();
+                foreach ($tiene_desceunto as $key_d => $descuentodata) {
                     $descuento = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                     $query[$key]['tiene_desceunto'] = 1;
                     $query[$key]['importe']-=$descuento;
-                    $descuentos[]=$descuento;
+                    $descuentos[] = $descuento;
                 }
-                $query[$key]['descuento']=$descuentos;
+                $query[$key]['descuento'] = $descuentos;
                 if ($daynow > $day) {
                     $query[$key]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
                 }
@@ -107,7 +106,7 @@ class Adeudos extends \Eloquent {
                     $query[$key]['recargo_total'] = 0;
                 }
                 if ($query[$key]['meses_retraso'] > 0) {
-                    $query[$key]['beca']='N/A';
+                    $query[$key]['beca'] = 'N/A';
                     if ($tiene_beca) {
                         $databeca = array(
                             "id_persona" => $data['id_persona'],
@@ -124,33 +123,33 @@ class Adeudos extends \Eloquent {
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {
                     $beca = $commond->calcular_importe_por_tipo($adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
                     $query[$key]['importe']-=$beca;
-                    $query[$key]['beca']=$beca;
+                    $query[$key]['beca'] = $beca;
                 }
                 if (!$tiene_beca) {
-                    $query[$key]['beca']='N/A';
+                    $query[$key]['beca'] = 'N/A';
                 }
             } else {
                 $pago = strtotime($adeudo['fecha_pago']);
                 $fecha_pago = date('d', $pago);
                 $fecha_limite = strtotime($adeudo['fecha_limite']);
                 $day = date('d', $fecha_limite);
-                $descuentos=array();
-                foreach ($tiene_desceunto as $key_d =>  $descuentodata) {
+                $descuentos = array();
+                foreach ($tiene_desceunto as $key_d => $descuentodata) {
                     $descuento = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                     $query[$key]['tiene_desceunto'] = 1;
                     $query[$key]['importe']-=$descuento;
-                    $descuentos[]=$descuento;
+                    $descuentos[] = $descuento;
                 }
-                $query[$key]['descuento']=$descuentos;
+                $query[$key]['descuento'] = $descuentos;
                 if ($fecha_pago > $day) {
                     $query[$key]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
                 }
                 if ($query[$key]['meses_retraso'] <= 0) {
                     $query[$key]['recargo_total'] = 0;
                 }
-                
+
                 if ($query[$key]['meses_retraso'] > 0) {
-                    $query[$key]['beca']='N/A';
+                    $query[$key]['beca'] = 'N/A';
                     $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
                     $recargo*= $query[$key]['meses_retraso'];
                     $query[$key]['recargo_total'] = $recargo;
@@ -158,10 +157,10 @@ class Adeudos extends \Eloquent {
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {
                     $beca = $commond->calcular_importe_por_tipo($adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
                     $query[$key]['importe']-=$beca;
-                    $query[$key]['beca']=$beca;                    
+                    $query[$key]['beca'] = $beca;
                 }
                 if (!$tiene_beca) {
-                    $query[$key]['beca']='N/A';
+                    $query[$key]['beca'] = 'N/A';
                 }
             }
         }

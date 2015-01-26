@@ -27,6 +27,22 @@ class Sub_ConceptosController extends \BaseController {
         }
     }
 
+    public function show_all_by_id() {
+        $parametros = Input::get();
+        $reglas = array(
+            'conceptos_id' => 'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $res['data'] = Sub_conceptos::where('conceptos_id', '=', $parametros['conceptos_id'])
+                    ->get();
+            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *
