@@ -124,35 +124,17 @@ class AdeudosController extends \BaseController {
 
     public function create_reporte() {
         $excel = new Excel_Constructor();
-    /*    $parametros = Input::get();
+        $parametros = Input::get();
         $reglas = array(
             'adeudos' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
 
-        if (!$validator->fails()) {*/
-            $parametros['adeudos']=array(
-                    0=>array(
-                        'nombre'=>'Diego Macias',
-                        'status'=> 0,
-                        'subconcepto'=>'Inscricion',
-                        ),
-                    1=>array(
-                        'nombre'=>'Memo Layas',
-                        'status'=> 1,
-                        'subconcepto'=>'Inscricion',
-                        ),
-                    2=>array(
-                        'nombre'=>'Invalitas Supremas',
-                        'status'=> 0,
-                        'subconcepto'=>'Inscricion',
-                        ),
-                );
+        if (!$validator->fails()) {
             $excel->export($parametros['adeudos']);    
-        /*
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-        }*/
+        }
     }
 
     /**
