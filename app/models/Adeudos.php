@@ -65,6 +65,20 @@ class Adeudos extends \Eloquent {
             }
         }
     }
+    public static function obtener_adeudos_reporte($data) {
+        $Temporaltable = DB::table('Adeudos');
+        $query = $Temporaltable->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+                ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto');
+        if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
+            $query = $query->where("adeudos.fecha_pago", ">=", $data['fecha_desde'])
+            ->where("adeudos.fecha_pago", "<=", $data['fecha_hasta']);
+        }
+        if (isset($data['periodo'])) {
+            $query = $query->where("adeudos.periodo", "=", $data['periodo']);
+        }
+       
+        return $query->get();
+    }
 
     public static function obtener_adeudos_alumno($data) {
         $commond = new Common_functions();

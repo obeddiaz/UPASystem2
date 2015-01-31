@@ -122,6 +122,39 @@ class AdeudosController extends \BaseController {
         //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
     }
 
+    public function create_reporte() {
+        $excel = new Excel_Constructor();
+    /*    $parametros = Input::get();
+        $reglas = array(
+            'adeudos' => 'required|array'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {*/
+            $parametros['adeudos']=array(
+                    0=>array(
+                        'nombre'=>'Diego Macias',
+                        'status'=> 0,
+                        'subconcepto'=>'Inscricion',
+                        ),
+                    1=>array(
+                        'nombre'=>'Memo Layas',
+                        'status'=> 1,
+                        'subconcepto'=>'Inscricion',
+                        ),
+                    2=>array(
+                        'nombre'=>'Invalitas Supremas',
+                        'status'=> 0,
+                        'subconcepto'=>'Inscricion',
+                        ),
+                );
+            $excel->export($parametros['adeudos']);    
+        /*
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }*/
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -170,6 +203,25 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
+            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+        }
+    }
+
+    public function show_adeudos_reporte() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'fecha_desde' => 'date_format:Y-m-d',
+            'fecha_hasta' => 'date_format:Y-m-d',
+            'periodo' => 'integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros['periodo']);
             $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
@@ -282,5 +334,4 @@ class AdeudosController extends \BaseController {
     public function destroy($id) {
         //
     }
-
 }
