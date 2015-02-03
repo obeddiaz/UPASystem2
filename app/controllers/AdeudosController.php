@@ -123,15 +123,40 @@ class AdeudosController extends \BaseController {
     }
 
     public function create_reporte() {
+        $commond = new Common_functions();
         $excel = new Excel_Constructor();
         $parametros = Input::get();
+        try {
+            $parametros['adeudos_ids']=json_decode($parametros['adeudos_ids']);
+            $parametros['adeudos_campos']=json_decode($parametros['adeudos_campos']);   
+        } catch (Exception $e) {}
         $reglas = array(
-            'adeudos' => 'required|array'
+            'adeudos_ids' => 'required|array',
+            'adeudos_campos' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
-
+        $adeudos_consulta=array();
         if (!$validator->fails()) {
-            $excel->export($parametros['adeudos']);    
+            
+            foreach ($parametros['adeudos_ids'] as $key => $id) {
+                $adeudos_consulta[]=Adeudos::obtener_adeudos_id($id);
+            }
+            $adeudos_info=$commond->obtener_alumno_idPersona($adeudos_consulta);
+            foreach ($adeudos_info as $key => $adeudo) {
+                if (!isset($adeudos_info[$key]['grado'])) {
+                        $adeudos_info[$key]['grado']=null;
+                }
+                foreach ($parametros['adeudos_campos'] as $key_campo => $campo) {
+                    foreach ($adeudo as $key_adeudo => $adeudo_data) {
+                        if ($key_adeudo!=$campo) {
+                            unset($adeudos_info[$key][$key_adeudo]);
+                        }
+                    }
+                }
+            }
+            #echo json_encode($adeudos_info);die();
+            #var_dump($adeudos_info);die();
+            $excel->export($adeudos_info);    
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }

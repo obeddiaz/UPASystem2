@@ -19,6 +19,16 @@ class Adeudos extends \Eloquent {
         return $query;
     }
 
+    public static function obtener_adeudos_id($id) {
+        DB::setFetchMode(PDO::FETCH_ASSOC);
+        $Temporaltable = DB::table('adeudos');
+        $query = $Temporaltable->join('sub_conceptos', 'adeudos.sub_concepto_id', '=', 'sub_conceptos.id')
+                ->where('adeudos.id', '=', $id)
+                ->select('sub_conceptos.sub_concepto', 'adeudos.*')
+                ->first();
+        return $query;
+    }
+
     public function paquete() {
         return $this->belongsTo('Paquete', 'paquete_id');
     }
