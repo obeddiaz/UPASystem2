@@ -20,6 +20,7 @@ class Common_functions {
     }
 
     public function obtener_alumno_idPersona($personas) {
+        var_dump($personas);die();
         $alumnos = $this->sii->new_request('POST', '/alumnos/all');
         $res = array();
         if (is_array($personas)) {
