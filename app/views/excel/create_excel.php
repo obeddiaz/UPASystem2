@@ -14,7 +14,23 @@
 		}
 	</style>
 	<table>
-		<tr><td>AA</td></tr>
-		<tr><td>BB</td></tr>
+		<tr>
+		<?php foreach ($adeudos as $key => $adeudo) { ?>
+			<?php foreach ($adeudo as $key_adeudo => $data_adeudo) { ?>
+				<th> <?php  echo  ucfirst($key_adeudo); ?> </th>
+			<?php }
+				break;
+			  ?>
+		<?php }  ?>
+		</tr>
+		
+		<?php foreach ($adeudos as $key => $adeudo) { ?>
+			<tr>
+			<?php foreach ($adeudo as $key_adeudo => $data_adeudo) { ?>
+				<td> <?php  echo  ucfirst($data_adeudo); ?> </td>
+			<?php } ?>
+			</tr>
+		<?php } ?>
+
 	</table>
 </html>
