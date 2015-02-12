@@ -228,7 +228,7 @@ class AdeudosController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
-            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros['periodo']);
+            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
             $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

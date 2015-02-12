@@ -78,16 +78,18 @@ class Adeudos extends \Eloquent {
     public static function obtener_adeudos_reporte($data) {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $Temporaltable = DB::table('adeudos');
-        $query = $Temporaltable->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+        $query = $Temporaltable
+                ->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
                 ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto');
         if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
             $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
-            ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta']);
-        }
-        if (isset($data['periodo'])) {
-            $query = $query->where("adeudos.periodo", "=", $data['periodo']);
-        }
-       
+               ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta']);
+        } else {
+           if (isset($data['periodo'])) {
+                $query = $query->where("adeudos.periodo", "=", $data['periodo']);
+            }
+ 
+        }      
         return $query->get();
     }
 
