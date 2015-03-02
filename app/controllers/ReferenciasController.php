@@ -250,7 +250,7 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             foreach ($parametros['referencias'] as $key => $referencia) {            
-                $no_calculada=substr($referencia,0,12);
+                $no_calculada=substr($referencia,0,12); 
                 $calculada=substr($referencia,12,8);
                 $ref_temp[$key]['referencia']=$referencia;
                 $ref_temp[$key]['id_persona']=substr($no_calculada,0,5);
@@ -264,7 +264,8 @@ class ReferenciasController extends \BaseController {
                 $ref_temp[$key]['sub_concepto']=$subconcepto_info['sub_concepto'];
                 $ref_temp[$key]['sub_concepto_descripcion']=$subconcepto_info['descripcion'];
             }
-            $res=$commond->obtener_alumno_idPersona($ref_temp);
+            $ref_temp=$commond->obtener_alumno_idPersona($ref_temp);
+            $res=$commond->obtener_periodo_id($ref_temp);
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
