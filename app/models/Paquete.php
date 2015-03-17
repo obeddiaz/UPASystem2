@@ -2,7 +2,11 @@
 
 class Paquete extends \Eloquent {
 
-    protected $fillable = ['created_at', 'id', 'id_plandepago', 'idnivel', 'nivel', 'periodo', 'recargo', 'recargo_inscripcion', 'updated_at'];
+    protected $fillable = [
+                            'created_at', 'id', 'id_plandepago', 'idnivel', 
+                            'nivel', 'periodo', 'recargo', 'recargo_inscripcion', 
+                            'updated_at'
+                            ];
     protected $table = 'paqueteplandepago';
     public static $subconceptos = 'sub_conceptos';
     public static $subconceptos_paquete = 'subconcepto_paqueteplandepago';
@@ -25,17 +29,18 @@ class Paquete extends \Eloquent {
     public static function create_subconceptos_paquetes($data) {
         $table = DB::table(Paquete::$subconceptos_paquete);
         $ids_sub = array();
-        //$paquete = null;
         $paquete = $data['paquete_id'];
         foreach ($data['sub_concepto'] as $subconcepto) {
             if (isset($subconcepto['idsub_paqueteplan'])) {
-                $ids_sub[] = intval($subconcepto['idsub_paqueteplan']);
+                $ids_sub[] = intval($subconcepto['idsub_paqueteplan']); // si existe un paquete cacha el id
             }
         }
+
         $query = $table
                 ->where('paquete_id', '=', $paquete)
                 ->select('id')
                 ->get();
+
         foreach ($query as $i) {
             if (!in_array(intval($i->id), $ids_sub)) {
                 $table = DB::table(Paquete::$subconceptos_paquete);
@@ -45,7 +50,7 @@ class Paquete extends \Eloquent {
         }
         foreach ($data['sub_concepto'] as $subconcepto) {
             $table = DB::table(Paquete::$subconceptos_paquete);
-            $data_subconcepto = array(
+            $data_subconcepto = array( // Crea el array para generar el adeudo
                 "sub_concepto_id" => $subconcepto['id'],
                 "recargo" => $data['recargo'][$subconcepto['id']],
                 "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
@@ -53,24 +58,27 @@ class Paquete extends \Eloquent {
                 "paquete_id" => $data['paquete_id'],
                 "tipos_pago" => json_encode($data['tipos_pago']),
                 "digito_referencia" => $subconcepto['digito_referencia'],
-                "descripcion_sc" => $subconcepto['descripcion_sc']
+                "descripcion_sc" => $subconcepto['descripcion_sc'],
+                "recargo_acumulado"=>$subconcepto['recargo_acumulado']
             );
-            if (isset($subconcepto['idsub_paqueteplan'])) {
+            if (isset($subconcepto['idsub_paqueteplan'])) { // Verifica si existe un subconcepto en el paquete
                 $id = $subconcepto['idsub_paqueteplan']; // obtiene el id del registro subconcepto_paqueteplandepago
                 $table->where('id', $id)
                         ->update($data_subconcepto); //actualiza los datos del registro con el id anterior
                 $adeudos = Adeudos::where('subconcepto_paquete_id', $subconcepto['idsub_paqueteplan'])
                         ->get(); // busca los adeudos del registro con ese id 
-                foreach ($adeudos as $key => $adeudo) {
-                    DB::table('adeudos')->where('id', $adeudo['id'])
-                            ->update(array(
-                                'recargo' => $data['recargo'][$subconcepto['id']],
-                                "sub_concepto_id" => $subconcepto['id'],
-                                "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
-                                "fecha_limite" => $subconcepto['fecha'],
-                                "paquete_id" => $data['paquete_id'],
-                                "digito_referencia" => $subconcepto['digito_referencia'],
-                                "descripcion_sc" => $subconcepto['descripcion_sc']
+                foreach ($adeudos as $key => $adeudo) { //
+                    DB::table('adeudos')
+                    ->where('id', $adeudo['id'])
+                    ->update(array(
+                        "recargo" => $data['recargo'][$subconcepto['id']],
+                        "sub_concepto_id" => $subconcepto['id'],
+                        "tipo_recargo" => $data['tipo_recargo'][$subconcepto['id']],
+                        "fecha_limite" => $subconcepto['fecha'],
+                        "paquete_id" => $data['paquete_id'],
+                        "digito_referencia" => $subconcepto['digito_referencia'],
+                        "descripcion_sc" => $subconcepto['descripcion_sc'],
+                        "recargo_acumulado"=> $data['recargo_acumulado']
                     ));
                     foreach ($data['tipos_pago'] as $key => $value) {
                         $adeudo_tipopago['adeudos_id'] = $adeudo['id'];
@@ -110,7 +118,10 @@ class Paquete extends \Eloquent {
                 ->where('paquete_id', '=', $id)
                 ->join(Paquete::$subconceptos . ' as sc', 'sc.id', '=', 'scp.sub_concepto_id')
                 ->select(
-                        'sc.id', 'sc.importe', 'scp.fecha_de_vencimiento', 'scp.recargo', 'scp.tipo_recargo', 'scp.tipos_pago', 'scp.id as idsub_paqueteplan', 'scp.digito_referencia', 'scp.descripcion_sc'
+                    'sc.id', 'sc.importe', 'scp.fecha_de_vencimiento',
+                    'scp.recargo', 'scp.tipo_recargo', 'scp.tipos_pago',
+                    'scp.recargo_acumulado' ,'scp.id as idsub_paqueteplan', 
+                    'scp.digito_referencia', 'scp.descripcion_sc','scp.recargo_acumulado'
                 )
                 ->get();
         return $query;
@@ -120,10 +131,10 @@ class Paquete extends \Eloquent {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $table = DB::table('paqueteplandepago');
         $query = $table
-                        ->join('adeudos', 'adeudos.paquete_id', '=', 'paqueteplandepago.id')
-                        ->select('id_persona')
-                        ->where('paqueteplandepago.id', '=', $id)
-                        ->groupBy('id_persona')->get();
+            ->join('adeudos', 'adeudos.paquete_id', '=', 'paqueteplandepago.id')
+            ->select('id_persona')
+            ->where('paqueteplandepago.id', '=', $id)
+            ->groupBy('id_persona')->get();
         return $query;
     }
 
@@ -131,10 +142,10 @@ class Paquete extends \Eloquent {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $table = DB::table('paqueteplandepago');
         $query = $table
-                        ->join('adeudos', 'adeudos.paquete_id', '=', 'paqueteplandepago.id')
-                        ->select('id_persona')
-                        ->where('paqueteplandepago.id', '!=', $id)
-                        ->groupBy('id_persona')->get();
+                ->join('adeudos', 'adeudos.paquete_id', '=', 'paqueteplandepago.id')
+                ->select('id_persona')
+                ->where('paqueteplandepago.id', '!=', $id)
+                ->groupBy('id_persona')->get();
         return $query;
     }
 

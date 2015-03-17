@@ -250,25 +250,49 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             foreach ($parametros['referencias'] as $key => $referencia) {            
-                $no_calculada=substr($referencia,0,12); 
-                $calculada=substr($referencia,12,8);
-                $ref_temp[$key]['referencia']=$referencia;
-                $ref_temp[$key]['id_persona']=substr($no_calculada,0,5);
-                $ref_temp[$key]['periodo']=substr($no_calculada,5,3);
-                $ref_temp[$key]['id_subconcepto']=substr($no_calculada,8,3);
-                $ref_temp[$key]['digito_referencia']=substr($no_calculada,11,1);
-                $ref_temp[$key]['fecha_condensada']=substr($calculada,0,4);
-                $ref_temp[$key]['monto_condensado']=substr($calculada,4,2);
-                $ref_temp[$key]['referencia_condensada']=substr($calculada,6,2);
-                $subconcepto_info=Sub_conceptos::find($ref_temp[$key]['id_subconcepto']);
-                $ref_temp[$key]['sub_concepto']=$subconcepto_info['sub_concepto'];
-                $ref_temp[$key]['sub_concepto_descripcion']=$subconcepto_info['descripcion'];
+                var_dump(strlen($referencia));die();
+                if (strlen($referencia)==20) {
+                    $no_calculada=substr($referencia,0,12); 
+                    $calculada=substr($referencia,12,8);
+                    $ref_temp[$key]['referencia']=$referencia;
+                    $ref_temp[$key]['id_persona']=substr($no_calculada,0,5);
+                    $ref_temp[$key]['periodo']=substr($no_calculada,5,3);
+                    $ref_temp[$key]['id_subconcepto']=substr($no_calculada,8,3);
+                    $ref_temp[$key]['digito_referencia']=substr($no_calculada,11,1);
+                    $ref_temp[$key]['fecha_condensada']=substr($calculada,0,4);
+                    $ref_temp[$key]['monto_condensado']=substr($calculada,4,2);
+                    $ref_temp[$key]['referencia_condensada']=substr($calculada,6,2);
+                    $subconcepto_info=Sub_conceptos::find($ref_temp[$key]['id_subconcepto']);
+                    $ref_temp[$key]['sub_concepto']=$subconcepto_info['sub_concepto'];
+                    $ref_temp[$key]['sub_concepto_descripcion']=$subconcepto_info['descripcion'];
+                    $ref_temp[$key]['status']='Referencia valida';
+                } else {
+                    $ref_temp[$key]['referencia']=$referencia;
+                    $ref_temp[$key]['status']='Referencia no valida';
+                }
             }
             $ref_temp=$commond->obtener_alumno_idPersona($ref_temp);
             $res=$commond->obtener_periodo_id($ref_temp);
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }        
+    }
+    public function show_ingresos() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'fecha_desde' => 'required|date_format:Y-m-d',
+            'fecha_hasta' => 'required|date_format:Y-m-d'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $res['total'] = Referencia::obtener_ingresos($parametros);
+            $res['data']=Referencia::obtener_info_referencias_pagadas($parametros);
+            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }        
     }
 }

@@ -3,7 +3,11 @@
 class Adeudos extends \Eloquent {
 
     protected $fillable = ['fecha_limite', 'id', 'id_persona',
-        'importe', 'periodo', 'status_adeudo', 'sub_concepto_id', 'grado', 'recargo', 'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id', 'digito_referencia', 'descripcion_sc'];
+                           'importe', 'periodo', 'status_adeudo', 
+                           'sub_concepto_id', 'grado', 'recargo', 
+                           'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id', 
+                           'digito_referencia', 'descripcion_sc','recargo_acumulado'];
+
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -35,12 +39,12 @@ class Adeudos extends \Eloquent {
 
     public static function referencias() {
         return $this
-                        ->hasMany('Referencia');
+                ->hasMany('Referencia');
     }
 
     public function tipo_pago() {
         return $this
-                        ->belongsTo('Adeudos_tipopago', 'adeudos_id');
+                ->belongsTo('Adeudos_tipopago', 'adeudos_id');
     }
 
     public static function agregar_adeudos($alumno) {
@@ -65,7 +69,8 @@ class Adeudos extends \Eloquent {
                 "digito_referencia" => $subconcepto->digito_referencia,
                 "grado" => $grado,
                 "status_adeudo" => 0,
-                "descripcion_sc" => $subconcepto->descripcion_sc
+                "descripcion_sc" => $subconcepto->descripcion_sc,
+                "recargo_acumulado" =>$subconcepto->recargo_acumulado
             );
             $adeudo = Adeudos::create($adeudo);
             foreach (json_decode($subconcepto->tipos_pago) as $key => $value) {
@@ -144,7 +149,9 @@ class Adeudos extends \Eloquent {
                         $tiene_beca = FALSE;
                     }
                     $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
-                    $recargo*= $query[$key]['meses_retraso'];
+                    if ($adeudo['recargo_acumulado'] == 1) {
+                        $recargo*= $query[$key]['meses_retraso'];
+                    }
                     $query[$key]['recargo_total'] = $recargo;
                     $query[$key]['importe']+=$recargo;
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {
@@ -178,7 +185,9 @@ class Adeudos extends \Eloquent {
                 if ($query[$key]['meses_retraso'] > 0) {
                     $query[$key]['beca'] = 'N/A';
                     $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
-                    $recargo*= $query[$key]['meses_retraso'];
+                    if ($adeudo['recargo_acumulado'] == 1) {
+                        $recargo*= $query[$key]['meses_retraso'];
+                    }
                     $query[$key]['recargo_total'] = $recargo;
                     $query[$key]['importe']+=$recargo;
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {

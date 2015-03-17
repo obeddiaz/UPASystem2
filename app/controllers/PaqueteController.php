@@ -49,8 +49,8 @@ class PaqueteController extends \BaseController {
             'sub_concepto' => 'required|array',
             'recargo' => 'required|array',
             'tipo_recargo' => 'required|array',
-            'tipos_pago'=> 'required|array'
-        ); 
+            'tipos_pago'=> 'required|array',
+        );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {            
            $res = Paquete::create_subconceptos_paquetes($parametros);

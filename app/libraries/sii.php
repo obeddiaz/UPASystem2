@@ -119,7 +119,7 @@ class Sii {
             $response = json_decode($this->response->getContent(), true);
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
-            }
+            } 
         }
         return $response;
     }

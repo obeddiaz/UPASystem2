@@ -143,6 +143,7 @@ Route::group(array('before' => 'auth'), function() {
         Route::group(array('prefix' => '/referencias'), function() {
             Route::post('/agregar', array('as' => 'crear_referencia', 'uses' => 'ReferenciasController@create'));
             Route::post('/traducir',array('as' => 'traducir_referencia', 'uses' => 'ReferenciasController@traducir'));
+            Route::post('/ingresos',array('as' => 'ingresos', 'uses' => 'ReferenciasController@show_ingresos'));
         });
     });
     Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));

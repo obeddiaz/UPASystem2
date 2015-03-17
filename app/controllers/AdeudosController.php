@@ -17,7 +17,6 @@ class AdeudosController extends \BaseController {
      * @return Response
      */
     public function create() {
-        //var_dump(Input::get());
         $commond = new Common_functions();
 
         $parametros = array(
@@ -47,26 +46,24 @@ class AdeudosController extends \BaseController {
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
-        //return json_encode(Adeudos::$custom_data["paquete"]);
-        //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
     }
 
     public function createSubconcepto() {
-        //var_dump(Input::get());
-        //
         $parametros = array(
             'subconcepto_id' => Input::get('subconcepto_id'),
             'periodo' => Input::get('periodo'),
             'id_personas' => Input::get('id_personas'),
             'fecha_limite' => Input::get('fecha_limite'),
-            'tipos_pago' => Input::get('tipos_pago')
+            'tipos_pago' => Input::get('tipos_pago'),
+            'recargo_acumulado'=> Input::get('recargo_acumulado')
         );
         $reglas = array(
             'subconcepto_id' => 'required|integer',
             'periodo' => 'required|integer',
             'id_personas' => 'required|integer',
             'fecha_limite' => 'date_format:Y-m-d',
-            'tipos_pago' => 'required|array'
+            'tipos_pago' => 'required|array',
+            'recargo_acumulado'=>'required|integer'
         );
         $commond = new Common_functions();
         $validator = Validator::make($parametros, $reglas);
@@ -97,7 +94,8 @@ class AdeudosController extends \BaseController {
                     'grado' => $grado,
                     'id_persona' => $parametros['id_personas'],
                     'periodo' => $parametros['periodo'],
-                    'digito_referencia'=>$parametros['digito_referencia']+1
+                    'digito_referencia'=>$parametros['digito_referencia']+1,
+                    'recargo_acumulado'=>$parametros['recargo_acumulado']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
