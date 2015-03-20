@@ -21,7 +21,6 @@ class BecasController extends \BaseController {
         $parametros = array(
             'abreviatura' => Input::get('abreviatura'),
             'importe' => Input::get('importe'),
-            'periodicidades_id' => Input::get('periodicidades_id'),
             'subcidios_id' => Input::get('subcidios_id'),
             'tipo_importe_id' => Input::get('tipo_importe_id'),
             'descripcion' => Input::get('descripcion'),
@@ -30,7 +29,6 @@ class BecasController extends \BaseController {
         $reglas = array(
             'abreviatura' => 'required',
             'importe' => 'required|numeric',
-            'periodicidades_id' => 'required|integer',
             'subcidios_id' => 'required|integer',
             'tipo_importe_id' => 'required|integer',
             'descripcion' => 'required',
@@ -106,7 +104,6 @@ class BecasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['tipo_importe'] = Becas::obtenerTipoImporte();
-            $res['periodicidades'] = Becas::obtenerPerodicidades();
             $res['subcidios'] = Becas::obtenerSubcidios();
             $res['data'] = Becas::find($parametros['id']);
             return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));

@@ -20,16 +20,6 @@ class Becas extends \Eloquent {
         return $query->get();
     }
 
-    public static function obtenerPerodicidades($id = null) {
-        DB::setFetchMode(PDO::FETCH_ASSOC);
-        $Temporaltable = DB::table('periodicidades');
-        $query = $Temporaltable->select('*');
-        if (isset($id)) {
-            $query = $query->where('id', $id);
-        }
-        return $query->get();
-    }
-
     public static function obtenerSubcidios($id = null) {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $Temporaltable = DB::table('subcidios');

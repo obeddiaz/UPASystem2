@@ -35,7 +35,7 @@ class Paquete extends \Eloquent {
                 $ids_sub[] = intval($subconcepto['idsub_paqueteplan']); // si existe un paquete cacha el id
             }
         }
-
+        
         $query = $table
                 ->where('paquete_id', '=', $paquete)
                 ->select('id')
