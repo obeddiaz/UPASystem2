@@ -282,25 +282,52 @@ class AdeudosController extends \BaseController {
     }
 
     public function update_status() {
-        $parametros = Input::get();
-        $reglas = array(
-            'id' => 'required',
-            'status_adeudo' => 'required|integer'
-        );
-        $validator = Validator::make($parametros, $reglas);
+      $parametros = Input::get();
+      $reglas = array(
+          'id' => 'required',
+          'status_adeudo' => 'required|integer'
+      );
+      $validator = Validator::make($parametros, $reglas);
 
-        if (!$validator->fails()) {
-            foreach ($parametros as $key => $value) {
-                if (!array_key_exists($key, $reglas)) {
-                    unset($parametros[$key]);
-                }
-            }
-            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
-            $res['data'] = Adeudos::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-        } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-        }
+      if (!$validator->fails()) {
+          foreach ($parametros as $key => $value) {
+              if (!array_key_exists($key, $reglas)) {
+                  unset($parametros[$key]);
+              }
+          }
+          Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+          $res['data'] = Adeudos::find($parametros['id']);
+          return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+      } else {
+          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+      }
+    }
+    public function update_status_pagado() {
+      $parametros = Input::get();
+      $reglas = array(
+          'id' => 'required',
+          'status_adeudo' => 'required|integer'
+      );
+      $validator = Validator::make($parametros, $reglas);
+
+      if (!$validator->fails()) {
+          foreach ($parametros as $key => $value) {
+              if (!array_key_exists($key, $reglas)) {
+                  unset($parametros[$key]);
+              }
+          }
+          Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+          $res['data'] = Adeudos::find($parametros['id']);
+          if ($parametros['status_adeudo']==1) {
+            Ingresos::create(
+              array('tipo_pago'=> 2,
+                    'importe'=>$res['data']['importe'],
+                    'fecha_pago'=>date('Y-m-d')));
+          }
+          return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+      } else {
+          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+      }
     }
 
     public function update_tipospago() {

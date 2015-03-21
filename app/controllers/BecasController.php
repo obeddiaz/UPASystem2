@@ -70,10 +70,16 @@ class BecasController extends \BaseController {
             unset($data_todos['status']);
             foreach ($parametros['id_persona'] as $key => $value) {
                 $array_insert['id_persona'] = $value;
-                Becas::create_beca_alumno($array_insert);
+                $beca = Becas::AlumnoBeca_Persona_Periodo(
+                    array('id_persona' => $id_persona,
+                    'periodo'=>$periodo)); // Consulta beca
+                if (!$beca) {
+                    Becas::create_beca_alumno($array_insert);
+                }
             }
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
+            $commond->actualiza_status_adeudos($parametros['id_persona'],$parametros['periodo']);
             return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));

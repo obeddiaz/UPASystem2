@@ -140,10 +140,27 @@ Route::group(array('before' => 'auth'), function() {
             Route::put('/guardar', array('as' => 'actualizar_valor_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@update'));
             Route::delete('/eliminar', array('as' => 'eliminar_respuestaBancaria', 'uses' => 'Respuesta_bancariaController@destroy'));
         });
+        Route::group(array('prefix' => '/ingresos'), function() {
+            Route::get('/', array('as' => 'muestra_ingresos', 'uses' => 'IngresosController@index'));
+            Route::post('/agregar', array('as' => 'crear_ingresos', 'uses' => 'IngresosController@create'));
+            Route::put('/guardar', array('as' => 'actualizar_valor_ingresos', 'uses' => 'IngresosController@update'));
+            Route::delete('/eliminar', array('as' => 'eliminar_ingresos', 'uses' => 'IngresosController@destroy'));
+            Route::post('/totales', array('as' => 'muestra_ingresos_fecha', 'uses' => 'IngresosController@show_ingresos'));
+        });
+        Route::group(array('prefix' => '/devoluciones'), function() {
+            Route::get('/', array('as' => 'muestra_devoluciones', 'uses' => 'DevolucionesController@index'));
+            Route::get('/expediente', array('as' => 'muestra_expediente_devoluciones', 'uses' => 'DevolucionesController@show'));
+            Route::get('/alumno', array('as' => 'muestra_expediente_devoluciones', 'uses' => 'DevolucionesController@show_persona_periodo'));
+            Route::get('/persona', array('as' => 'muestra_expediente_devoluciones', 'uses' => 'DevolucionesController@show_persona'));
+            Route::get('/periodo', array('as' => 'muestra_expediente_devoluciones', 'uses' => 'DevolucionesController@show_periodo'));
+            Route::post('/agregar', array('as' => 'crear_devoluciones', 'uses' => 'DevolucionesController@create'));
+            Route::put('/guardar', array('as' => 'actualizar_valor_devoluciones', 'uses' => 'DevolucionesController@update'));
+            Route::put('/status', array('as' => 'actualizar_status_devoluciones', 'uses' => 'DevolucionesController@update_status'));
+            Route::delete('/eliminar', array('as' => 'eliminar_devoluciones', 'uses' => 'DevolucionesController@destroy'));
+        });
         Route::group(array('prefix' => '/referencias'), function() {
             Route::post('/agregar', array('as' => 'crear_referencia', 'uses' => 'ReferenciasController@create'));
             Route::post('/traducir',array('as' => 'traducir_referencia', 'uses' => 'ReferenciasController@traducir'));
-            Route::post('/ingresos',array('as' => 'ingresos', 'uses' => 'ReferenciasController@show_ingresos'));
         });
     });
     Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));

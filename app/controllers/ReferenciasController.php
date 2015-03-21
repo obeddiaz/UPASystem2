@@ -226,6 +226,10 @@ class ReferenciasController extends \BaseController {
                             'estado' => $value['estado'] 
                             );
                     Referencia::create_referencia_pagada($referencia_pagada);
+                    Ingresos::create(
+                      array('tipo_pago'=> 1,
+                            'importe'=>$value['importe'],
+                            'fecha_pago'=>$value['fecha_de_pago']));
                     $personas['existe_referencia'][$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
                     $personas['existe_referencia'][$i]['referencia'] = $value;
                     $i++;
@@ -278,6 +282,7 @@ class ReferenciasController extends \BaseController {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }        
     }
+    /*
     public function show_ingresos() {
         $commond = new Common_functions();
         $parametros = Input::get();
@@ -294,5 +299,5 @@ class ReferenciasController extends \BaseController {
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }        
-    }
+    }*/
 }
