@@ -38,7 +38,8 @@ class Planes_de_pago extends \Eloquent {
                         'subconcepto_paqueteplandepago.fecha_de_vencimiento', 
                         'subconcepto_paqueteplandepago.recargo', 
                         'subconcepto_paqueteplandepago.tipo_recargo',
-                        'subconcepto_paqueteplandepago.tipos_pago'
+                        'subconcepto_paqueteplandepago.tipos_pago',
+                        'subconcepto_paqueteplandepago.recargo_acumulado'
                         )
                 ->orderBy('subconcepto_paqueteplandepago.id', 'ASC')
                 ->get();
