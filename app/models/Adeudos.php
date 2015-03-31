@@ -217,6 +217,3 @@ class Adeudos extends \Eloquent {
         return $query;
     }
 }
-
-?>
-	

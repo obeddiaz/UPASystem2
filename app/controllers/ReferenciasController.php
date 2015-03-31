@@ -254,7 +254,7 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             foreach ($parametros['referencias'] as $key => $referencia) {            
-                var_dump(strlen($referencia));die();
+                //var_dump(strlen($referencia));die();
                 if (strlen($referencia)==20) {
                     $no_calculada=substr($referencia,0,12); 
                     $calculada=substr($referencia,12,8);

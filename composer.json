@@ -9,7 +9,7 @@
 		"cartalyst/sentry": "2.1.*",
 		"kriswallsmith/buzz":"0.12",
 		"way/generators": "2.*",
-		"maatwebsite/excel": "1.*"
+		"maatwebsite/excel": "~1.2.1"
 	},
 	"autoload": {
 		"classmap": [

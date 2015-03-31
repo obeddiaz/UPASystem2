@@ -55,7 +55,7 @@ class AdeudosController extends \BaseController {
             'id_personas' => Input::get('id_personas'),
             'fecha_limite' => Input::get('fecha_limite'),
             'tipos_pago' => Input::get('tipos_pago'),
-            'recargo_acumulado'=> Input::get('recargo_acumulado')
+            'recargo_acumulado' => Input::get('recargo_acumulado')
         );
         $reglas = array(
             'subconcepto_id' => 'required|integer',
@@ -63,7 +63,7 @@ class AdeudosController extends \BaseController {
             'id_personas' => 'required|integer',
             'fecha_limite' => 'date_format:Y-m-d',
             'tipos_pago' => 'required|array',
-            'recargo_acumulado'=>'required|integer'
+            'recargo_acumulado' => 'required|integer'
         );
         $commond = new Common_functions();
         $validator = Validator::make($parametros, $reglas);
@@ -81,11 +81,11 @@ class AdeudosController extends \BaseController {
             if ($adeudos_no_pagados == 0) {
                 $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
 
-                $parametros['digito_referencia']= intval(DB::table('subconcepto_paqueteplandepago')
-                                    ->where('sub_concepto_id',$parametros['subconcepto_id'])
-                                    ->max('digito_referencia'));
-                if ($parametros['digito_referencia']>9) {
-                    $parametros['digito_referencia']=8;
+                $parametros['digito_referencia'] = intval(DB::table('subconcepto_paqueteplandepago')
+                                ->where('sub_concepto_id', $parametros['subconcepto_id'])
+                                ->max('digito_referencia'));
+                if ($parametros['digito_referencia'] > 9) {
+                    $parametros['digito_referencia'] = 8;
                 }
                 $adeudo = array(
                     'importe' => $subconcepto['importe'],
@@ -94,8 +94,8 @@ class AdeudosController extends \BaseController {
                     'grado' => $grado,
                     'id_persona' => $parametros['id_personas'],
                     'periodo' => $parametros['periodo'],
-                    'digito_referencia'=>$parametros['digito_referencia']+1,
-                    'recargo_acumulado'=>$parametros['recargo_acumulado']
+                    'digito_referencia' => $parametros['digito_referencia'] + 1,
+                    'recargo_acumulado' => $parametros['recargo_acumulado']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
@@ -122,39 +122,159 @@ class AdeudosController extends \BaseController {
 
     public function create_reporte() {
         $commond = new Common_functions();
-        $excel = new Excel_Constructor();
         $parametros = Input::get();
-        try {
-            $parametros['adeudos_ids']=json_decode($parametros['adeudos_ids']);
-            $parametros['adeudos_campos']=json_decode($parametros['adeudos_campos']);   
-        } catch (Exception $e) {}
+        $parametros['adeudos_ids'] = json_decode($parametros['adeudos_ids']);
+        $parametros['adeudos_campos'] = json_decode($parametros['adeudos_campos']);
         $reglas = array(
             'adeudos_ids' => 'required|array',
             'adeudos_campos' => 'required|array'
         );
         $validator = Validator::make($parametros, $reglas);
-        $adeudos_consulta=array();
-        if (!$validator->fails()) {
+        if ($validator->fails()) {
             
+        } else {
             foreach ($parametros['adeudos_ids'] as $key => $id) {
-                $adeudos_consulta[]=Adeudos::obtener_adeudos_id($id);
+                $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
             }
-            $adeudos_info=$commond->obtener_alumno_idPersona($adeudos_consulta);
-            foreach ($adeudos_info as $key => $adeudo) {
-                if (!isset($adeudos_info[$key]['grado'])) {
-                        $adeudos_info[$key]['grado']=null;
-                }
-                foreach ($parametros['adeudos_campos'] as $key_campo => $campo) {
-                    foreach ($adeudo as $key_adeudo => $adeudo_data) {
-                        if ($key_adeudo!=$campo) {
-                            unset($adeudos_info[$key][$key_adeudo]);
-                        }
-                    }
-                }
+            $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
+            Excel::create('Mi primer archivo excel', function($excel) use($adeudos_info) {
+                $excel->sheet('Sheetname', function($sheet) use($adeudos_info) {
+                    $sheet->fromArray($adeudos_info);
+                });
+            })->download('xlsx');
+        }
+    }
+
+    public function create_reporte_test() {
+        $commond = new Common_functions();
+        $excel = new Excel_Constructor();
+        $parametros = Input::get();
+        try {
+            $parametros['adeudos_ids'] = json_decode($parametros['adeudos_ids']);
+            $parametros['adeudos_campos'] = json_decode($parametros['adeudos_campos']);
+        } catch (Exception $e) {
+            
+        }
+        $reglas = array(
+            'adeudos_ids' => 'required|array',
+            'adeudos_campos' => 'required|array'
+        );
+
+        $validator = Validator::make($parametros, $reglas);
+        $adeudos_consulta = array();
+        if (!$validator->fails()) {
+
+            foreach ($parametros['adeudos_ids'] as $key => $id) {
+                $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
             }
+            $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
+
+//            foreach ($adeudos_info as $key => $adeudo) {
+//                if (!isset($adeudos_info[$key]['grado'])) {
+//                        $adeudos_info[$key]['grado']=null;
+//                }
+//                foreach ($parametros['adeudos_campos'] as $key_campo => $campo) {
+//                    
+//                    foreach ($adeudo as $key_adeudo => $adeudo_data) {
+//                        //return json_encode(array('error' => $key_adeudo, 'respuesta' => $campo));
+//                        if ($key_adeudo!=$campo) {
+//                            unset($adeudos_info[$key][$key_adeudo]);
+//                        }
+//                        var_dump($adeudos_info);
+//                    }
+//                }
+//            }
             #echo json_encode($adeudos_info);die();
             #var_dump($adeudos_info);die();
-            $excel->export($adeudos_info);    
+            //return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => $adeudos_info));
+//            $report = Excel::create('export');
+////            $regtypes = Regtype::all();
+////            $summary = $report->sheet('Summary', function($sheet) {
+////                
+////            });
+////            foreach ($regtypes as $regtype) {
+////                $attendees = Attendee::where('block_id', '=', Input::get('block_id'))
+////                        ->where('regtype_id', '=', $regtype->id)
+////                        ->get();
+////                if ($attendees->count() > 0) {
+////                    $report->sheet($regtype->name, function($sheet) use ($regtype, $summary, $attendees) {
+////                        $headers = $this->getColumnNames($attendees);
+////
+////                        // $attendees_array = array_merge((array)$headers, (array)$attendees->toArray());
+////                        $attendees_array = $attendees->toArray();
+////                        $sheet->with($attendees_array);
+////                        $sheet->setStyle(array(
+////                            'font' => array(
+////                                'name' => 'Arial',
+////                                'size' => 12
+////                            )
+////                        ));
+////                        $summary->prependRow(array(
+////                            $regtype->name, $attendees->count()
+////                        ));
+////                    });
+////                }
+////            }
+//            // $summary->setCellValue($celltotal,$calc);
+////            $summary->setCellValue('B5', '=SUM(B1:B4)');
+////            $summary->setCellValue('A5', 'Total Registered Attendees');
+//            $report->sheet('Adeudos', function ($sheet) use($adeudos_info) {
+//                $sheet->fromArray($adeudos_info);
+//            });
+//            $report->export('xls');
+//         
+//            foreach ($adeudos_info as $one) {
+//                        $test[]=$one;
+//                    }
+//                    var_dump($test);
+//            die();
+//            $test=array(
+//                0=>array(
+//                    "val1"=>"Val1"
+//                ),
+//                2=>array(
+//                    "val1"=>"Val1"
+//                ),
+//                3=>array(
+//                    "val1"=>"Val1"
+//                ),
+//                4=>array(
+//                    "val1"=>"Val1"
+//                )
+//            );
+            Excel::create('ExcelExport', function($excel) use($adeudos_info) {
+                $excel->sheet('Sheetshit', function($sheet) use($adeudos_info) {
+                    $data = [];
+                    array_push($data, array('Kevin', 'Arnold'));
+                    $sheet->fromArray($data);
+                });
+            })->download('xlsx');
+
+// Excel::create('Mi primer archivo excel',function($excel){
+//            $excel->sheet('Sheetname',function($sheet){
+//               $data=[];
+//               array_push($data, array('Kevin','Arnold'));
+//               $sheet->fromArray($data);
+//            });
+//        })->download('xlsx');
+//            Excel::create('ExcelExport', function($excel) use($filters, $agents) {
+//
+//                $main_arr = array();
+//
+//                foreach ($agents as $value) {
+//                    $main_arr[] = Card::cardForUser($value, $filters)->toArray();
+//                }
+//
+//                $excel->sheet('Sheetshit', function($sheet) use($main_arr) {
+//                    //You may ask me "why are you using foreach?"
+//                    // and my answer will be:"I don`t KNOW, because it WORKS!"
+//
+//                    foreach ($main_arr as $one) {
+//                        $sheet->fromArray($one);
+//                    }
+//                });
+//            })->export('xls');
+            //return $excel->export($adeudos_info);    
         } else {
             return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -282,52 +402,53 @@ class AdeudosController extends \BaseController {
     }
 
     public function update_status() {
-      $parametros = Input::get();
-      $reglas = array(
-          'id' => 'required',
-          'status_adeudo' => 'required|integer'
-      );
-      $validator = Validator::make($parametros, $reglas);
+        $parametros = Input::get();
+        $reglas = array(
+            'id' => 'required',
+            'status_adeudo' => 'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
 
-      if (!$validator->fails()) {
-          foreach ($parametros as $key => $value) {
-              if (!array_key_exists($key, $reglas)) {
-                  unset($parametros[$key]);
-              }
-          }
-          Adeudos::where('id', '=', $parametros['id'])->update($parametros);
-          $res['data'] = Adeudos::find($parametros['id']);
-          return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-      } else {
-          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-      }
+        if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key, $reglas)) {
+                    unset($parametros[$key]);
+                }
+            }
+            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+            $res['data'] = Adeudos::find($parametros['id']);
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
     }
-    public function update_status_pagado() {
-      $parametros = Input::get();
-      $reglas = array(
-          'id' => 'required',
-          'status_adeudo' => 'required|integer'
-      );
-      $validator = Validator::make($parametros, $reglas);
 
-      if (!$validator->fails()) {
-          foreach ($parametros as $key => $value) {
-              if (!array_key_exists($key, $reglas)) {
-                  unset($parametros[$key]);
-              }
-          }
-          Adeudos::where('id', '=', $parametros['id'])->update($parametros);
-          $res['data'] = Adeudos::find($parametros['id']);
-          if ($parametros['status_adeudo']==1) {
-            Ingresos::create(
-              array('tipo_pago'=> 2,
-                    'importe'=>$res['data']['importe'],
-                    'fecha_pago'=>date('Y-m-d')));
-          }
-          return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-      } else {
-          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-      }
+    public function update_status_pagado() {
+        $parametros = Input::get();
+        $reglas = array(
+            'id' => 'required',
+            'status_adeudo' => 'required|integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            foreach ($parametros as $key => $value) {
+                if (!array_key_exists($key, $reglas)) {
+                    unset($parametros[$key]);
+                }
+            }
+            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+            $res['data'] = Adeudos::find($parametros['id']);
+            if ($parametros['status_adeudo'] == 1) {
+                Ingresos::create(
+                        array('tipo_pago' => 2,
+                            'importe' => $res['data']['importe'],
+                            'fecha_pago' => date('Y-m-d')));
+            }
+            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
     }
 
     public function update_tipospago() {
@@ -366,4 +487,5 @@ class AdeudosController extends \BaseController {
     public function destroy($id) {
         //
     }
+
 }

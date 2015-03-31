@@ -133,6 +133,7 @@ return array(
       |
      */
     'aliases' => array(
+        'Excel' => 'Maatwebsite\Excel\Facades\Excel',
         'Sentry' => 'Cartalyst\Sentry\Facades\Laravel\Sentry',
         'App' => 'Illuminate\Support\Facades\App',
         'Artisan' => 'Illuminate\Support\Facades\Artisan',
@@ -172,6 +173,6 @@ return array(
         'URL' => 'Illuminate\Support\Facades\URL',
         'Validator' => 'Illuminate\Support\Facades\Validator',
         'View' => 'Illuminate\Support\Facades\View',
-        'Excel' => 'Maatwebsite\Excel\Facades\Excel',
+        
     ),
 );
