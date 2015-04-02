@@ -91,6 +91,8 @@ class Sii {
         foreach ($datos as $key => $value) {
             if (is_array($value)) {
                 $datos[$key] = $this->orderParamsToKeyCache($value);
+            } else {
+                sort($datos);
             }
         }
         return $datos;

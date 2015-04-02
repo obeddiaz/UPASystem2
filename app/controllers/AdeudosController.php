@@ -119,6 +119,26 @@ class AdeudosController extends \BaseController {
         //return json_encode(Adeudos::$custom_data["paquete"]);
         //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
     }
+    public function create_reporte_key() {
+      $commond = new Common_functions();
+      $parametros = Input::get();
+      $parametros['filters'] = json_decode($parametros['filters']);
+      $reglas = array(
+        'key' => 'required',
+        'filters' => 'required|array'
+      );
+      $validator = Validator::make($parametros, $reglas);
+      if ($validator->fails()) {
+        return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
+      } else {
+        $adeudos=$commond >get_by_key($parametros['key']);
+        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
+            $excel->sheet('Sheetname', function($sheet) use($adeudos) {
+                $sheet->fromArray($adeudos["data"]);
+            });
+        })->download('xlsx');
+      }
+    }
 
     public function create_reporte() {
         $commond = new Common_functions();
@@ -129,154 +149,21 @@ class AdeudosController extends \BaseController {
             'adeudos_ids' => 'required|array',
             'adeudos_campos' => 'required|array'
         );
+
         $validator = Validator::make($parametros, $reglas);
         if ($validator->fails()) {
-            
+          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
         } else {
-            foreach ($parametros['adeudos_ids'] as $key => $id) {
-                $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
-            }
-            $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
-            Excel::create('Mi primer archivo excel', function($excel) use($adeudos_info) {
-                $excel->sheet('Sheetname', function($sheet) use($adeudos_info) {
-                    $sheet->fromArray($adeudos_info);
-                });
-            })->download('xlsx');
-        }
-    }
-
-    public function create_reporte_test() {
-        $commond = new Common_functions();
-        $excel = new Excel_Constructor();
-        $parametros = Input::get();
-        try {
-            $parametros['adeudos_ids'] = json_decode($parametros['adeudos_ids']);
-            $parametros['adeudos_campos'] = json_decode($parametros['adeudos_campos']);
-        } catch (Exception $e) {
-            
-        }
-        $reglas = array(
-            'adeudos_ids' => 'required|array',
-            'adeudos_campos' => 'required|array'
-        );
-
-        $validator = Validator::make($parametros, $reglas);
-        $adeudos_consulta = array();
-        if (!$validator->fails()) {
-
-            foreach ($parametros['adeudos_ids'] as $key => $id) {
-                $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
-            }
-            $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
-
-//            foreach ($adeudos_info as $key => $adeudo) {
-//                if (!isset($adeudos_info[$key]['grado'])) {
-//                        $adeudos_info[$key]['grado']=null;
-//                }
-//                foreach ($parametros['adeudos_campos'] as $key_campo => $campo) {
-//                    
-//                    foreach ($adeudo as $key_adeudo => $adeudo_data) {
-//                        //return json_encode(array('error' => $key_adeudo, 'respuesta' => $campo));
-//                        if ($key_adeudo!=$campo) {
-//                            unset($adeudos_info[$key][$key_adeudo]);
-//                        }
-//                        var_dump($adeudos_info);
-//                    }
-//                }
-//            }
-            #echo json_encode($adeudos_info);die();
-            #var_dump($adeudos_info);die();
-            //return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => $adeudos_info));
-//            $report = Excel::create('export');
-////            $regtypes = Regtype::all();
-////            $summary = $report->sheet('Summary', function($sheet) {
-////                
-////            });
-////            foreach ($regtypes as $regtype) {
-////                $attendees = Attendee::where('block_id', '=', Input::get('block_id'))
-////                        ->where('regtype_id', '=', $regtype->id)
-////                        ->get();
-////                if ($attendees->count() > 0) {
-////                    $report->sheet($regtype->name, function($sheet) use ($regtype, $summary, $attendees) {
-////                        $headers = $this->getColumnNames($attendees);
-////
-////                        // $attendees_array = array_merge((array)$headers, (array)$attendees->toArray());
-////                        $attendees_array = $attendees->toArray();
-////                        $sheet->with($attendees_array);
-////                        $sheet->setStyle(array(
-////                            'font' => array(
-////                                'name' => 'Arial',
-////                                'size' => 12
-////                            )
-////                        ));
-////                        $summary->prependRow(array(
-////                            $regtype->name, $attendees->count()
-////                        ));
-////                    });
-////                }
-////            }
-//            // $summary->setCellValue($celltotal,$calc);
-////            $summary->setCellValue('B5', '=SUM(B1:B4)');
-////            $summary->setCellValue('A5', 'Total Registered Attendees');
-//            $report->sheet('Adeudos', function ($sheet) use($adeudos_info) {
-//                $sheet->fromArray($adeudos_info);
-//            });
-//            $report->export('xls');
-//         
-//            foreach ($adeudos_info as $one) {
-//                        $test[]=$one;
-//                    }
-//                    var_dump($test);
-//            die();
-//            $test=array(
-//                0=>array(
-//                    "val1"=>"Val1"
-//                ),
-//                2=>array(
-//                    "val1"=>"Val1"
-//                ),
-//                3=>array(
-//                    "val1"=>"Val1"
-//                ),
-//                4=>array(
-//                    "val1"=>"Val1"
-//                )
-//            );
-            Excel::create('ExcelExport', function($excel) use($adeudos_info) {
-                $excel->sheet('Sheetshit', function($sheet) use($adeudos_info) {
-                    $data = [];
-                    array_push($data, array('Kevin', 'Arnold'));
-                    $sheet->fromArray($data);
-                });
-            })->download('xlsx');
-
-// Excel::create('Mi primer archivo excel',function($excel){
-//            $excel->sheet('Sheetname',function($sheet){
-//               $data=[];
-//               array_push($data, array('Kevin','Arnold'));
-//               $sheet->fromArray($data);
-//            });
-//        })->download('xlsx');
-//            Excel::create('ExcelExport', function($excel) use($filters, $agents) {
-//
-//                $main_arr = array();
-//
-//                foreach ($agents as $value) {
-//                    $main_arr[] = Card::cardForUser($value, $filters)->toArray();
-//                }
-//
-//                $excel->sheet('Sheetshit', function($sheet) use($main_arr) {
-//                    //You may ask me "why are you using foreach?"
-//                    // and my answer will be:"I don`t KNOW, because it WORKS!"
-//
-//                    foreach ($main_arr as $one) {
-//                        $sheet->fromArray($one);
-//                    }
-//                });
-//            })->export('xls');
-            //return $excel->export($adeudos_info);    
-        } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+          foreach ($parametros['adeudos_ids'] as $key => $id) {
+              $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
+          }
+          $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
+          $adeudos=$commond -> crear_key($parametros,$adeudos_info);
+          Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
+              $excel->sheet('Sheetname', function($sheet) use($adeudos) {
+                  $sheet->fromArray($adeudos["data"]);
+              });
+          })->download('xlsx');
         }
     }
 
@@ -329,6 +216,7 @@ class AdeudosController extends \BaseController {
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
             $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+            $res['data'] = $adeudos=$commond -> crear_key($parametros,$res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
