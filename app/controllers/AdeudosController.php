@@ -121,8 +121,35 @@ class AdeudosController extends \BaseController {
     }
 
     public function create_reporte() {
+//        $commond = new Common_functions();
+//        $parametros = Input::get();
+//        $reglas = array(
+//            'fecha_desde' => 'date_format:Y-m-d',
+//            'fecha_hasta' => 'date_format:Y-m-d',
+//            'periodo' => 'integer'
+//        );
+//        $validator = Validator::make($parametros, $reglas);
+//
+//        if (!$validator->fails()) {
+//            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
+//            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+//            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+//        } else {
+//            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+//        }
+
+
+
         $commond = new Common_functions();
         $parametros = Input::get();
+        $campos = explode(',', $parametros['campos']);
+        Adeudos::obtener_adeudos_reporte_filtrado($parametros,$campos);
+        var_dump($campos);
+//        var_dump($parametros['adeudos_ids']);
+//        var_dump(base64_decode($parametros['adeudos_ids']));
+        //$data=Adeudos::obtener_adeudos_reporte_filtrado($parametros);
+        //echo json_encode($data);
+        die();
         $parametros['adeudos_ids'] = json_decode($parametros['adeudos_ids']);
         $parametros['adeudos_campos'] = json_decode($parametros['adeudos_campos']);
         $reglas = array(
