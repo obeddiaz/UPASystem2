@@ -3,9 +3,33 @@
 class Common_functions {
 
     private $sii;
+    private $minutesToCache = 20;
 
     public function __construct() {
         $this->sii = new Sii();
+    }
+
+    public function crear_key($datos,$results) {
+      $this->sii->orderParamsToKeyCache($datos);
+      $keyToService = md5(json_encode($datos));
+      $response['key']=$keyToService;
+      if (Cache::has($keyToService)) {
+        $response['data'] = Cache::get($keyToService);
+      } else {
+        Cache::put($keyToService, $results, $this->minutesToCache);
+        $response['data'] = $results;
+      }
+      return $response;
+    }
+
+    public function get_by_key($key) {
+      if (Cache::has($key)) {
+        $response['key']=$key;
+        $response['data']=Cache::get($key);
+        return Cache::get($key);
+      } else {
+        return false;
+      }
     }
 
     public function periodo_actual() {
