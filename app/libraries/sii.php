@@ -44,8 +44,8 @@ class Sii {
             $this->password = $config["password"];
             $curr_user = Session::get('user');
             $this->token = $curr_user['persona']['token'];
-            $this->client = new Buzz\Client\FileGetContents();
-            //$this->client = new Buzz\Client\Curl();
+            //$this->client = new Buzz\Client\FileGetContents();
+            $this->client = new Buzz\Client\Curl();
             $this->client->setTimeout(60);
             $this->response = new Buzz\Message\Response();
 
@@ -55,14 +55,16 @@ class Sii {
     }
 
     public function login($user, $password) {
+
         $parametros = array(
             'user'=>$user
         );
         $reglas = array(
             'user'=> 'required|email'
         );
-        $validator = Validator::make($parametros,$reglas);
-        if (!$validator->fails())
+        $email = Validator::make($parametros,$reglas);
+
+        if (!$email->fails())
         {
             $content = array("email" => $user, "password" => $password);
             $this->request = new Request("POST");
@@ -72,17 +74,21 @@ class Sii {
             $this->response = $this->send($this->client, $this->request);
             Log::info($this->response);
         } else {
+            
             $content = array("nocuenta" => $user, "password" => $password);
             $this->request = new Request("POST");
             $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
             $this->request->setContent(http_build_query($content));
             $this->request->fromUrl($this->url . "/persona/login_alumno");
             $this->response = $this->send($this->client, $this->request);
+            
+            #$this->response=array('error' => true);
             Log::info($this->response);
         }
         
         //$user_token=  json_decode($this->response->getContent());
         //User::$token = $user_token->persona->token;
+
         return json_decode($this->response->getContent(), true);
     }
 
@@ -119,9 +125,13 @@ class Sii {
             $this->response = $this->send($this->client, $this->request);
             Log::info($this->response);
             $response = json_decode($this->response->getContent(), true);
+            #var_dump($response['error']);die();
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
-            } 
+            } else {
+                echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
+                die();
+            }
         }
         return $response;
     }
