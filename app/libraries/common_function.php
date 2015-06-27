@@ -13,11 +13,13 @@ class Common_functions {
       $this->sii->orderParamsToKeyCache($datos);
       $keyToService = md5(json_encode($datos));
       $response['key']=$keyToService;
+      #var_dump($response['key']);die();
       if (Cache::has($keyToService)) {
         $response['data'] = Cache::get($keyToService);
       } else {
         Cache::put($keyToService, $results, $this->minutesToCache);
         $response['data'] = $results;
+        $response['key'] = $keyToService;
       }
       return $response;
     }
@@ -123,6 +125,29 @@ class Common_functions {
       return $res;
     }
 
+    public function obtener_infoAlumno_idPersona_no_merge($persona) {
+      $alumnos = $this->sii->new_request('POST', '/alumnos/all');
+      $res = array();
+      
+      if (is_array($persona)) {
+        foreach ($alumnos as $key_alumnos => $alumno) {
+          if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
+            $res = $alumno;
+          }
+        }
+      } else {
+        return null;
+      }
+
+      if (empty($res)) {
+        $res['id_persona']=$persona['id_persona'];
+        $res['persona']="No hay datos sobre este alumno";
+        $res['estatus_admin']="INACTIVO";
+      }
+
+      return $res;
+    }
+
   public function calcular_importe_por_tipo($importe, $rob, $tipo) {
     $res = null;
     if ($tipo == 1) {
@@ -166,6 +191,43 @@ class Common_functions {
       }
     }
   }
+
+  public function procesar_adeudos_reporte($data) {
+    $alumnos = $this->sii->new_request('POST', '/alumnos/all');
+    $res = array();
+    $personas=array();
+    $key_cunt=0;
+
+    foreach ($data as $key_adeudos => $value_adeudos) {
+      if (empty($res)) {
+        $personas[]=intval($value_adeudos['id_persona']);
+        $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
+        $res[$key_cunt]['adeudos'][]=$value_adeudos;
+        $key_cunt++;
+      } else {
+        if (in_array(intval($value_adeudos['id_persona']),$personas) ) {
+          $key_repetido=array_search(intval($value_adeudos['id_persona']),$personas);
+          $res[$key_repetido]['adeudos'][]=$value_adeudos;
+        } else {
+          $personas[]=$value_adeudos['id_persona'];
+          $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
+          $res[$key_cunt]['adeudos'][]=$value_adeudos;
+          $key_cunt++;
+        }
+      }
+    }
+
+    foreach ($res as $key_personas => $persona) {
+      foreach ($alumnos as $key_alumnos => $alumno) {
+        if (intval($alumno['idpersonas']) == intval($persona['id_persona'])) {
+          unset($alumno['idpersonas']);
+          $res[$key_personas] = array_merge($alumno, $persona);
+        }
+      }
+    }
+    return $res;
+  }
+
 }
 
 ?>

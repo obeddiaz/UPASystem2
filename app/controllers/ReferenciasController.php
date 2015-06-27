@@ -204,6 +204,7 @@ class ReferenciasController extends \BaseController {
                 $adeudo = Referencia::with('adeudos')
                         ->where('referencia','=',$value['referencia'])->first(); 
                 if ($adeudo && !empty($adeudo)) {
+                    #echo json_encode($adeudo['adeudos']['status_adeudo']);die();
                     $referencia_info = Referencia::where('referencia','=',$value['referencia'])->first();
                     if ($value['importe']>=$adeudo['adeudos']['importe']) {
                         Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(

@@ -89,7 +89,7 @@ class APIServicesController extends \BaseController {
         }
     }
 
-    public function alumnos() {
+    public function alumnos_activos() {
         $res['data'] = array();
         try {
             $res['data'] = $this->sii->new_request('POST', '/alumnos');
@@ -103,7 +103,7 @@ class APIServicesController extends \BaseController {
         }
     }
 
-    public function alumnostodos() {
+    public function alumnos_todos() {
         $res['data'] = array();
         try {
             $res['data'] = $this->sii->new_request('POST', '/alumnos/all');

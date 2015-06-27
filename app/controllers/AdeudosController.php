@@ -242,8 +242,8 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
-            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
-            $res['data'] = $adeudos=$commond -> crear_key($parametros,$res['data']);
+            $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
+            $res['data'] = $commond -> crear_key($parametros,$res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
@@ -262,7 +262,8 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
-            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+            $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
+            $res['data'] = $commond -> crear_key($parametros,$res['data']);
             echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));

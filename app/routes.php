@@ -165,8 +165,8 @@ Route::group(array('before' => 'auth'), function() {
         });
     });
     Route::get('/periodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@periodos'));
-    Route::get('/alumnos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos'));
-    Route::get('/alumnostodos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnostodos'));
+    Route::get('/alumnos_activos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos_activos'));
+    Route::get('/alumnos_todos/', array('as' => 'muestra_todos_periodos', 'uses' => 'APIServicesController@alumnos_todos'));
     Route::get('/grupos/', array('as' => 'muestra_todos_grupos', 'uses' => 'APIServicesController@grupos'));
     Route::get('/niveles/', array('as' => 'muestra_todos_niveles', 'uses' => 'APIServicesController@niveles'));
     Route::group(array('prefix' => '/estado_de_cuenta'), function() {
