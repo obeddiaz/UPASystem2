@@ -10,16 +10,14 @@ class Common_functions {
     }
 
     public function crear_key($datos,$results) {
-      $this->sii->orderParamsToKeyCache($datos);
+      $datos=$this->sii->orderParamsToKeyCache($datos);
       $keyToService = md5(json_encode($datos));
       $response['key']=$keyToService;
-      #var_dump($response['key']);die();
       if (Cache::has($keyToService)) {
         $response['data'] = Cache::get($keyToService);
       } else {
-        Cache::put($keyToService, $results, $this->minutesToCache);
+        Cache::add($keyToService, $results, $this->minutesToCache);
         $response['data'] = $results;
-        $response['key'] = $keyToService;
       }
       return $response;
     }
@@ -28,7 +26,7 @@ class Common_functions {
       if (Cache::has($key)) {
         $response['key']=$key;
         $response['data']=Cache::get($key);
-        return Cache::get($key);
+        return $response;
       } else {
         return false;
       }
@@ -202,15 +200,18 @@ class Common_functions {
       if (empty($res)) {
         $personas[]=intval($value_adeudos['id_persona']);
         $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
+        unset($value_adeudos['id_persona']);
         $res[$key_cunt]['adeudos'][]=$value_adeudos;
         $key_cunt++;
       } else {
         if (in_array(intval($value_adeudos['id_persona']),$personas) ) {
           $key_repetido=array_search(intval($value_adeudos['id_persona']),$personas);
+          unset($value_adeudos['id_persona']);
           $res[$key_repetido]['adeudos'][]=$value_adeudos;
         } else {
           $personas[]=$value_adeudos['id_persona'];
           $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
+          unset($value_adeudos['id_persona']);
           $res[$key_cunt]['adeudos'][]=$value_adeudos;
           $key_cunt++;
         }
@@ -225,7 +226,14 @@ class Common_functions {
         }
       }
     }
+    foreach ($res as $key => $value) {
+      if (!isset($value['matricula'])) {
+        unset($res[$key]);
+      }
+    }
+
     return $res;
+
   }
 
 }
