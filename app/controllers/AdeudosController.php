@@ -122,7 +122,9 @@ class AdeudosController extends \BaseController {
     public function create_reporte_key() {
       $commond = new Common_functions();
       $parametros = Input::get();
-      $parametros['filters'] = json_decode($parametros['filters']);
+      if (isset($parametros['filters'])) {
+        $parametros['filters'] = json_decode($parametros['filters']);
+      }
       $reglas = array(
         'key' => 'required',
         'filters' => 'required|array'
@@ -131,12 +133,20 @@ class AdeudosController extends \BaseController {
       if ($validator->fails()) {
         return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
       } else {
-        $adeudos=$commond >get_by_key($parametros['key']);
+        $adeudos=$commond->get_by_key($parametros['key']);
+        $filters=$parametros["filters"];
+        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
+          $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
+              $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
+          });
+        })->download('xlsx');
+
+        /*
         Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
             $excel->sheet('Sheetname', function($sheet) use($adeudos) {
                 $sheet->fromArray($adeudos["data"]);
             });
-        })->download('xlsx');
+        })->download('xlsx'); */
       }
     }
 
