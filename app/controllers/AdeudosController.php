@@ -142,15 +142,8 @@ class AdeudosController extends \BaseController {
             });
           })->download('xlsx');
         } else {
-          return json_encode(array('error' => true, 'mensaje' => 'Key incorrecta o caduca.', 'respuesta' => null));
+          return View::make('excel.error_excel')->with('key', $parametros['key']);
         }
-
-        /*
-        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
-            $excel->sheet('Sheetname', function($sheet) use($adeudos) {
-                $sheet->fromArray($adeudos["data"]);
-            });
-        })->download('xlsx'); */
       }
     }
 
