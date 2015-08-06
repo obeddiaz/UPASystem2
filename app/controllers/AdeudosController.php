@@ -135,11 +135,15 @@ class AdeudosController extends \BaseController {
       } else {
         $adeudos=$commond->get_by_key($parametros['key']);
         $filters=$parametros["filters"];
-        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
-          $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
-              $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
-          });
-        })->download('xlsx');
+        if ($adeudos) {
+          Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
+            $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
+                $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
+            });
+          })->download('xlsx');
+        } else {
+          return json_encode(array('error' => true, 'mensaje' => 'Key incorrecta o caduca.', 'respuesta' => null));
+        }
 
         /*
         Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
