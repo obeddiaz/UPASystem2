@@ -135,18 +135,15 @@ class AdeudosController extends \BaseController {
       } else {
         $adeudos=$commond->get_by_key($parametros['key']);
         $filters=$parametros["filters"];
-        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
-          $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
-              $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
-          });
-        })->download('xlsx');
-
-        /*
-        Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
-            $excel->sheet('Sheetname', function($sheet) use($adeudos) {
-                $sheet->fromArray($adeudos["data"]);
+        if ($adeudos) {
+          Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
+            $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
+                $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
             });
-        })->download('xlsx'); */
+          })->download('xlsx');
+        } else {
+          return View::make('excel.error_excel')->with('key', $parametros['key']);
+        }
       }
     }
 
