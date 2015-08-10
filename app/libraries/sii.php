@@ -129,7 +129,7 @@ class Sii {
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
             } else {
-                echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
+                echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>'','error_type'=>0));
                 die();
             }
         }

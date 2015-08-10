@@ -200,24 +200,44 @@ class ReferenciasController extends \BaseController {
             );
             $personas = array();
             $i = 0;
+            $descuento=round(0,2);
+
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
                         ->where('referencia','=',$value['referencia'])->first(); 
+                $adeudo_actual = Adeudos::obtener_adeudos_alumno(
+                    array('id_persona'=>$adeudo['adeudos']['id_persona'],
+                        'periodo'=>$adeudo['adeudos']['periodo'],
+                        'id'=>$adeudo['adeudos']['id'],
+                        'fecha_de_pago'=>$value['fecha_de_pago'])
+                    );
+
                 if ($adeudo && !empty($adeudo)) {
-                    #echo json_encode($adeudo['adeudos']['status_adeudo']);die();
                     $referencia_info = Referencia::where('referencia','=',$value['referencia'])->first();
-                    if ($value['importe']>=$adeudo['adeudos']['importe']) {
+                    if ($value['importe']>=$adeudo_actual[0]->importe) {    /// Cuanod hizo el pago correcto o de mas
+                        if (($value['importe']+10)>$adeudo_actual[0]->importe) {    /// Ajustar adeudos
+                            $descuento=$value['importe']-$adeudo_actual[0]->importe;
+                            $commond->ajustar_adeudos_pagoa_de_mas($adeudo_actual[0]->id,
+                                                                    $adeudo_actual[0]->id_persona,
+                                                                    $adeudo_actual[0]->periodo,
+                                                                    $descuento);
+                        }
                         Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
                             array(
                                 'status_adeudo' => 1, 
                                 'fecha_pago' => $value['fecha_de_pago']
                                 ));
+
                     } else{
+                        $now = strtotime('now');
+                        $fecha = date('Y-m-d', $now); // Dia actual
+                        $nuevo_limite=substr($fecha, 0,8).substr($adeudo_actual[0]->fecha_limite, 8,9);                        
                         Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
                             array(
-                                'importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 
-                                'fecha_pago' => $value['fecha_de_pago']
-                                ));
+                                'importe' => floatval(floatval($adeudo_actual[0]->importe-$value['importe'])), 
+                                'fecha_pago' => $value['fecha_de_pago'],
+                                'fecha_limite' => $nuevo_limite
+                            ));
                     }  
                     $referencia_pagada= 
                         array(

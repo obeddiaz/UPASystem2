@@ -111,7 +111,7 @@ class Adeudos extends \Eloquent {
                 $query = $query->where("adeudos.periodo", "=", $data['periodo']);
             }
  
-        }      
+        }       
         return $query->get();
     }
 
@@ -120,15 +120,28 @@ class Adeudos extends \Eloquent {
         // Actualiza el status_adeudo si tiene beca del 100%
         $commond->actualiza_status_adeudos($data['id_persona'],$data['periodo']);
         
+        if (isset($data['id'])) {
+          $query = 
+            Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+              ->where("adeudos.id_persona", "=", $data['id_persona'])
+              ->where("adeudos.periodo", "=", $data['periodo'])
+              ->where("adeudos.id", "=", $data['id'])
+              ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+              ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
+        } else {
         $query = 
-        Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
-          ->where("adeudos.id_persona", "=", $data['id_persona'])
-          ->where("adeudos.periodo", "=", $data['periodo'])
-          ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
-          ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
+          Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+            ->where("adeudos.id_persona", "=", $data['id_persona'])
+            ->where("adeudos.periodo", "=", $data['periodo'])
+            ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+            ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
+        }
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data); // Consulta beca
-
-        $now = strtotime('now'); // Se obtiene la fecha actual
+        if (isset($data['fecha_pago'])) {
+          $now = strtotime($data['fecha_pago']); // Se obtiene la fecha actual
+        } else {
+          $now = strtotime('now'); // Se obtiene la fecha actual
+        }
         $daynow = date('d', $now); // Dia actual
         $sub_cont = array(); // Contador de adeudos
         
