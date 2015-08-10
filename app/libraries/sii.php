@@ -133,7 +133,7 @@ class Sii {
                 $final_response = Response::make($respuesta, 200);
                 $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-                return $final_response;
+                echo  $final_response;
                 die();
             }
         }
