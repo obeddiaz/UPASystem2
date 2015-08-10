@@ -10,7 +10,11 @@ class DevolucionesController extends \BaseController {
 	public function index()
 	{
 		$res['data']=Devoluciones::All();
-		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -35,10 +39,14 @@ class DevolucionesController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Devoluciones::create($parametros);
-			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -71,10 +79,14 @@ class DevolucionesController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Devoluciones::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 	public function show_persona_periodo()
 	{
@@ -94,10 +106,14 @@ class DevolucionesController extends \BaseController {
 			$res['total']=Devoluciones::where('id_persona','=',$parametros['id_persona'])
 									->where('periodo','=',$parametros['periodo'])
 									->sum('importe');
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 	public function show_periodo()
@@ -115,10 +131,14 @@ class DevolucionesController extends \BaseController {
 									->get();
 			$res['total']=Devoluciones::where('periodo','=',$parametros['periodo'])
 									->sum('importe');
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 	public function show_persona()
@@ -136,10 +156,14 @@ class DevolucionesController extends \BaseController {
 									->get();
 			$res['total']=Devoluciones::where('id_persona','=',$parametros['id_persona'])
 									->sum('importe');
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -184,10 +208,14 @@ class DevolucionesController extends \BaseController {
 			}
 			Devoluciones::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Devoluciones::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 	public function update_status()
 	{
@@ -209,10 +237,14 @@ class DevolucionesController extends \BaseController {
 			$parametros['fecha_devolucion']=date('Y-m-d');
 			Devoluciones::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Devoluciones::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -235,9 +267,13 @@ class DevolucionesController extends \BaseController {
 		{
 			Devoluciones::destroy($parametros['id']);
 			$res['data']=Devoluciones::All();
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 }

@@ -10,7 +10,11 @@ class IngresosController extends \BaseController {
 	public function index()
 	{
 		$res['data']=Ingresos::All();
-		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -33,10 +37,14 @@ class IngresosController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Ingresos::create($parametros);
-			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -69,10 +77,14 @@ class IngresosController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Ingresos::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 	public function show_ingresos() {
@@ -92,10 +104,14 @@ class IngresosController extends \BaseController {
 					    		->where('status_devolucion','=',1)
 					    		->sum('importe');
             $res['total']=($res['caja']+$res['banco'])-$res['devoluciones'];
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }        
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
 
@@ -138,10 +154,14 @@ class IngresosController extends \BaseController {
 			}
 			Ingresos::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Ingresos::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -164,9 +184,13 @@ class IngresosController extends \BaseController {
 		{
 			Ingresos::destroy($parametros['id']);
 			$res['data']=Ingresos::All();
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 }

@@ -10,7 +10,11 @@ class DescuentosController extends \BaseController {
 	public function index()
 	{
 		$res['data']=Descuentos::All();
-		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -33,10 +37,14 @@ class DescuentosController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Descuentos::create($parametros);
-			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -100,10 +108,14 @@ class DescuentosController extends \BaseController {
 			}
 			Descuentos::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Descuentos::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -126,10 +138,14 @@ class DescuentosController extends \BaseController {
 		{
 			Descuentos::destroy($parametros['id']);
 			$res['data']=Descuentos::All();
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 	public static function expediente(){
@@ -143,10 +159,14 @@ class DescuentosController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Descuentos::obtenerAdeudosDeDescuentos($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}	
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 

@@ -9,7 +9,11 @@ class Planes_de_pagoController extends \BaseController {
      */
     public function index() {
         $res['data'] = Planes_de_pago::All();
-        return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -28,10 +32,14 @@ class Planes_de_pagoController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Planes_de_pago::create($parametros);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -58,10 +66,14 @@ class Planes_de_pagoController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Planes_de_pago::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_byAgrupaciones() {
@@ -73,10 +85,14 @@ class Planes_de_pagoController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Planes_de_pago::where('id_agrupaciones', '=', $parametros['id_agrupaciones'])->get();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_paquete_alumno() {
@@ -99,12 +115,16 @@ class Planes_de_pagoController extends \BaseController {
                     $res['data'] = array();
                 }
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_no_paquete_alumno() {
@@ -127,12 +147,16 @@ class Planes_de_pagoController extends \BaseController {
                     $res['data'] = array();
                 }
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_subconceptos() {
@@ -150,12 +174,16 @@ class Planes_de_pagoController extends \BaseController {
                 $res['paquete'] = $paquete;
                 $res['data'] = Planes_de_pago::sub_conceptos(array('id' => $paquete['id']));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -191,10 +219,14 @@ class Planes_de_pagoController extends \BaseController {
             }
             Planes_de_pago::where('id', '=', $parametros['id'])->update($parametros);
             $res['data'] = Planes_de_pago::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -212,10 +244,14 @@ class Planes_de_pagoController extends \BaseController {
         if (!$validator->fails()) {
             Planes_de_pago::destroy($parametros['id']);
             $res['data'] = Planes_de_pago::All();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
 }

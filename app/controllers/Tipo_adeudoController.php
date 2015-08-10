@@ -10,7 +10,11 @@ class Tipo_adeudoController extends \BaseController {
 	public function index()
 	{
 		$res['data']=Tipo_adeudo::All();
-		return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));	
+		$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));	
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -35,10 +39,14 @@ class Tipo_adeudoController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Tipo_adeudo::create($parametros);
-			return json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}	
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -71,10 +79,14 @@ class Tipo_adeudoController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$res['data']=Tipo_adeudo::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -115,10 +127,14 @@ class Tipo_adeudoController extends \BaseController {
 			}
 			Tipo_adeudo::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Tipo_adeudo::find($parametros['id']);
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}	
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
@@ -140,10 +156,14 @@ class Tipo_adeudoController extends \BaseController {
 		{
 			Tipo_adeudo::destroy($parametros['id']);
 			$res['data']=Tipo_adeudo::All();
-			return json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
+			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
-			return json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}		
+		$final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 

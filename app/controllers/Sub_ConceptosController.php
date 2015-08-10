@@ -21,10 +21,14 @@ class Sub_ConceptosController extends \BaseController {
                     ->where('nivel_id', '=', $parametros['nivel_id'])
                     ->where('conceptos_id', '=', $parametros['conceptos_id'])
                     ->get();
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_all_by_id() {
@@ -37,10 +41,14 @@ class Sub_ConceptosController extends \BaseController {
         if (!$validator->fails()) {
             $res['data'] = Sub_conceptos::where('conceptos_id', '=', $parametros['conceptos_id'])
                     ->get();
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -72,10 +80,14 @@ class Sub_ConceptosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res = Sub_conceptos::create($parametros);
-            echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -102,10 +114,14 @@ class Sub_ConceptosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Sub_conceptos::find($parametros['id']);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -143,10 +159,14 @@ class Sub_ConceptosController extends \BaseController {
         if (!$validator->fails()) {
 
             $res = Sub_conceptos::where('id', '=', $parametros['id'])->update($parametros);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -164,10 +184,14 @@ class Sub_ConceptosController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             $res = Sub_conceptos::destroy($parametros['id']);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
 }

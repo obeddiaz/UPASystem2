@@ -243,6 +243,10 @@ class AdeudosController extends \BaseController {
             $alumno = Adeudos::obtener_adeudos_alumno($parametros);
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -267,6 +271,10 @@ class AdeudosController extends \BaseController {
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_adeudos_reporte() {
