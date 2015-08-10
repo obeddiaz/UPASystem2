@@ -42,10 +42,14 @@ class AdeudosController extends \BaseController {
                     Adeudos::agregar_adeudos($alumno);
                 }
             }
-            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function createSubconcepto() {
@@ -112,10 +116,14 @@ class AdeudosController extends \BaseController {
                 }
                 $res = array_merge($adeudo_creado, $subconcepto_adeudo);
             }
-            return json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
         //return json_encode(Adeudos::$custom_data["paquete"]);
         //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
     }
@@ -131,7 +139,11 @@ class AdeudosController extends \BaseController {
       );
       $validator = Validator::make($parametros, $reglas);
       if ($validator->fails()) {
-        return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
+        $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
       } else {
         $adeudos=$commond->get_by_key($parametros['key']);
         $filters=$parametros["filters"];
@@ -226,10 +238,10 @@ class AdeudosController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if ($validator->fails()) {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         } else {
             $alumno = Adeudos::obtener_adeudos_alumno($parametros);
-            return json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
         }
     }
 
@@ -251,9 +263,9 @@ class AdeudosController extends \BaseController {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
             $res['data'] = $commond -> crear_key($parametros,$res['data']);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }
     }
 
@@ -271,10 +283,14 @@ class AdeudosController extends \BaseController {
             $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
             $res['data'] = $commond -> crear_key($parametros,$res['data']);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -322,6 +338,10 @@ class AdeudosController extends \BaseController {
         } else {
             $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function update_status() {

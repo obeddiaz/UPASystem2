@@ -80,13 +80,17 @@ class APIServicesController extends \BaseController {
         try {
             $res['data'] = $this->sii->new_request('POST', '/periodos');
             if (isset($res['data']) && !isset($res['data']['error'])) {
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
             }
         } catch (Exception $e) {
-            return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function alumnos_activos() {
@@ -94,13 +98,17 @@ class APIServicesController extends \BaseController {
         try {
             $res['data'] = $this->sii->new_request('POST', '/alumnos');
             if (isset($res['data']) && !isset($res['data']['error'])) {
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
             }
         } catch (Exception $e) {
-            return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function alumnos_todos() {
@@ -108,13 +116,17 @@ class APIServicesController extends \BaseController {
         try {
             $res['data'] = $this->sii->new_request('POST', '/alumnos/all');
             if (isset($res['data']) && !isset($res['data']['error'])) {
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
             }
         } catch (Exception $e) {
-            return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function grupos() {
@@ -122,13 +134,17 @@ class APIServicesController extends \BaseController {
         try {
             $res['data'] = $this->sii->new_request('POST', '/grupos');
             if (isset($res['data']) && !isset($res['data']['error'])) {
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
             }
         } catch (Exception $e) {
-            return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function niveles() {
@@ -136,13 +152,17 @@ class APIServicesController extends \BaseController {
         try {
             $res['data'] = $this->sii->new_request('POST', '/niveles');
             if (isset($res['data']) && !isset($res['data']['error'])) {
-                return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
-                return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
             }
         } catch (Exception $e) {
-            return json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
     
     public function create_user_api() {
@@ -152,7 +172,11 @@ class APIServicesController extends \BaseController {
             'password'  => 'pagos2015',
             'activated' => true,
         ));
-        return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
+        $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $user));
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 
     }
 
@@ -172,9 +196,9 @@ class APIServicesController extends \BaseController {
                             'fecha_pago'
                             )
                         ->get();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
 
@@ -188,9 +212,13 @@ class APIServicesController extends \BaseController {
 
         if (!$validator->fails()) {
             $res=Sub_conceptos::where('periodo','=',$parametros['periodo'])->get();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 }

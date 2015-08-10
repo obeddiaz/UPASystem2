@@ -9,7 +9,11 @@ class BecasController extends \BaseController {
      */
     public function index() {
         $res['data'] = Becas::orderBy('importe', 'desc')->get();
-        return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -38,10 +42,14 @@ class BecasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Becas::create($parametros);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function create_alumno() {
@@ -80,10 +88,14 @@ class BecasController extends \BaseController {
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             $commond->actualiza_status_adeudos($parametros['id_persona'],$parametros['periodo']);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -112,10 +124,14 @@ class BecasController extends \BaseController {
             $res['tipo_importe'] = Becas::obtenerTipoImporte();
             $res['subcidios'] = Becas::obtenerSubcidios();
             $res['data'] = Becas::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_catalogos() {
@@ -124,7 +140,7 @@ class BecasController extends \BaseController {
         $res['data']['periodicidades'] = Becas::obtenerPerodicidades();
         $res['data']['subcidios'] = Becas::obtenerSubcidios();
 
-        return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
     }
 
     public function show_alumno() {
@@ -142,12 +158,16 @@ class BecasController extends \BaseController {
             $personasBeca = Becas::obtenerAlumnosBecas($parametros);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             if ($res['data'] == null) {
-                return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_alumno_nobeca() {
@@ -165,12 +185,16 @@ class BecasController extends \BaseController {
             $personasBeca = Becas::obtenerAlumnosBecas($parametros);
             $res['data'] = $commond->obtener_alumno_No_idPersona($personasBeca);
             if ($res['data'] == null) {
-                return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -211,10 +235,14 @@ class BecasController extends \BaseController {
             }
             Becas::where('id', '=', $parametros['id'])->update($parametros);
             $res['data'] = Becas::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function update_alumno_activar() {
@@ -246,10 +274,14 @@ class BecasController extends \BaseController {
             }
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function update_alumno_desactivar() {
@@ -283,10 +315,14 @@ class BecasController extends \BaseController {
 
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
-            return json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -305,10 +341,14 @@ class BecasController extends \BaseController {
 
             Becas::destroy($parametros['id']);
             $res['data'] = Becas::orderBy('importe', 'desc')->get();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function destroy_alumno() {
@@ -339,10 +379,14 @@ class BecasController extends \BaseController {
             }
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
 }
