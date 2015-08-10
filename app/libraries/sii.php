@@ -129,7 +129,11 @@ class Sii {
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
             } else {
-                echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
+                $respuesta = json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
+                $final_response = Response::make($respuesta, 200);
+                $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+                return $final_response;
                 die();
             }
         }
@@ -140,7 +144,6 @@ class Sii {
         $content = array("token" => $token);
         $this->request = new Request("POST");
         $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
-        var_dump(http_build_query($content));
         $this->request->setContent(http_build_query($content));
         $this->request->fromUrl($this->url . "/persona/getbytoken");
         $this->response = $this->send($this->client, $this->request);

@@ -8,7 +8,7 @@ class ReferenciasController extends \BaseController {
      */
     public function index() {
         $res['data'] = Referencia::All();
-        $respuesta json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+        $respuesta= json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 

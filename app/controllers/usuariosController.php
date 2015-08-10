@@ -53,7 +53,7 @@ class UsuariosController extends \BaseController {
             $user = $sii->login($parametros['u'], $parametros['p']);
 
             if (isset($user['error'])) {
-                return json_encode(array('error' => true, 'mensaje' => 'User or password Incorrect', 'respuesta' => ''));
+                $respuesta= json_encode(array('error' => true, 'mensaje' => 'User or password Incorrect', 'respuesta' => ''));
             } else {
                 Session::put('user', $user);
                 if (isset($user['persona']['alumno']) && intval($user['persona']['alumno']) == 1) {
@@ -65,19 +65,27 @@ class UsuariosController extends \BaseController {
                         $user['persona']['grado'] = null;
                     }
                 }
-                return array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200));
+                $respuesta= array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200));
             }
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show() {
         if (Session::has('user')) {
-            return json_encode(array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200)));
+            $respuesta= json_encode(array("error" => false, 'message' => "Usuario autenticado", 'respuesta' => array(Session::all(), 200)));
         } else {
-            return json_encode(array("error" => true, 'message' => "Usuario no autenticado", 'respuesta' => array('', 404)));
+            $respuesta= json_encode(array("error" => true, 'message' => "Usuario no autenticado", 'respuesta' => array('', 404)));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**

@@ -318,9 +318,9 @@ class AdeudosController extends \BaseController {
             }
             Adeudos::where('id', '=', $parametros['id'])->update($parametros);
             $res['data'] = Adeudos::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
     }
 
@@ -340,10 +340,14 @@ class AdeudosController extends \BaseController {
             }
             Adeudos::where('id', '=', $parametros['id'])->update($parametros);
             $res['data'] = Adeudos::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function update_status_pagado() {
@@ -368,10 +372,14 @@ class AdeudosController extends \BaseController {
                             'importe' => $res['data']['importe'],
                             'fecha_pago' => date('Y-m-d')));
             }
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function update_tipospago() {
@@ -395,10 +403,14 @@ class AdeudosController extends \BaseController {
                 Adeudos_tipopago::create($adeudo_tipopago);
             }
             $res['data'] = Adeudos::find($parametros['id']);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
