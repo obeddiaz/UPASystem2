@@ -1,6 +1,7 @@
 <?php
 
 class ReferenciasController extends \BaseController {
+
     /**
      * Display a listing of the resource.
      *
@@ -8,7 +9,8 @@ class ReferenciasController extends \BaseController {
      */
     public function index() {
         $res['data'] = Referencia::All();
-        $respuesta= json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+
+        $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
@@ -75,9 +77,9 @@ class ReferenciasController extends \BaseController {
                 }
             }
             $res['data'] = $data;
-            $respuesta= json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
@@ -109,9 +111,9 @@ class ReferenciasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Referencia::find($parametros['id']);
-            $respuesta json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
@@ -128,9 +130,9 @@ class ReferenciasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Referencia::find($parametros['adeudos_id'])->adeudos();
-            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
@@ -169,9 +171,9 @@ class ReferenciasController extends \BaseController {
                 }
             }
             $res = Referencia::where('id', '=', $parametros['id'])->update($parametros);
-            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
@@ -194,9 +196,9 @@ class ReferenciasController extends \BaseController {
         if (!$validator->fails()) {
             Referencia::destroy($parametros['id']);
             $res['data'] = Referencia::All();
-            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
@@ -225,35 +227,34 @@ class ReferenciasController extends \BaseController {
             $i = 0;
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
-                        ->where('referencia','=',$value['referencia'])->first(); 
+                                ->where('referencia', '=', $value['referencia'])->first();
                 if ($adeudo && !empty($adeudo)) {
                     #echo json_encode($adeudo['adeudos']['status_adeudo']);die();
-                    $referencia_info = Referencia::where('referencia','=',$value['referencia'])->first();
-                    if ($value['importe']>=$adeudo['adeudos']['importe']) {
-                        Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
-                            array(
-                                'status_adeudo' => 1, 
-                                'fecha_pago' => $value['fecha_de_pago']
-                                ));
-                    } else{
-                        Adeudos::where('id','=',$adeudo['adeudos']['id'])->update(
-                            array(
-                                'importe' => floatval(floatval($value['importe']-$adeudo['importe'])), 
-                                'fecha_pago' => $value['fecha_de_pago']
-                                ));
-                    }  
-                    $referencia_pagada= 
-                        array(
-                            'id_referencia' =>$referencia_info['id'],
-                            'fecha_de_pago' =>$value['fecha_de_pago'],
-                            'importe' => $value['importe'],
-                            'estado' => $value['estado'] 
-                            );
+                    $referencia_info = Referencia::where('referencia', '=', $value['referencia'])->first();
+                    if ($value['importe'] >= $adeudo['adeudos']['importe']) {
+                        Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
+                                array(
+                                    'status_adeudo' => 1,
+                                    'fecha_pago' => $value['fecha_de_pago']
+                        ));
+                    } else {
+                        Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
+                                array(
+                                    'importe' => floatval(floatval($value['importe'] - $adeudo['importe'])),
+                                    'fecha_pago' => $value['fecha_de_pago']
+                        ));
+                    }
+                    $referencia_pagada = array(
+                        'id_referencia' => $referencia_info['id'],
+                        'fecha_de_pago' => $value['fecha_de_pago'],
+                        'importe' => $value['importe'],
+                        'estado' => $value['estado']
+                    );
                     Referencia::create_referencia_pagada($referencia_pagada);
                     Ingresos::create(
-                      array('tipo_pago'=> 1,
-                            'importe'=>$value['importe'],
-                            'fecha_pago'=>$value['fecha_de_pago']));
+                            array('tipo_pago' => 1,
+                                'importe' => $value['importe'],
+                                'fecha_pago' => $value['fecha_de_pago']));
                     $personas['existe_referencia'][$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
                     $personas['existe_referencia'][$i]['referencia'] = $value;
                     $i++;
@@ -261,10 +262,10 @@ class ReferenciasController extends \BaseController {
                     $personas['no_existe_referencia'][$i]['referencia'] = $value;
                     $i++;
                 }
-            } 
+            }
             $res['data'] = $personas;
             Respuesta_bancaria::create($infoarchivo);
-            $respuesta =json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
         }
@@ -273,6 +274,7 @@ class ReferenciasController extends \BaseController {
 
         return $final_response;
     }
+
     public function traducir() {
         $commond = new Common_functions();
         $parametros = Input::get();
@@ -281,55 +283,56 @@ class ReferenciasController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            foreach ($parametros['referencias'] as $key => $referencia) {            
+            foreach ($parametros['referencias'] as $key => $referencia) {
                 //var_dump(strlen($referencia));die();
-                if (strlen($referencia)==20) {
-                    $no_calculada=substr($referencia,0,12); 
-                    $calculada=substr($referencia,12,8);
-                    $ref_temp[$key]['referencia']=$referencia;
-                    $ref_temp[$key]['id_persona']=substr($no_calculada,0,5);
-                    $ref_temp[$key]['periodo']=substr($no_calculada,5,3);
-                    $ref_temp[$key]['id_subconcepto']=substr($no_calculada,8,3);
-                    $ref_temp[$key]['digito_referencia']=substr($no_calculada,11,1);
-                    $ref_temp[$key]['fecha_condensada']=substr($calculada,0,4);
-                    $ref_temp[$key]['monto_condensado']=substr($calculada,4,2);
-                    $ref_temp[$key]['referencia_condensada']=substr($calculada,6,2);
-                    $subconcepto_info=Sub_conceptos::find($ref_temp[$key]['id_subconcepto']);
-                    $ref_temp[$key]['sub_concepto']=$subconcepto_info['sub_concepto'];
-                    $ref_temp[$key]['sub_concepto_descripcion']=$subconcepto_info['descripcion'];
-                    $ref_temp[$key]['status']='Referencia valida';
+                if (strlen($referencia) == 20) {
+                    $no_calculada = substr($referencia, 0, 12);
+                    $calculada = substr($referencia, 12, 8);
+                    $ref_temp[$key]['referencia'] = $referencia;
+                    $ref_temp[$key]['id_persona'] = substr($no_calculada, 0, 5);
+                    $ref_temp[$key]['periodo'] = substr($no_calculada, 5, 3);
+                    $ref_temp[$key]['id_subconcepto'] = substr($no_calculada, 8, 3);
+                    $ref_temp[$key]['digito_referencia'] = substr($no_calculada, 11, 1);
+                    $ref_temp[$key]['fecha_condensada'] = substr($calculada, 0, 4);
+                    $ref_temp[$key]['monto_condensado'] = substr($calculada, 4, 2);
+                    $ref_temp[$key]['referencia_condensada'] = substr($calculada, 6, 2);
+                    $subconcepto_info = Sub_conceptos::find($ref_temp[$key]['id_subconcepto']);
+                    $ref_temp[$key]['sub_concepto'] = $subconcepto_info['sub_concepto'];
+                    $ref_temp[$key]['sub_concepto_descripcion'] = $subconcepto_info['descripcion'];
+                    $ref_temp[$key]['status'] = 'Referencia valida';
                 } else {
-                    $ref_temp[$key]['referencia']=$referencia;
-                    $ref_temp[$key]['status']='Referencia no valida';
+                    $ref_temp[$key]['referencia'] = $referencia;
+                    $ref_temp[$key]['status'] = 'Referencia no valida';
                 }
             }
-            $ref_temp=$commond->obtener_alumno_idPersona($ref_temp);
-            $res=$commond->obtener_periodo_id($ref_temp);
-            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $ref_temp = $commond->obtener_alumno_idPersona($ref_temp);
+            $res = $commond->obtener_periodo_id($ref_temp);
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
-        }        
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
         return $final_response;
     }
-    /*
-    public function show_ingresos() {
-        $commond = new Common_functions();
-        $parametros = Input::get();
-        $reglas = array(
-            'fecha_desde' => 'required|date_format:Y-m-d',
-            'fecha_hasta' => 'required|date_format:Y-m-d'
-        );
-        $validator = Validator::make($parametros, $reglas);
 
-        if (!$validator->fails()) {
-            $res['total'] = Referencia::obtener_ingresos($parametros);
-            $res['data']=Referencia::obtener_info_referencias_pagadas($parametros);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-        } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
-        }        
-    }*/
+    /*
+      public function show_ingresos() {
+      $commond = new Common_functions();
+      $parametros = Input::get();
+      $reglas = array(
+      'fecha_desde' => 'required|date_format:Y-m-d',
+      'fecha_hasta' => 'required|date_format:Y-m-d'
+      );
+      $validator = Validator::make($parametros, $reglas);
+
+      if (!$validator->fails()) {
+      $res['total'] = Referencia::obtener_ingresos($parametros);
+      $res['data']=Referencia::obtener_info_referencias_pagadas($parametros);
+      echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+      } else {
+      echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+      }
+      } */
 }
