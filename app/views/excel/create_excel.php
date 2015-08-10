@@ -31,7 +31,7 @@
 	<table border="1">
 		<tr>
 		<?php
-			foreach ($adeudos as $key => $adeudo) { ?>
+			foreach ($adeudos["alumnos"] as $key => $adeudo) { ?>
 			<?php foreach ($adeudo as $key_adeudo => $data_adeudo) { ?>
 				 <?php  
 				 	if (is_array($data_adeudo)) {
@@ -61,7 +61,7 @@
 		<?php } ?>
 		</tr>
 		
-		<?php foreach ($adeudos as $key => $adeudo_info) { ?>
+		<?php foreach ($adeudos["alumnos"] as $key => $adeudo_info) { ?>
 			<tr>
 			<?php foreach ($adeudo_info as $key_adeudo_info => $data_adeudo) { ?>
 				 <?php 

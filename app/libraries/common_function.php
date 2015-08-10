@@ -9,27 +9,27 @@ class Common_functions {
         $this->sii = new Sii();
     }
 
-    public function crear_key($datos,$results) {
-      $datos=$this->sii->orderParamsToKeyCache($datos);
-      $keyToService = md5(json_encode($datos));
-      $response['key']=$keyToService;
-      if (Cache::has($keyToService)) {
-        $response['data'] = Cache::get($keyToService);
-      } else {
-        Cache::add($keyToService, $results, $this->minutesToCache);
-        $response['data'] = $results;
-      }
-      return $response;
+    public function crear_key($datos, $results) {
+        $datos = $this->sii->orderParamsToKeyCache($datos);
+        $keyToService = md5(json_encode($datos));
+        $response['key'] = $keyToService;
+        if (Cache::has($keyToService)) {
+            $response['data'] = Cache::get($keyToService);
+        } else {
+            Cache::add($keyToService, $results, $this->minutesToCache);
+            $response['data'] = $results;
+        }
+        return $response;
     }
 
     public function get_by_key($key) {
-      if (Cache::has($key)) {
-        $response['key']=$key;
-        $response['data']=Cache::get($key);
-        return $response;
-      } else {
-        return false;
-      }
+        if (Cache::has($key)) {
+            $response['key'] = $key;
+            $response['data'] = Cache::get($key);
+            return $response;
+        } else {
+            return false;
+        }
     }
 
     public function periodo_actual() {
@@ -50,8 +50,8 @@ class Common_functions {
             foreach ($periodos as $key_periodos => $periodo) {
                 foreach ($todos as $key_todos => $uno) {
                     if (intval($periodo['periodo']) == intval($uno['idperiodo'])) {
-                        $periodo['periodo']=$uno['idperiodo'];
-                        $periodo['periodo_descripcion']=$uno['periodo'];
+                        $periodo['periodo'] = $uno['idperiodo'];
+                        $periodo['periodo_descripcion'] = $uno['periodo'];
                         unset($uno['periodo']);
                         unset($uno['idperiodo']);
                         $res[] = array_merge($periodo, $uno);
@@ -107,122 +107,128 @@ class Common_functions {
     }
 
     public function obtener_infoAlumno_idPersona($persona) {
-      $alumnos = $this->sii->new_request('POST', '/alumnos/all');
-      $res = array();
-      if (is_array($persona)) {
-        foreach ($alumnos as $key_alumnos => $alumno) {
-          if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
-            $persona_info = $persona;
-            unset($persona_info['id_persona']);
-            $res[] = array_merge($alumno, $persona_info);
-          }
+        $alumnos = $this->sii->new_request('POST', '/alumnos/all');
+        $res = array();
+        if (is_array($persona)) {
+            foreach ($alumnos as $key_alumnos => $alumno) {
+                if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
+                    $persona_info = $persona;
+                    unset($persona_info['id_persona']);
+                    $res[] = array_merge($alumno, $persona_info);
+                }
+            }
+        } else {
+            return null;
         }
-      } else {
-        return null;
-      }
-      return $res;
+        return $res;
     }
 
     public function obtener_infoAlumno_idPersona_no_merge($persona) {
-      $alumnos = $this->sii->new_request('POST', '/alumnos/all');
-      $res = array();
-      
-      if (is_array($persona)) {
-        foreach ($alumnos as $key_alumnos => $alumno) {
-          if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
-            $res = $alumno;
-          }
-        }
-      } else {
-        return null;
-      }
+        $alumnos = $this->sii->new_request('POST', '/alumnos/all');
+        $res = array();
 
-      if (empty($res)) {
-        $res['id_persona']=$persona['id_persona'];
-        $res['persona']="No hay datos sobre este alumno";
-        $res['estatus_admin']="INACTIVO";
-      }
-
-      return $res;
-    }
-
-  public function calcular_importe_por_tipo($importe, $rob, $tipo) {
-    $res = null;
-    if ($tipo == 1) {
-      $res = $rob / 100;
-      $res = $importe * $res;
-    } elseif ($tipo == 2) {
-      return $rob;
-    }
-   return $res;
-  }
-  public function actualiza_status_adeudos($id_persona,$periodo) {
-    $adeudos = 
-      Adeudos::join('sub_conceptos as sc', 
-                    'sc.id', '=', 
-                    'adeudos.sub_concepto_id')
-              ->where("adeudos.id_persona", "=", $id_persona)
-              ->where("adeudos.periodo", "=", $periodo)
-              ->select('adeudos.*', 
-                        DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
-                        'sc.aplica_beca', 
-                        'sc.sub_concepto')
-              ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
-    $beca = 
-      Becas::AlumnoBeca_Persona_Periodo(
-            array('id_persona' => $id_persona,
-                  'periodo'=>$periodo)); // Consulta beca
-      $retrasos=false;
-    if ($beca) {
-      if (intval($beca['importe'])==100 && intval($beca['tipo_importe_id'])==1) {
-        foreach ($adeudos as $key => $adeudo) {
-          if ($adeudo['aplica_beca'] == 1 && $retrasos==false) {
-            if ($adeudo['fecha_limite']>= date('Y-m-d')) {
-              Adeudos::where('id', '=', $adeudos['id'])
-              ->update(array('status_adeudo' =>1));
-
-            } else {
-              $retrasos=true;
+        if (is_array($persona)) {
+            foreach ($alumnos as $key_alumnos => $alumno) {
+                if ($alumno['idpersonas'] == intval($persona['id_persona'])) {
+                    $res = $alumno;
+                }
             }
-          }
-        }
-      }
-    }
-  }
-
-  public function procesar_adeudos_reporte($data) {
-    $alumnos = $this->sii->new_request('POST', '/alumnos/all');
-    $res = array();
-    $personas=array();
-    $key_cunt=0;
-
-    foreach ($data as $key_adeudos => $value_adeudos) {
-      if (empty($res)) {
-        $personas[]=intval($value_adeudos['id_persona']);
-        $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
-        unset($value_adeudos['id_persona']);
-        $res[$key_cunt]['adeudos'][]=$value_adeudos;
-        $key_cunt++;
-      } else {
-        if (in_array(intval($value_adeudos['id_persona']),$personas) ) {
-          $key_repetido=array_search(intval($value_adeudos['id_persona']),$personas);
-          unset($value_adeudos['id_persona']);
-          $res[$key_repetido]['adeudos'][]=$value_adeudos;
         } else {
-          $personas[]=$value_adeudos['id_persona'];
-          $res[$key_cunt]['id_persona']=$value_adeudos['id_persona'];
-          unset($value_adeudos['id_persona']);
-          $res[$key_cunt]['adeudos'][]=$value_adeudos;
-          $key_cunt++;
+            return null;
         }
-      }
+
+        if (empty($res)) {
+            $res['id_persona'] = $persona['id_persona'];
+            $res['persona'] = "No hay datos sobre este alumno";
+            $res['estatus_admin'] = "INACTIVO";
+        }
+
+        return $res;
     }
 
-    foreach ($res as $key_personas => $persona) {
-      foreach ($alumnos as $key_alumnos => $alumno) {
-        if (intval($alumno['idpersonas']) == intval($persona['id_persona'])) {
-          unset($alumno['idpersonas']);
-          $res[$key_personas] = array_merge($alumno, $persona);
+    public function calcular_importe_por_tipo($importe, $rob, $tipo) {
+        $res = null;
+        if ($tipo == 1) {
+            $res = $rob / 100;
+            $res = $importe * $res;
+        } elseif ($tipo == 2) {
+            return $rob;
+        }
+        return $res;
+    }
+
+    public function actualiza_status_adeudos($id_persona, $periodo) {
+        $adeudos = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+                ->where("adeudos.id_persona", "=", $id_persona)
+                ->where("adeudos.periodo", "=", $periodo)
+                ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+                ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
+        $beca = Becas::AlumnoBeca_Persona_Periodo(
+                        array('id_persona' => $id_persona,
+                            'periodo' => $periodo)); // Consulta beca
+        $retrasos = false;
+        if ($beca) {
+            if (intval($beca['importe']) == 100 && intval($beca['tipo_importe_id']) == 1) {
+                foreach ($adeudos as $key => $adeudo) {
+                    if ($adeudo['aplica_beca'] == 1 && $retrasos == false) {
+                        if ($adeudo['fecha_limite'] >= date('Y-m-d')) {
+                            Adeudos::where('id', '=', $adeudos['id'])
+                                    ->update(array('status_adeudo' => 1));
+                        } else {
+                            $retrasos = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public function procesar_adeudos_reporte($data) {
+        $alumnos = $this->sii->new_request('POST', '/alumnos/all');
+        $res = array();
+        $personas = array();
+        $key_cunt = 0;
+        $filtros["carreras"] = [];
+        $filtros["sub_conceptos"] = [];
+        $filtros["descripcion_sc"] = [];
+        foreach ($data as $key_adeudos => $value_adeudos) {
+            if (empty($res)) {
+                $personas[] = intval($value_adeudos['id_persona']);
+                $res[$key_cunt]['id_persona'] = $value_adeudos['id_persona'];
+                unset($value_adeudos['id_persona']);
+                $res[$key_cunt]['adeudos'][] = $value_adeudos;
+                $key_cunt++;
+            } else {
+                if (in_array(intval($value_adeudos['id_persona']), $personas)) {
+                    $key_repetido = array_search(intval($value_adeudos['id_persona']), $personas);
+                    unset($value_adeudos['id_persona']);
+                    $res[$key_repetido]['adeudos'][] = $value_adeudos;
+                } else {
+                    $personas[] = $value_adeudos['id_persona'];
+                    $res[$key_cunt]['id_persona'] = $value_adeudos['id_persona'];
+                    unset($value_adeudos['id_persona']);
+                    $res[$key_cunt]['adeudos'][] = $value_adeudos;
+                    $key_cunt++;
+                }
+            }
+            if ((!in_array($value_adeudos["sub_concepto"], $filtros["sub_conceptos"])) && ($value_adeudos["sub_concepto"] != "")) {
+                array_push($filtros["sub_conceptos"], $value_adeudos["sub_concepto"]);
+            }
+            if ((!in_array($value_adeudos["descripcion_sc"], $filtros["descripcion_sc"])) && ($value_adeudos["descripcion_sc"] != "")) {
+                array_push($filtros["descripcion_sc"], $value_adeudos["descripcion_sc"]);
+            }
+        }
+
+        foreach ($res as $key_personas => $persona) {
+            foreach ($alumnos as $key_alumnos => $alumno) {
+                if (intval($alumno['idpersonas']) == intval($persona['id_persona'])) {
+                    unset($alumno['idpersonas']);
+                    $res[$key_personas] = array_merge($alumno, $persona);
+                    if (!in_array($alumno["carrera"], $filtros["carreras"]) && ($alumno["carrera"] != "")) {
+                        array_push($filtros["carreras"], $alumno["carrera"]);
+                    }
+                }
+            }
         }
       }
     }
@@ -271,7 +277,6 @@ class Common_functions {
         ));
     }
   }
-
 }
 
 ?>
