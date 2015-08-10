@@ -236,40 +236,40 @@ class Common_functions {
 
   }
   public function ajustar_adeudos_pagoa_de_mas($adeudo_id,$id_persona,$periodo,$cantidad){
-  $adeudos=Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
-    ->where("adeudos.id_persona", "=", $id_persona)
-    ->where("adeudos.periodo", "=", $periodo)
-    ->where("adeudos.id", "<>", $adeudo_id)
-    ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
-        ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
+    $adeudos=Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+      ->where("adeudos.id_persona", "=", $id_persona)
+      ->where("adeudos.periodo", "=", $periodo)
+      ->where("adeudos.id", "<>", $adeudo_id)
+      ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+          ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
 
-  foreach ($adeudos as $key => $adeudo) {
-    if ($adeudo->importe>=$cantidad) {
-      Adeudos::where('id','=',$adeudo->id)->update(
-        array(
-            'importe' => round($adeudo->importe-$cantidad,2)
-            //'status_adeudo' => 1
-        ));
-      $cantidad=0;
-      break;
-    } else {
-      Adeudos::where('id','=',$adeudo->id)->update(
-        array(
-            //'importe' => round(0,2),
-            'status_adeudo' => 1
-        ));
-      $cantidad=$cantidad-$adeudo->importe;
+    foreach ($adeudos as $key => $adeudo) {
+      if ($adeudo->importe>=$cantidad) {
+        Adeudos::where('id','=',$adeudo->id)->update(
+          array(
+              'importe' => round($adeudo->importe-$cantidad,2)
+              //'status_adeudo' => 1
+          ));
+        $cantidad=0;
+        break;
+      } else {
+        Adeudos::where('id','=',$adeudo->id)->update(
+          array(
+              //'importe' => round(0,2),
+              'status_adeudo' => 1
+          ));
+        $cantidad=$cantidad-$adeudo->importe;
+      }
     }
-  }
-  if ($cantidad>0) {
-    Devoluciones::create(array(
-        'periodo'=>$periodo,
-        'fecha_devolucion' => date('Y-m-d'),
-        'importe' => $cantidad,
-        'id_persona'=>$id_persona,
-        'status_devolucion'=>0
-      ));
-  }
+    if ($cantidad>0) {
+      Devoluciones::create(array(
+          'periodo'=>$periodo,
+          'fecha_devolucion' => date('Y-m-d'),
+          'importe' => $cantidad,
+          'id_persona'=>$id_persona,
+          'status_devolucion'=>0
+        ));
+    }
   }
 
 }

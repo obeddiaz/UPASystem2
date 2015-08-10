@@ -1,7 +1,6 @@
 <?php
 
 class ReferenciasController extends \BaseController {
-
     /**
      * Display a listing of the resource.
      *
@@ -9,7 +8,11 @@ class ReferenciasController extends \BaseController {
      */
     public function index() {
         $res['data'] = Referencia::All();
-        echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+        $respuesta json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -72,10 +75,14 @@ class ReferenciasController extends \BaseController {
                 }
             }
             $res['data'] = $data;
-            echo json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -102,10 +109,14 @@ class ReferenciasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Referencia::find($parametros['id']);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function show_by_adeudo() {
@@ -117,10 +128,14 @@ class ReferenciasController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Referencia::find($parametros['adeudos_id'])->adeudos();
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -154,10 +169,14 @@ class ReferenciasController extends \BaseController {
                 }
             }
             $res = Referencia::where('id', '=', $parametros['id'])->update($parametros);
-            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     /**
@@ -175,10 +194,14 @@ class ReferenciasController extends \BaseController {
         if (!$validator->fails()) {
             Referencia::destroy($parametros['id']);
             $res['data'] = Referencia::All();
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function leer_archivo_banco() {
@@ -261,10 +284,14 @@ class ReferenciasController extends \BaseController {
             } 
             $res['data'] = $personas;
             Respuesta_bancaria::create($infoarchivo);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta =json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
         }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
     public function traducir() {
         $commond = new Common_functions();
@@ -298,10 +325,14 @@ class ReferenciasController extends \BaseController {
             }
             $ref_temp=$commond->obtener_alumno_idPersona($ref_temp);
             $res=$commond->obtener_periodo_id($ref_temp);
-            return json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $respuesta= json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+            $respuesta= json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }        
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
     /*
     public function show_ingresos() {
