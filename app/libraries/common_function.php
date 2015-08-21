@@ -46,15 +46,19 @@ class Common_functions {
     public function obtener_periodo_id($periodos) {
         $todos = $this->sii->new_request('POST', '/periodos');
         $res = array();
-        if (is_array($periodos)) {
+        if (is_array($periodos) ) {
             foreach ($periodos as $key_periodos => $periodo) {
                 foreach ($todos as $key_todos => $uno) {
-                    if (intval($periodo['periodo']) == intval($uno['idperiodo'])) {
-                        $periodo['periodo'] = $uno['idperiodo'];
-                        $periodo['periodo_descripcion'] = $uno['periodo'];
-                        unset($uno['periodo']);
-                        unset($uno['idperiodo']);
-                        $res[] = array_merge($periodo, $uno);
+                    if (isset($periodo['periodo'])) {
+                        if (intval($periodo['periodo']) == intval($uno['idperiodo'])) {
+                            $periodo['periodo'] = $uno['idperiodo'];
+                            $periodo['periodo_descripcion'] = $uno['periodo'];
+                            unset($uno['periodo']);
+                            unset($uno['idperiodo']);
+                            $res[] = array_merge($periodo, $uno);
+                        }
+                    } else {
+                        $res[]=$periodo;
                     }
                 }
             }

@@ -284,8 +284,13 @@ class ReferenciasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
             foreach ($parametros['referencias'] as $key => $referencia) {
-                //var_dump(strlen($referencia));die();
-                if (strlen($referencia) == 20) {
+                
+                if (strlen($referencia) == 20 || strlen($referencia)==27) {
+
+                    if (strlen($referencia)==27) {
+                        $ref_temp[$key]['convenio'] = substr($referencia, 0, 7);
+                        $referencia=substr($referencia, 7, 20);
+                    }
                     $no_calculada = substr($referencia, 0, 12);
                     $calculada = substr($referencia, 12, 8);
                     $ref_temp[$key]['referencia'] = $referencia;
@@ -305,7 +310,7 @@ class ReferenciasController extends \BaseController {
                     $ref_temp[$key]['status'] = 'Referencia no valida';
                 }
             }
-            $ref_temp = $commond->obtener_alumno_idPersona($ref_temp);
+            #$ref_temp = $commond->obtener_alumno_idPersona($ref_temp);
             $res = $commond->obtener_periodo_id($ref_temp);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
