@@ -4,7 +4,8 @@ class Becas extends \Eloquent {
 
     protected $fillable = [
         'abreviatura', 'created_at', 'id', 'importe',
-        'periodicidades_id', 'subcidios_id', 'tipo_importe_id',
+        #'periodicidades_id', 
+        'subcidios_id', 'tipo_importe_id',
         'tipobeca', 'updated_at', 'descripcion'
     ];
     protected $table = 'becas';

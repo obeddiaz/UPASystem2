@@ -137,7 +137,7 @@ class BecasController extends \BaseController {
     public function show_catalogos() {
 
         $res['data']['tipo_importe'] = Becas::obtenerTipoImporte();
-        $res['data']['periodicidades'] = Becas::obtenerPerodicidades();
+        #$res['data']['periodicidades'] = Becas::obtenerPerodicidades();
         $res['data']['subcidios'] = Becas::obtenerSubcidios();
 
         $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
@@ -223,7 +223,7 @@ class BecasController extends \BaseController {
             'id' => 'required',
             'abreviatura' => '',
             'importe' => 'numeric',
-            'periodicidades_id' => 'integer',
+          #  'periodicidades_id' => 'integer',
             'subcidios_id' => 'integer',
             'tipo_importe_id' => 'integer',
             'descripcion' => '',

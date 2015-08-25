@@ -130,10 +130,10 @@ class Sii {
                 Cache::put($keyToService, $response, $this->minutesToCache);
             } else {
                 $respuesta = json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
-                $final_response = Response::make($respuesta, 200);
-                $final_response->header('Content-Type', "application/json; charset=utf-8");
+                #$final_response = Response::make($respuesta, 200);
+                #$final_response->header('Content-Type', "application/json; charset=utf-8");
 
-                echo  $final_response;
+                echo  $respuesta;
                 die();
             }
         }
