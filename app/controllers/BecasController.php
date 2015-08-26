@@ -79,8 +79,8 @@ class BecasController extends \BaseController {
             foreach ($parametros['id_persona'] as $key => $value) {
                 $array_insert['id_persona'] = $value;
                 $beca = Becas::AlumnoBeca_Persona_Periodo(
-                    array('id_persona' => $id_persona,
-                    'periodo'=>$periodo)); // Consulta beca
+                    array('id_persona' => $value,
+                    'periodo'=>$parametros['periodo'])); // Consulta beca
                 if (!$beca) {
                     Becas::create_beca_alumno($array_insert);
                 }
