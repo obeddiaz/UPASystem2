@@ -54,7 +54,7 @@ return array(
 
 		'mysql' => array(
 			'driver'    => 'mysql',
-			'host'      => 'localhost:8088/',
+			'host'      => '127.0.0.1',
 			'database'  => 'pagos',
 			'username'  => 'root',
 			'password'  => '',
