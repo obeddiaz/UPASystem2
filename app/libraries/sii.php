@@ -108,6 +108,7 @@ class Sii {
 
     public function new_request($type, $service, $datos = null) {
         $this->request = new Request($type);
+        $this->request->proxy =$this->proxy;
         if ($datos && is_array($datos)) {
             $datos = $this->orderParamsToKeyCache($datos);
         }
