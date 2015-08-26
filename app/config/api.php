@@ -6,5 +6,6 @@
 		'url' => "https://api.upa.edu.mx/1",
 		#'url'=>"http://api-local.upa.edu.mx/1",
 		'name' => 'tutoriasv1',
-		'password' => 'DosmilCatorce.2014'
+		'password' => 'DosmilCatorce.2014',
+		'proxy'=> 'http://3.211.64.25:80'
 	);

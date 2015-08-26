@@ -42,6 +42,7 @@ class Sii {
             $this->url = $config["url"];
             $this->name = $config["name"];
             $this->password = $config["password"];
+            $this->proxy=$config['proxy'];
             $curr_user = Session::get('user');
             $this->token = $curr_user['persona']['token'];
             //$this->client = new Buzz\Client\FileGetContents();
@@ -68,6 +69,7 @@ class Sii {
         {
             $content = array("email" => $user, "password" => $password);
             $this->request = new Request("POST");
+            $this->request->proxy =$this->proxy;
             $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
             $this->request->setContent(http_build_query($content));
             $this->request->fromUrl($this->url . "/persona/login");
@@ -129,11 +131,7 @@ class Sii {
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
             } else {
-                $respuesta = json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
-                #$final_response = Response::make($respuesta, 200);
-                #$final_response->header('Content-Type', "application/json; charset=utf-8");
-                header('Content-Type: application/json; charset=utf-8'); 
-                echo  $respuesta;
+                echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
                 die();
             }
         }
