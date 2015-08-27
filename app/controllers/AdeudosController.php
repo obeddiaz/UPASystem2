@@ -148,7 +148,7 @@ class AdeudosController extends \BaseController {
         $adeudos=$commond->get_by_key($parametros['key']);
         $filters=$parametros["filters"];
         if ($adeudos) {
-          Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos,$filters) {
+          Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters) {
             $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
                 $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
             });

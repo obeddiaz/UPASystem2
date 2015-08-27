@@ -131,8 +131,7 @@ class Adeudos extends \Eloquent {
         $query = $Temporaltable
                 ->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
                 ->select($campos_finales);
-        var_dump($query->get());
-        die();
+                
         if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
             $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
                     ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta']);

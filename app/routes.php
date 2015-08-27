@@ -61,6 +61,8 @@ Route::group(array('before' => 'auth'), function() {
                     Route::put('/alumnos/cancelar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update_alumno_desactivar'));
                     Route::delete('/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy'));
                     Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy_alumno'));
+
+                    Route::get('/reporte', array('as' => 'muestra_becas', 'uses' => 'BecasController@reporte'));
                 });
             });
         });
@@ -95,6 +97,8 @@ Route::group(array('before' => 'auth'), function() {
                 Route::get('/subconceptos/actualiza', array('as' => 'muestra_subconcepto', 'uses' => 'Sub_ConceptosController@show'));
                 #   Route::get('/subconceptos/actualiza/subconceptos', array('as' => 'muestra_subconceptos_concepto', 'uses' => 'ConceptosController@show_subconceptos'));
                 Route::post('/subconceptos/agregar', array('as' => 'crear_subconcepto', 'uses' => 'Sub_ConceptosController@create'));
+
+                Route::get('/reporte', array('as' => 'muestra_becas', 'uses' => 'BecasController@reporte'));
                 Route::put('/subconceptos/guardar', array('as' => 'actualizar_valor_subconcepto', 'uses' => 'Sub_ConceptosController@update'));
                 Route::delete('/subconceptos/eliminar', array('as' => 'eliminar_subconcepto', 'uses' => 'Sub_ConceptosController@destroy'));
             });

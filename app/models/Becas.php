@@ -35,10 +35,38 @@ class Becas extends \Eloquent {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $Temporaltable = DB::table('becas_alumno');
         $query = $Temporaltable->select('id_persona', 'status')
-                ->where('idbeca', '=', $data['idbeca'])
-                ->where('idnivel', '=', $data['idnivel'])
                 ->where('periodo', '=', $data['periodo']);
+            if (isset($data['idbeca'])) {
+                $query=$query->where('idbeca', '=', $data['idbeca']);
+            }
+            if (isset($data['idnivel'])) {
+                $query=$query->where('idnivel', '=', $data['idnivel']);
+            }
         return $query->get();
+    }
+
+    public static function obtenerAlumnosBecasCompleto($data) {
+        #DB::setFetchMode(PDO::FETCH_ASSOC);
+        #$Temporaltable = DB::table('becas_alumno');
+        $query = Becas::Select('becas_alumno.*',
+                                        'becas.abreviatura',
+                                        'becas.descripcion',
+                                        'becas.importe',
+                                        'tipo_importe.nombre as tipo')
+                                ->join('becas_alumno', 'becas_alumno.idbeca', '=', 'becas.id')
+                                ->join('tipo_importe','tipo_importe.id','=','becas.tipo_importe_id')
+                                ->where('periodo', '=', $data['periodo']);
+                
+            if (isset($data['idbeca'])) {
+                $query=$query->where('idbeca', '=', $data['idbeca']);
+            }
+            if (isset($data['idnivel'])) {
+                $query=$query->where('idnivel', '=', $data['idnivel']);
+            }
+            if (isset($data['status'])) {
+                $query=$query->where('becas_alumno.status', '=', $data['status']);
+            }
+        return $query->get()->toArray();
     }
 
     public static function create_beca_alumno($data) {

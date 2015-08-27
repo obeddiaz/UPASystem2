@@ -20,7 +20,9 @@
 	<body>
 		<div class="contenedor-mensaje">
 			<h1 class="titulo-mensaje">¡Error!</h1>
-			<h3 class="mensaje-error">Key(reporte) incorrecta o caduca: <?php echo $key; ?></h3>
+			<h3 class="mensaje-error">Datos incompletos o erroneos. <?php if ($isset($key)) {
+				echo "<br/><br/>";echo "Key inexistente o caduca: ";	echo $key;
+			} ?></h3>
 		</div>
 	</body>
 </html>

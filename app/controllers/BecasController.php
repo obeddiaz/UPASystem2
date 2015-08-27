@@ -392,5 +392,31 @@ class BecasController extends \BaseController {
 
         return $final_response;
     }
+    public function reporte() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'periodo'=> 'required|integer',
+            'idbeca' => 'required|numeric',
+            'idnivel' => 'integer',
+            'status' => 'integer'
+        );
 
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $personasBeca = Becas::obtenerAlumnosBecasCompleto($parametros);
+            $becas_info = $commond->obtener_alumno_idPersona($personasBeca);
+            Excel::create('Reporte Becas'.date('Y-m-d'), function($excel) use($becas_info) {
+                $excel->sheet('Adeudos', function($sheet) use($becas_info){
+                    $sheet->loadView('excel.create_excel_becas',array("becas"=>$becas_info));
+                });
+            })->download('xlsx');
+            #$respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            return View::make('excel.error_excel');
+            #$respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+        return $respuesta;
+    }
 }
