@@ -25,6 +25,7 @@ class Sii {
     private $minutesToCache = 20;
 
     public function __construct($config = null) {
+        ini_set('max_execution_time', 300);
         //var_dump($config["url"]);exit
         if (!$config) {
             $config = Config::get('api');
@@ -79,6 +80,7 @@ class Sii {
             
             $content = array("nocuenta" => $user, "password" => $password);
             $this->request = new Request("POST");
+            $this->request->proxy =$this->proxy;
             $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
             $this->request->setContent(http_build_query($content));
             $this->request->fromUrl($this->url . "/persona/login_alumno");
