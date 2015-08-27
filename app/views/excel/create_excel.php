@@ -16,13 +16,17 @@
 			font-size: 20px;
 			background: #05B202;
 		}
+		table th .sprincipal {
+			font-size: 25px;
+			background: #FA5858;
+		}
 		td {
 		  font-size: 12px;
 		}
 	</style>
 	<body>
 	<table >
-		<tr><th id="principal" colspan="3">Reporte de Adeudos</th></tr>
+		<tr><th class="sprincipal" style="background: #FA5858;" colspan="3">Reporte de Adeudos</th></tr>
 		<tr><td>Fecha: </td><td colspan="2"><?php echo  date('d-m-Y'); ?></td></tr>
 		<tr><td>Filtros </td><td colspan="2"> <?php foreach ($filters as $key => $value) {echo trim(str_replace("_"," ",ucfirst($value.', ')),',');} ?> </td> </tr>
 	</table>
