@@ -53,7 +53,7 @@ Route::filter('auth', function()
 {
 	$sii= new Sii();
   if (!Session::has('user')) {
-          return json_encode(array('error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0));
+          return response::json(['error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0]);
   } else {
     $keepalive=$sii->new_request('POST','/niveles');  
   }

@@ -134,6 +134,7 @@ class Sii {
             if (!isset($response['error'])){
                 Cache::put($keyToService, $response, $this->minutesToCache);
             } else {
+                header('Content-Type: application/json; charset=utf-8');
                 echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
                 die();
             }
