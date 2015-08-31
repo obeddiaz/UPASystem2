@@ -121,7 +121,8 @@ class Paquete extends \Eloquent {
                     'sc.id', 'sc.importe', 'scp.fecha_de_vencimiento',
                     'scp.recargo', 'scp.tipo_recargo', 'scp.tipos_pago',
                     'scp.recargo_acumulado' ,'scp.id as idsub_paqueteplan', 
-                    'scp.digito_referencia', 'scp.descripcion_sc','scp.recargo_acumulado'
+                    'scp.digito_referencia', 'scp.descripcion_sc','scp.recargo_acumulado',
+                    'sc.aplica_beca'
                 )
                 ->get();
         return $query;

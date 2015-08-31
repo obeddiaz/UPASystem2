@@ -53,21 +53,15 @@ class AdeudosController extends \BaseController {
     }
 
     public function createSubconcepto() {
-        $parametros = array(
-            'subconcepto_id' => Input::get('subconcepto_id'),
-            'periodo' => Input::get('periodo'),
-            'id_personas' => Input::get('id_personas'),
-            'fecha_limite' => Input::get('fecha_limite'),
-            'tipos_pago' => Input::get('tipos_pago'),
-            'recargo_acumulado' => Input::get('recargo_acumulado')
-        );
+        $parametros = Input::get();
         $reglas = array(
             'subconcepto_id' => 'required|integer',
             'periodo' => 'required|integer',
             'id_personas' => 'required|integer',
             'fecha_limite' => 'date_format:Y-m-d',
             'tipos_pago' => 'required|array',
-            'recargo_acumulado' => 'required|integer'
+            'recargo_acumulado' => 'required|integer',
+            'aplica_beca'   => 'integer'
         );
         $commond = new Common_functions();
         $validator = Validator::make($parametros, $reglas);

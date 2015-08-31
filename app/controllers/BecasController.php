@@ -419,4 +419,35 @@ class BecasController extends \BaseController {
         }
         return $respuesta;
     }
+    public function suspender_beca_mes() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'id_adeudo'=> 'required|integer',
+            'id_persona' => 'required|integer',
+            'periodo' => 'required|integer'
+            'aplica_beca' => 'required|integer'
+        );
+
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            if ($parametros['aplica_beca']==0) {
+                $data['aplica_recargo']=0;
+                $data['aplica_beca']=$parametros['aplica_beca'];
+            } else {
+                $data['aplica_recargo']=1;
+                $data['aplica_beca']=$parametros['aplica_beca'];
+            }
+            Adeudos::where('id', '=', $parametros['id_adeudo'])->update($data);
+            $res['data'] = Adeudos::obtener_adeudos_alumno(array('id_persona'=>$parametros['id_persona'],'periodo'=>$parametros['periodo']));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        }   else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
 }

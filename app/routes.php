@@ -63,6 +63,7 @@ Route::group(array('before' => 'auth'), function() {
                     Route::delete('/alumnos/eliminar', array('as' => 'eliminar_becas', 'uses' => 'BecasController@destroy_alumno'));
 
                     Route::get('/reporte', array('as' => 'muestra_becas', 'uses' => 'BecasController@reporte'));
+                    Route::get('/suspender_mes', array('as' => 'muestra_becas', 'uses' => 'BecasController@suspender_beca_mes'));
                 });
             });
         });

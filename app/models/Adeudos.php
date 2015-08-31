@@ -7,7 +7,8 @@ class Adeudos extends \Eloquent {
         'importe', 'periodo', 'status_adeudo',
         'sub_concepto_id', 'grado', 'recargo',
         'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id',
-        'digito_referencia', 'descripcion_sc', 'recargo_acumulado'];
+        'digito_referencia', 'descripcion_sc', 'recargo_acumulado',
+        'aplica_beca','aplica_recargo'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -80,7 +81,8 @@ class Adeudos extends \Eloquent {
                 "grado" => $grado,
                 "status_adeudo" => 0,
                 "descripcion_sc" => $subconcepto->descripcion_sc,
-                "recargo_acumulado" => $subconcepto->recargo_acumulado
+                "recargo_acumulado" => $subconcepto->recargo_acumulado,
+                "aplica_beca" => $subconcepto->aplica_beca
             );
             $adeudo = Adeudos::create($adeudo);
             //  Se gnera el registro de los tipos de pago que tendra el adeudo
@@ -151,7 +153,7 @@ class Adeudos extends \Eloquent {
         $query = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
                 ->where("adeudos.id_persona", "=", $data['id_persona'])
                 ->where("adeudos.periodo", "=", $data['periodo'])
-                ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+                ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'adeudos.aplica_beca', 'sc.sub_concepto')
                 ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data); // Consulta beca
 
@@ -206,7 +208,11 @@ class Adeudos extends \Eloquent {
                         Becas::update_status_beca_alumno($databeca);
                         $tiene_beca = FALSE;
                     }
-                    $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
+                    if ($adeudo['aplica_recargo']==1) {
+                        $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
+                    } else {
+                        $recargo = 0;
+                    }
                     if ($adeudo['recargo_acumulado'] == 1) {
                         $recargo*= $query[$key]['meses_retraso'];
                     }
@@ -228,7 +234,11 @@ class Adeudos extends \Eloquent {
                 }
                 if ($query[$key]['meses_retraso'] > 0) {
                     $query[$key]['beca'] = 'N/A';
-                    $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
+                    if ($adeudo['aplica_recargo']==1) {
+                        $recargo = $commond->calcular_importe_por_tipo($adeudo['importe'], $adeudo['recargo'], $adeudo['tipo_recargo']);
+                    } else {
+                        $recargo = 0;
+                    }
                     if ($adeudo['recargo_acumulado'] == 1) {
                         $recargo*= $query[$key]['meses_retraso'];
                     }

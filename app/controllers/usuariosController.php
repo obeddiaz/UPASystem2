@@ -51,7 +51,6 @@ class UsuariosController extends \BaseController {
 
         if (!$validator->fails()) {
             $user = $sii->login($parametros['u'], $parametros['p']);
-
             if (isset($user['error'])) {
                 $respuesta= json_encode(array('error' => true, 'mensaje' => 'User or password Incorrect', 'respuesta' => ''));
             } else {
