@@ -8,7 +8,7 @@ class Adeudos extends \Eloquent {
         'sub_concepto_id', 'grado', 'recargo',
         'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id',
         'digito_referencia', 'descripcion_sc', 'recargo_acumulado',
-        'aplica_beca','aplica_recargo'];
+        'aplica_beca','aplica_recargo','locker_manager'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -83,6 +83,7 @@ class Adeudos extends \Eloquent {
                 "descripcion_sc" => $subconcepto->descripcion_sc,
                 "recargo_acumulado" => $subconcepto->recargo_acumulado,
                 "aplica_beca" => $subconcepto->aplica_beca
+                'locker_manager' => $subconcepto->locker_manager
             );
             $adeudo = Adeudos::create($adeudo);
             //  Se gnera el registro de los tipos de pago que tendra el adeudo
@@ -160,7 +161,7 @@ class Adeudos extends \Eloquent {
         $now = strtotime('now'); // Se obtiene la fecha actual
         $daynow = date('d', $now); // Dia actual
         $sub_cont = array(); // Contador de adeudos
-
+        $look=false;
         foreach ($query as $key => $adeudo) { // Se genera la informacion para el Edo. de cuenta del alumno
             $query[$key]['tipos_pago'] = Adeudos_tipopago::where('adeudos_id', '=', $adeudo['id'])->get();
             $query[$key]['importe_inicial'] = $query[$key]['importe'];
@@ -198,6 +199,9 @@ class Adeudos extends \Eloquent {
                     $query[$key]['recargo_total'] = 0;
                 }
                 if ($query[$key]['meses_retraso'] > 0) {
+                    if ($adeudo['locker_manager']==1) {
+                        $look=true;
+                    }
                     $query[$key]['beca'] = 'N/A';
                     if ($tiene_beca) {
                         $databeca = array(
@@ -223,9 +227,15 @@ class Adeudos extends \Eloquent {
                     $query[$key]['importe']-=$beca;
                     $query[$key]['beca'] = $beca;
                 }
+                if ($look==true) {
+                    $query[$key]['look'] = 1;   
+                } else {
+                    $query[$key]['look'] = 0;   
+                }
             } else {
                 $pago = strtotime($adeudo['fecha_pago']);
                 $fecha_pago = date('d', $pago);
+                $query[$key]['look'] = 0;
                 if ($fecha_pago > $day) {
                     $query[$key]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
                 }
