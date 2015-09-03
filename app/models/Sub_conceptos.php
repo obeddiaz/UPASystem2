@@ -2,7 +2,8 @@
 
 class Sub_conceptos extends \Eloquent {
 
-    protected $fillable = ['id', 'descripcion', 'sub_concepto', 'conceptos_id', 'importe', 'periodo', 'nivel_id','tipo_adeudo','locker_manager'];
+    protected $fillable = ['id', 'descripcion', 'sub_concepto', 'conceptos_id', 
+    						'importe', 'periodo', 'nivel_id','tipo_adeudo','locker_manager','aplica_beca'];
     protected $table = 'sub_conceptos';
     protected $table_plandepagos = "subconcepto_plandepago";
     protected $table_tipopago = "subconcepto_tipopago";

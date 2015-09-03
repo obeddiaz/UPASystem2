@@ -38,6 +38,7 @@ class AdeudosController extends \BaseController {
                 $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
                                 ->where('periodo', '!=', $periodo_actual['idperiodo'])
                                 ->where('status_adeudo', '=', 0)->count();
+
                 if ($adeudos_no_pagados == 0) {
                     Adeudos::agregar_adeudos($alumno);
                 }

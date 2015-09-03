@@ -111,13 +111,14 @@ class Planes_de_pagoController extends \BaseController {
                 $res['data'] = Paquete::personasPaquete($paquete['id']);
                 if ($res['data'] || !empty($res['data'])) {
                     $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+                    $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
                 } else {
                     $res['data'] = array();
+                    $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
                 }
             } else {
                 $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -143,13 +144,14 @@ class Planes_de_pagoController extends \BaseController {
                 $res['data'] = Paquete::personasPaquete($paquete['id']);
                 if ($res['data'] || !empty($res['data'])) {
                     $res['data'] = $commond->obtener_alumno_No_idPersona($res['data']);
+                    $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
                 } else {
                     $res['data'] = array();
+                    $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
                 }
             } else {
                 $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -173,10 +175,10 @@ class Planes_de_pagoController extends \BaseController {
             if ($paquete || !empty($paquete)) {
                 $res['paquete'] = $paquete;
                 $res['data'] = Planes_de_pago::sub_conceptos(array('id' => $paquete['id']));
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
             } else {
                 $respuesta = json_encode(array('error' => true, 'mensaje' => 'No existe paquete en periodo actual.', 'respuesta' => null));
             }
-            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }

@@ -425,7 +425,7 @@ class BecasController extends \BaseController {
         $reglas = array(
             'id_adeudo'=> 'required|integer',
             'id_persona' => 'required|integer',
-            'periodo' => 'required|integer'
+            'periodo' => 'required|integer',
             'aplica_beca' => 'required|integer'
         );
 

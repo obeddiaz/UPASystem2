@@ -82,8 +82,8 @@ class Adeudos extends \Eloquent {
                 "status_adeudo" => 0,
                 "descripcion_sc" => $subconcepto->descripcion_sc,
                 "recargo_acumulado" => $subconcepto->recargo_acumulado,
-                "aplica_beca" => $subconcepto->aplica_beca
-                'locker_manager' => $subconcepto->locker_manager
+                "aplica_beca" => $subconcepto->aplica_beca,
+                "locker_manager" => $subconcepto->locker_manager
             );
             $adeudo = Adeudos::create($adeudo);
             //  Se gnera el registro de los tipos de pago que tendra el adeudo
