@@ -49,7 +49,6 @@ class Paquete extends \Eloquent {
             }
         }
         foreach ($data['sub_concepto'] as $subconcepto) {
-            #var_dump($data);die();
             $table = DB::table(Paquete::$subconceptos_paquete);
             $data_subconcepto = array( // Crea el array para generar el adeudo
                 "sub_concepto_id" => $subconcepto['id'],
@@ -79,7 +78,7 @@ class Paquete extends \Eloquent {
                         "paquete_id" => $data['paquete_id'],
                         "digito_referencia" => $subconcepto['digito_referencia'],
                         "descripcion_sc" => $subconcepto['descripcion_sc'],
-                        "recargo_acumulado"=> $data['recargo_acumulado']
+                        "recargo_acumulado"=> $subconcepto['recargo_acumulado']
                     ));
                     foreach ($data['tipos_pago'] as $key => $value) {
                         $adeudo_tipopago['adeudos_id'] = $adeudo['id'];

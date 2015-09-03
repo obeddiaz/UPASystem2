@@ -161,7 +161,7 @@ class Adeudos extends \Eloquent {
         $now = strtotime('now'); // Se obtiene la fecha actual
         $daynow = date('d', $now); // Dia actual
         $sub_cont = array(); // Contador de adeudos
-        $look=false;
+        $lock=false;
         foreach ($query as $key => $adeudo) { // Se genera la informacion para el Edo. de cuenta del alumno
             $query[$key]['tipos_pago'] = Adeudos_tipopago::where('adeudos_id', '=', $adeudo['id'])->get();
             $query[$key]['importe_inicial'] = $query[$key]['importe'];
@@ -200,7 +200,7 @@ class Adeudos extends \Eloquent {
                 }
                 if ($query[$key]['meses_retraso'] > 0) {
                     if ($adeudo['locker_manager']==1) {
-                        $look=true;
+                        $lock=true;
                     }
                     $query[$key]['beca'] = 'N/A';
                     if ($tiene_beca) {
@@ -227,15 +227,15 @@ class Adeudos extends \Eloquent {
                     $query[$key]['importe']-=$beca;
                     $query[$key]['beca'] = $beca;
                 }
-                if ($look==true) {
-                    $query[$key]['look'] = 1;   
+                if ($lock==true) {
+                    $query[$key]['lock'] = 1;   
                 } else {
-                    $query[$key]['look'] = 0;   
+                    $query[$key]['lock'] = 0;   
                 }
             } else {
                 $pago = strtotime($adeudo['fecha_pago']);
                 $fecha_pago = date('d', $pago);
-                $query[$key]['look'] = 0;
+                $query[$key]['lock'] = 0;
                 if ($fecha_pago > $day) {
                     $query[$key]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
                 }
