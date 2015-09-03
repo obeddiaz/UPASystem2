@@ -62,7 +62,8 @@ class AdeudosController extends \BaseController {
             'fecha_limite' => 'date_format:Y-m-d',
             'tipos_pago' => 'required|array',
             'recargo_acumulado' => 'required|integer',
-            'aplica_beca'   => 'integer'
+            'aplica_beca'   => 'integer',
+            'aplica_recargo' => 'integer'
         );
         $commond = new Common_functions();
         $validator = Validator::make($parametros, $reglas);
