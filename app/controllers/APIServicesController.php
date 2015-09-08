@@ -128,6 +128,44 @@ class APIServicesController extends \BaseController {
 
         return $final_response;
     }
+    public function alumnos_todos_matricula() {
+        $res['data'] = array();
+        $selected= Config::get('matriculas');
+
+        try {
+            $alumnos = $this->sii->new_request('POST', '/alumnos/all/persona');
+            foreach ($selected as $key => $value) {
+                foreach ($alumnos as $key_alumno => $alumno) {
+    
+                    if ($value == $alumno['matricula']) {
+                        $res['data'][$key]['matricula']=$value;
+                        $res['data'][$key]['idpersonas']=$alumno['idpersonas'];
+                        break;
+                    } else {
+                        $res['data'][$key]['matricula']=$value;
+                        $res['data'][$key]['idpersonas']='0';
+                    }
+                }
+            }
+
+            if (isset($res['data']) && !isset($res['data']['error'])) {
+                $filters=array('idpersonas','matricula');
+                Excel::create('Reporte'.date('Y-m-d'), function($excel) use($res,$filters) {
+                    $excel->sheet('Hoja 1', function($sheet) use($res,$filters){
+                        $sheet->loadView('excel.create_excel_global',array("data"=>$res['data'],"filters"=>$filters));
+                    });
+                })->download('xlsx');
+            } else {
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+            }
+        } catch (Exception $e) {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Algo esta mal con el servico.', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
 
     public function grupos() {
         $res['data'] = array();
