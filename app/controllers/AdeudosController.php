@@ -143,7 +143,28 @@ class AdeudosController extends \BaseController {
       } else {
         $adeudos=$commond->get_by_key($parametros['key']);
         $filters=$parametros["filters"];
+        $data=array();
         if ($adeudos) {
+            /*
+            foreach ($adeudos['data']['alumnos'] as $key => $adeudo) {
+                #echo "<pre>";print_r($adeudo);echo "</pre>"; die();
+                if (!isset($data['periodo'])) {
+                    $data['periodo'][]=$adeudo['idperiodo'];
+                }   else {
+                    foreach ($data['periodo'] as $key => $periodo) {
+                        if ($periodo==$adeudo['idperiodo']) {
+                            if (isset($periodo['subconceptos'])) {
+                                # code...
+                            }   else {
+
+                            }
+                        }   else {
+                            $data['periodo'][]=$adeudo['idperiodo'];        
+                        }
+                    }
+                }
+            }
+            */
           Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters) {
             $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
                 $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
@@ -274,6 +295,7 @@ class AdeudosController extends \BaseController {
     }
 
     public function show_adeudos_reporte() {
+        ini_set('max_execution_time', 300);
         $commond = new Common_functions();
         $parametros = Input::get();
         $reglas = array(

@@ -131,9 +131,10 @@ class APIServicesController extends \BaseController {
     public function alumnos_todos_matricula() {
         $res['data'] = array();
         $selected= Config::get('matriculas');
-
-        try {
+        
             $alumnos = $this->sii->new_request('POST', '/alumnos/all/persona');
+            var_dump($alumnos[0]);die();
+        try {
             foreach ($selected as $key => $value) {
                 foreach ($alumnos as $key_alumno => $alumno) {
     

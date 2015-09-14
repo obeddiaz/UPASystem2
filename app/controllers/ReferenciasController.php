@@ -74,6 +74,7 @@ class ReferenciasController extends \BaseController {
                                     'cuentas_id' => $cuentas['id']
                         ));
                     }
+                    $data['adeudo_info']=Adeudos::obtener_adeudos_id($value['id']);
                 }
             }
             $res['data'] = $data;
