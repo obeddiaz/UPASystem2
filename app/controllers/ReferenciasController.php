@@ -59,6 +59,8 @@ class ReferenciasController extends \BaseController {
                     $data['referencias'][$key]['referencia'] = $libereriaReferencia->Generar($referencia, $value['importe'], $fecha_limite);
                     $data['referencias'][$key]['importe'] = json_decode($value['importe']);
                     $data['referencias'][$key]['sub_concepto'] = $subconcepto['sub_concepto'];
+                    $data['referencias'][$key]['sub_concepto'] = $subconcepto['descripcion'];
+
                     $data['importe_total']+=$value['importe'];
                     $data['fecha_limite'] = $fecha_limite;
                     $data['periodo'] = $value['periodo'];
@@ -74,8 +76,6 @@ class ReferenciasController extends \BaseController {
                                     'cuentas_id' => $cuentas['id']
                         ));
                     }
-                    $data['adeudo_info']=Adeudos::obtener_adeudos_id($value['id']);
-                    $data['sub_concepto']=Sub_conceptos::find($value['sub_concepto_id']);
                 }
             }
             $res['data'] = $data;
