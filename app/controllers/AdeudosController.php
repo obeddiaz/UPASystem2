@@ -145,26 +145,45 @@ class AdeudosController extends \BaseController {
         $filters=$parametros["filters"];
         $data=array();
         if ($adeudos) {
-            /*
+        
             foreach ($adeudos['data']['alumnos'] as $key => $adeudo) {
-                #echo "<pre>";print_r($adeudo);echo "</pre>"; die();
+                
                 if (!isset($data['periodo'])) {
-                    $data['periodo'][]=$adeudo['idperiodo'];
-                }   else {
-                    foreach ($data['periodo'] as $key => $periodo) {
-                        if ($periodo==$adeudo['idperiodo']) {
-                            if (isset($periodo['subconceptos'])) {
-                                # code...
-                            }   else {
+                  $data['periodo']=array();
+                  $data['periodo'][]=array($adeudo['idperiodo']);  
 
-                            }
-                        }   else {
-                            $data['periodo'][]=$adeudo['idperiodo'];        
-                        }
+                }   else {
+                  foreach ($data['periodo'] as $key => $periodo) {
+                    if ($periodo!=$adeudo['idperiodo']) {
+                        $data['periodo'][]=$adeudo['idperiodo'];        
                     }
+                  }
+                }
+                foreach ($data['periodo'] as $key_p => $periodo) {
+                  if (!isset($data['periodo'][$key_p]['subconceptos'])) { 
+                    #var_dump($data['periodo'][$key_p]);die();
+                    $data['periodo'][$key_p][]=array();
+                    foreach ($adeudo['adeudos'] as $key_a => $value) {
+                        $data['periodo'][$key]['subconceptos']=array(
+                          'sub_concepto'=>$value['sub_concepto'],
+                          'descripcion_sc'=>$value['descripcion_sc']
+                        );
+                    }
+                  }   else {
+                      foreach ($data['periodo'][$key_p]['subconceptos'] as $key_s => $subconceptos) {   
+                          foreach ($adeudo['adeudos'] as $key_a => $value) {
+                              if ($subconceptos['sub_concepto']!=$value['sub_concepto']) {
+                                  $data['periodo'][$key_p]['subconceptos'][]=array(
+                                      'sub_concepto'=>$value['sub_concepto'],
+                                      'descripcion_sc'=>$value['descripcion_sc']
+                                  );   
+                              }
+                          }    
+                      }
+                  }
                 }
             }
-            */
+            echo "<pre>";print_r($adeudo);echo "</pre>"; die();
           Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters) {
             $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
                 $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
