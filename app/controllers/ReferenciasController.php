@@ -75,6 +75,7 @@ class ReferenciasController extends \BaseController {
                         ));
                     }
                     $data['adeudo_info']=Adeudos::obtener_adeudos_id($value['id']);
+                    $data['sub_concepto']=Sub_conceptos::find($value['sub_concepto_id']);
                 }
             }
             $res['data'] = $data;
