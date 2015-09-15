@@ -145,7 +145,7 @@ class AdeudosController extends \BaseController {
         $filters=$parametros["filters"];
         $data=array();
         if ($adeudos) {
-        
+        /*
             foreach ($adeudos['data']['alumnos'] as $key => $adeudo) {
                 
                 if (!isset($data['periodo'])) {
@@ -182,8 +182,8 @@ class AdeudosController extends \BaseController {
                       }
                   }
                 }
-            }
-            echo "<pre>";print_r($adeudo);echo "</pre>"; die();
+            }*/
+            #echo "<pre>";print_r($adeudo);echo "</pre>"; die();
           Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters) {
             $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
                 $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
