@@ -230,19 +230,43 @@ class ReferenciasController extends \BaseController {
             foreach ($data_file['referencias'] as $key => $value) {
                 $adeudo = Referencia::with('adeudos')
                                 ->where('referencia', '=', $value['referencia'])->first();
+
                 if ($adeudo && !empty($adeudo)) {
-                    #echo json_encode($adeudo['adeudos']['status_adeudo']);die();
+                    $adeudo_up = Adeudos::obtener_adeudos_alumno(array(
+                        'id' => $adeudo['adeudos']['id'],
+                        'fecha_pago' => $value['fecha_de_pago'],
+                        'id_persona' => $adeudo['id_persona'],
+                        'periodo' => $adeudo['periodo']
+                    ));
                     $referencia_info = Referencia::where('referencia', '=', $value['referencia'])->first();
-                    if ($value['importe'] >= $adeudo['adeudos']['importe']) {
+                    if ($value['importe'] >= $adeudo_up[0]['importe']) {
+                        if ($adeudo_up[0]['beca']=="N/A") {
+                            $adeudo_up[0]['beca']=0;
+                        }
+                        if ($value['importe'] >= (intval($adeudo_up[0]['importe']) + 100)) {
+                            Devoluciones::create(array(
+                                'periodo' => $adeudo['adeudo']['periodo'],
+                                'fecha_devolucion' => date('Y-m-d'),
+                                'importe' => $adeudo_up[0]['importe'] - $value['importe'],
+                                'id_persona' => $id_persona,
+                                'status_devolucion' => 0
+                            ));   
+                        }
                         Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
                                 array(
+                                    'beca_pago' => $adeudo_up[0]['beca'],
+                                    'recargo_pago' => $adeudo_up[0]['recargo_total'],
+                                    'importe_pago' => $adeudo_up[0]['importe'],
                                     'status_adeudo' => 1,
                                     'fecha_pago' => $value['fecha_de_pago']
                         ));
                     } else {
                         Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
                                 array(
-                                    'importe' => floatval(floatval($value['importe'] - $adeudo['importe'])),
+                                    'beca_pago' => $adeudo_up[0]['beca'],
+                                    'recargo_pago' => $adeudo_up[0]['recargo_total'],
+                                    'importe_pago' => $adeudo_up[0]['importe'],
+                                    'importe' => floatval(floatval($value['importe'] - $adeudo_up[0]['importe'])),
                                     'fecha_pago' => $value['fecha_de_pago']
                         ));
                     }

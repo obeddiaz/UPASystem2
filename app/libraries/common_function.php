@@ -279,6 +279,154 @@ class Common_functions {
         }
     }
 
+    public function parseAdeudos($adeudos,$data=array()) {
+        foreach ($adeudos['data']['alumnos'] as $key_a => $adeudo) {
+              foreach ($adeudo['adeudos'] as $key_sa => $sub_adeudo) {
+                if (!isset($data['periodos'])) {
+                  $data['periodos'][]=array('periodo'=>$sub_adeudo['periodo']);
+                } else {
+                  $check=false;
+                  foreach ($data['periodos'] as $key => $value) {
+                    if (intval($value['periodo'])!=intval($sub_adeudo['periodo'])) {
+                      $check=true;
+                    } else {
+                      $check=false;
+                      break;
+                    }
+                  }       
+                  if ($check==true) {
+                    $data['periodos'][]=array('periodo'=> $sub_adeudo['periodo']);
+                  }
+                }
+                foreach ($data['periodos'] as $key_p => $periodo) {
+                    if (isset($periodo['subconceptos'])) {
+                        $check_s=false;
+                        foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                            if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
+                                if (intval($sub_adeudo['sub_concepto_id'])==intval($sc['sub_concepto_id'])) {
+                                    $check_s=false;
+                                    break;
+                                } else {
+                                    $check_s=true;
+                                }
+                            }   else {
+                                break;
+                            }
+                        }   
+                        if ($check_s==true) {
+                            $data['periodos'][$key_p]['subconceptos'][]=array(
+                                'sub_concepto'=>$sub_adeudo['sub_concepto'],
+                                'sub_concepto_id'=>$sub_adeudo['sub_concepto_id']
+                            );
+                        }
+                    } else {
+                        $data['periodos'][$key_p]['subconceptos'][]=array(
+                            'sub_concepto'=>$sub_adeudo['sub_concepto'],
+                            'sub_concepto_id'=>$sub_adeudo['sub_concepto_id']
+                        );
+                    }
+                }
+
+                $descuentos=DB::table('descuentos')
+                            ->where('adeudos_id','=',$sub_adeudo['id'])
+                            ->Select(DB::raw("ifnull(SUM(importe),0) as descuento"))
+                            ->first();
+                if (!isset($descuentos->descuento)) {
+                    $descuento=0;
+                } else {
+                    $descuento=$descuentos->descuento;
+                }
+                $now = strtotime('now'); // Se obtiene la fecha actual
+                $daynow = date('d', $now); // Dia actual
+                $fecha_limite = strtotime($sub_adeudo['fecha_limite']);
+                $day = date('d', $fecha_limite);
+                if ($daynow > $day) {
+                    $sub_adeudo['meses_retraso'] = $sub_adeudo['meses_retraso'] + 1;
+                }
+
+                //verifica si tiene beca
+                $tiene_beca=Becas::AlumnoBeca_Persona_Periodo(array('id_persona'=>$adeudo['id_persona'],'periodo'=>$sub_adeudo['periodo'])); // Consulta beca
+                if ($tiene_beca) {
+                    if ($sub_adeudo['aplica_beca']==1 ) { // Verifica si al adeudo le aplica beca
+                        //Si aplica beca la calcula, ya que puede ser por pocentaje o importe fijo
+                        $beca = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
+                    } else {
+                        $beca = 0;
+                    }
+                }   else {
+                    $beca=0;
+                }
+                if ($sub_adeudo['meses_retraso'] <= 0) { // si no se atrazo respeta beca y no genera adeudo
+                    $recargo_total = 0;
+                }
+                if ($sub_adeudo['meses_retraso'] > 0) { // Si se atrazo con un pago genera adeudo y quitara beca
+                    if ($sub_adeudo['aplica_recargo']==1) {
+                        //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
+                        $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
+                        $recargo_total=$recargo*$sub_adeudo['meses_retraso'];
+                    } else {
+                        $recargo = 0;
+                    }
+                    Becas::update_status_beca_alumno(array('id_persona'=>$adeudo['id_persona'],
+                                                           'periodo'=>$sub_adeudo['periodo'],
+                                                           'status'=> 0)); // Cancelar Beca en periodo 
+                    $beca=0;
+                }
+
+                $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
+                foreach ($data['periodos'] as $key_p => $periodo) {
+                    foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                        if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
+                            #echo "<pre>" ;var_dump($sub_adeudo);echo "</pre>";die();
+                                if (intval($sub_adeudo['sub_concepto_id'])==intval($sc['sub_concepto_id'])) {
+                                    if ($sub_adeudo['status_adeudo']==1) {
+                                            $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
+                                                'matricula'=>$adeudo['matricula'],
+                                                'nombre'=>$adeudo['nom'],
+                                                'apellido paterno'=>$adeudo['appat'],
+                                                'apellido materno'=>$adeudo['apmat'],
+                                                'carrera' => $adeudo['carrera'],
+                                                'importe'=>$sub_adeudo['importe'],
+                                                'recargo'=>$recargo_total,
+                                                'beca'=>$sub_adeudo['beca_pago'],
+                                                'descuento' =>$descuento,
+                                                'total' => $sub_adeudo['importe_pago'],
+                                                'fecha_limite' => $sub_adeudo['fecha_limite'],
+                                                'fecha_pago' => $sub_adeudo['fecha_pago']
+                                            );
+                                    } else {
+                                        $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
+                                                'matricula'=>$adeudo['matricula'],
+                                                'nombre'=>$adeudo['nom'],
+                                                'apellido paterno'=>$adeudo['appat'],
+                                                'apellido materno'=>$adeudo['apmat'],
+                                                'carrera' => $adeudo['carrera'],
+                                                'importe'=>$sub_adeudo['importe'],
+                                                'recargo'=>$recargo_total,
+                                                'beca'=>$beca,
+                                                'descuento'=>$descuento,
+                                                'total'=> $total_adeudo,
+                                                'fecha_limite'=>$sub_adeudo['fecha_limite']
+                                            );
+                                    }
+                                }
+                        }
+                    }
+                }
+              }
+            }
+
+        foreach ($data['periodos'] as $key_p => $periodo) {
+            foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                $total=0;
+                foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
+                    $total=$value_ai['total'] + $total; 
+                }
+                $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']=$total;
+            }
+        }
+        return $data;
+    }
 }
 
 ?>
