@@ -203,11 +203,10 @@ class AdeudosController extends \BaseController {
               );                           
               
               foreach ($adeudos['periodos'] as $key_p => $periodo) {
-                  $c_p=0;
-                  
-                  
+                  $c_p=0;                  
                   foreach ($periodo['subconceptos'] as $key_s => $sc) {
                       $c_s=0;
+                      $persona_ant="0";
                       foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
                         if ($c_p==0) {
                           $data_excel[]=array(
@@ -257,20 +256,37 @@ class AdeudosController extends \BaseController {
                                   $value_ai['total']
                                 );
                               } else {
-                                $data_excel[]=array(
-                                  "",
-                                  "",
-                                  $value_ai['clave'],
-                                  $value_ai['matricula'],
-                                  $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
-                                  $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
-                                  1,
-                                  $value_ai['importe'],
-                                  $value_ai['recargo'],
-                                  $value_ai['beca'],
-                                  $value_ai['descuento'],
-                                  $value_ai['total']
-                                );
+                                if (intval($persona_ant)==intval($value_ai['clave'])) {
+                                  $data_excel[]=array(
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
+                                    1,
+                                    $value_ai['importe'],
+                                    $value_ai['recargo'],
+                                    $value_ai['beca'],
+                                    $value_ai['descuento'],
+                                    $value_ai['total']
+                                  );
+                                } else {
+                                  $data_excel[]=array(
+                                    "",
+                                    "",
+                                    $value_ai['clave'],
+                                    $value_ai['matricula'],
+                                    $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
+                                    $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
+                                    1,
+                                    $value_ai['importe'],
+                                    $value_ai['recargo'],
+                                    $value_ai['beca'],
+                                    $value_ai['descuento'],
+                                    $value_ai['total']
+                                  );
+                                }
                               }
                             }
                         }
