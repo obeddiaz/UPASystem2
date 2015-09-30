@@ -120,8 +120,6 @@ class AdeudosController extends \BaseController {
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
         return $final_response;
-        //return json_encode(Adeudos::$custom_data["paquete"]);
-        //return json_encode(array("paquete" => $paquete, "subconcepto" => $subconceptos));
     }
 
     public function create_reporte_key() {
@@ -142,18 +140,71 @@ class AdeudosController extends \BaseController {
 
         return $final_response;
       } else {
-        
         $adeudos=$commond->get_by_key($parametros['key']);
 #        echo "<pre>";print_r($adeudos);echo "</pre>"; die();
         $filters=$parametros["filters"];
         if ($adeudos) {
           $adeudos=$commond->parseAdeudos($adeudos);
-          echo "<pre>";print_r($adeudos);echo "</pre>"; die();
-          Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters) {
-            $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters){
-                $sheet->loadView('excel.create_excel',array("adeudos"=>$adeudos['data'],"filters"=>$filters));
+          #echo "<pre>";print_r($adeudos);echo "</pre>"; die();
+          $meses=array('Enero', 'Febrero', 'Marzo','Abril', 'Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre');
+          Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters,$meses) {
+            $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters,$meses){
+              #$sheet->loadView('excel.create_excel_parseado',array("adeudos"=>$adeudos,"filters"=>$filters,"meses"=>$meses));
+              $sheet->setStyle(array(
+                  'font' => array(
+                      'name'      =>  'Arial',
+                      'size'      =>  10,
+                      'bold'      =>  false
+                  )
+              ));
+              $sheet->cells('G1:G2', function($cells) {
+                $cells->setBackground('#0000CD');
+                $cells->setFontColor('#ffffff');
+                $cells->setFontFamily('Arial');
+                $cells->setFontSize(10);
+                $cells->setBorder(array(
+                    'borders' => array(
+                        'top'   => array(
+                            'style' => 'solid'
+                        ),
+                    )
+                ));
+                $cells->setAlignment('left');  
+                $cells->setValignment('middle');
+                $cells->setFontWeight('bold');
+                  // manipulate the range of cells
+              });
+              $sheet->cells('A6:L6', function($cells) {
+                $cells->setBackground('#0000CD');
+                $cells->setFontColor('#ffffff');
+                $cells->setFontFamily('Arial');
+                $cells->setFontSize(10);
+                $cells->setBorder(array(
+                    'borders' => array(
+                        'top'   => array(
+                            'style' => 'solid'
+                        ),
+                    )
+                ));
+                $cells->setAlignment('left');  
+                $cells->setValignment('middle');
+                $cells->setFontWeight('bold');
+                  // manipulate the range of cells
+              });
+              $data['titulos_fechas_actuales']=array(
+                                          array("Año"),
+                                          array("Mes"),
+                                          array(""),
+                                          array(date('Y',strtotime('now'))),
+                                          array($meses[date('m', strtotime('now'))-1])
+                                        );                                          
+              $data['titulos_adeudos']=array(array("Periodo","Sub Concepto","Clave","Matricula",
+                                             "Alumno","Mes","Alumnos","Importe","Recargos",
+                                             "Beca","Descuentos","Total"));
+              $sheet->fromArray($data['titulos_fechas_actuales'], null, 'G1', false,false);
+              $sheet->fromArray($data['titulos_adeudos'], null, 'A6', false,false);
             });
-          })->download('xlsx');
+          })->download('xls');
         } else {
           return View::make('excel.error_excel')->with('key', $parametros['key']);
         }
