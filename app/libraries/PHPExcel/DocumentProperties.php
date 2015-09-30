@@ -134,6 +134,7 @@ class PHPExcel_DocumentProperties
     public function __construct()
     {
         // Initialise values
+        ini_set('max_execution_time', 300);
         $this->_lastModifiedBy    = $this->_creator;
         $this->_created        = time();
         $this->_modified    = time();

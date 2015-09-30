@@ -146,7 +146,7 @@ class AdeudosController extends \BaseController {
         if ($adeudos) {
           $adeudos=$commond->parseAdeudos($adeudos);
           #echo "<pre>";print_r($adeudos);echo "</pre>"; die();
-          $meses=array('Enero', 'Febrero', 'Marzo','Abril', 'Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre');
+          $meses=array('Enero', 'Febrero', 'Marzo','Abril','Mayo','Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre');
           Excel::create('Reporte Adeudos'.date('Y-m-d'), function($excel) use($adeudos,$filters,$meses) {
             $excel->sheet('Adeudos', function($sheet) use($adeudos,$filters,$meses){
               #$sheet->loadView('excel.create_excel_parseado',array("adeudos"=>$adeudos,"filters"=>$filters,"meses"=>$meses));
@@ -191,18 +191,99 @@ class AdeudosController extends \BaseController {
                 $cells->setFontWeight('bold');
                   // manipulate the range of cells
               });
-              $data['titulos_fechas_actuales']=array(
-                                          array("Año"),
-                                          array("Mes"),
-                                          array(""),
-                                          array(date('Y',strtotime('now'))),
-                                          array($meses[date('m', strtotime('now'))-1])
-                                        );                                          
-              $data['titulos_adeudos']=array(array("Periodo","Sub Concepto","Clave","Matricula",
-                                             "Alumno","Mes","Alumnos","Importe","Recargos",
-                                             "Beca","Descuentos","Total"));
-              $sheet->fromArray($data['titulos_fechas_actuales'], null, 'G1', false,false);
-              $sheet->fromArray($data['titulos_adeudos'], null, 'A6', false,false);
+              $data_excel=array(
+                          array("","","","","","","Año"),
+                          array("","","","","","","Mes"),
+                          array(""),
+                          array("","","","","","",date('Y',strtotime('now'))),
+                          array("","","","","","",$meses[date('m', strtotime('now'))-1]),
+                          array("Periodo","Sub Concepto","Clave","Matricula",
+                                "Alumno","Mes","Alumnos","Importe","Recargos",
+                                "Beca","Descuentos","Total"),
+              );                           
+              
+              foreach ($adeudos['periodos'] as $key_p => $periodo) {
+                  $c_p=0;
+                  
+                  
+                  foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                      $c_s=0;
+                      foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
+                        if ($c_p==0) {
+                          $data_excel[]=array(
+                              $periodo['periodo'],
+                              $sc['sub_concepto'],
+                              $value_ai['clave'],
+                              $value_ai['matricula'],
+                              $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
+                              $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
+                              1,
+                              $value_ai['importe'],
+                              $value_ai['recargo'],
+                              $value_ai['beca'],
+                              $value_ai['descuento'],
+                              $value_ai['total']
+                            );
+                        } else {
+                            if ($c_s==0) {
+                                $data_excel[]=array(
+                                "",
+                                $sc['sub_concepto'],
+                                $value_ai['clave'],
+                                $value_ai['matricula'],
+                                $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
+                                $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
+                                1,
+                                $value_ai['importe'],
+                                $value_ai['recargo'],
+                                $value_ai['beca'],
+                                $value_ai['descuento'],
+                                $value_ai['total']
+                              );
+                            } else {
+                              if (isset($value_ai['importe_total'])) {
+                                $data_excel[]=array(
+                                  "",
+                                  "",
+                                  "Total",
+                                  "",
+                                  "",
+                                  "",
+                                  $value_ai['alumnos_total'],
+                                  $value_ai['importe_total'],
+                                  $value_ai['recargo_total'],
+                                  $value_ai['beca_total'],
+                                  $value_ai['descuento_total'],
+                                  $value_ai['total']
+                                );
+                              } else {
+                                $data_excel[]=array(
+                                  "",
+                                  "",
+                                  $value_ai['clave'],
+                                  $value_ai['matricula'],
+                                  $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
+                                  $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
+                                  1,
+                                  $value_ai['importe'],
+                                  $value_ai['recargo'],
+                                  $value_ai['beca'],
+                                  $value_ai['descuento'],
+                                  $value_ai['total']
+                                );
+                              }
+                            }
+                        }
+                        $c_s++;
+                        $c_p++;
+                      }
+                  }
+              }
+              #var_dump($data_excel);die();
+              #$data['titulos_adeudos']=array();
+              $sheet->fromArray($data_excel, null, 'A1', false,false);
+
+              #$sheet->fromArray($data['titulos_adeudos'], null, 'A6', false,false);
             });
           })->download('xls');
         } else {
