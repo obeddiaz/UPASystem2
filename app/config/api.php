@@ -7,5 +7,6 @@
 		#'url'=>"http://api-local.upa.edu.mx/1",
 		'name' => 'tutoriasv1',
 		'password' => 'DosmilCatorce.2014',
-		'proxy'=> 'cis-cinci-pitc-ssow.proxy.corporate.ge.com:80'
+		'proxy'=> ''
+		#'proxy'=> 'cis-cinci-pitc-ssow.proxy.corporate.ge.com:80'
 	);

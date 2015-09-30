@@ -286,6 +286,7 @@ class AdeudosController extends \BaseController {
                                     $value_ai['descuento'],
                                     $value_ai['total']
                                   );
+                                  $persona_ant=$value_ai['clave'];
                                 }
                               }
                             }
@@ -433,7 +434,8 @@ class AdeudosController extends \BaseController {
         $reglas = array(
             'fecha_desde' => 'date_format:Y-m-d',
             'fecha_hasta' => 'date_format:Y-m-d',
-            'periodo' => 'integer'
+            'periodo' => 'integer',
+            'status' => 'required'
         );
         $validator = Validator::make($parametros, $reglas);
 

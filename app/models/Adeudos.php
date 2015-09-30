@@ -8,7 +8,7 @@ class Adeudos extends \Eloquent {
         'sub_concepto_id', 'grado', 'recargo',
         'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id',
         'digito_referencia', 'descripcion_sc', 'recargo_acumulado',
-        'aplica_beca','aplica_recargo','locker_manager'];
+        'aplica_beca','aplica_recargo','locker_manager','recargo_pago','beca_pago','importe_pago'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -111,10 +111,12 @@ class Adeudos extends \Eloquent {
                           'sc.sub_concepto');
         if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
             $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
-                    ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta']);
+                    ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta'])
+                    ->where("adeudos.status_adeudo","=",$data['status']);
         } else {
             if (isset($data['periodo'])) {
-                $query = $query->where("adeudos.periodo", "=", $data['periodo']);
+                $query = $query->where("adeudos.periodo", "=", $data['periodo'])
+                               ->where("adeudos.status_adeudo","=",$data['status']);;
             }
         }
         return $query->get();
