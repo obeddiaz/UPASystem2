@@ -120,6 +120,13 @@ Route::group(array('before' => 'auth'), function() {
             Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudoController@update'));
             Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudoController@destroy'));
         });
+        Route::group(array('prefix' => '/prorrogas'), function() {
+            Route::get('/', array('as' => 'muestra_prorrogas', 'uses' => 'ProrrogasController@index'));
+            Route::get('/expediente', array('as' => 'muestra_prorrogas', 'uses' => 'ProrrogasController@show'));
+            Route::post('/agregar', array('as' => 'crear_prorrogas', 'uses' => 'ProrrogasController@create'));
+            Route::put('/guardar', array('as' => 'actualizar_valor_prorrogas', 'uses' => 'ProrrogasController@update'));
+            Route::delete('/eliminar', array('as' => 'eliminar_prorrogas', 'uses' => 'ProrrogasController@destroy'));
+        });
         Route::group(array('prefix' => '/tipo_pagos'), function() {
             Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@index'));
             Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@show'));

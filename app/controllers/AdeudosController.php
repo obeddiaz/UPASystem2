@@ -217,11 +217,11 @@ class AdeudosController extends \BaseController {
                               $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
                               $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
                               1,
-                              $value_ai['importe'],
-                              $value_ai['recargo'],
-                              $value_ai['beca'],
-                              $value_ai['descuento'],
-                              $value_ai['total']
+                              floatval($value_ai['importe']),
+                              floatval($value_ai['recargo']),
+                              floatval($value_ai['beca']),
+                              floatval($value_ai['descuento']),
+                              floatval($value_ai['total'])
                             );
                         } else {
                             if ($c_s==0) {
@@ -233,11 +233,11 @@ class AdeudosController extends \BaseController {
                                 $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
                                 $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
                                 1,
-                                $value_ai['importe'],
-                                $value_ai['recargo'],
-                                $value_ai['beca'],
-                                $value_ai['descuento'],
-                                $value_ai['total']
+                                floatval($value_ai['importe']),
+                                floatval($value_ai['recargo']),
+                                floatval($value_ai['beca']),
+                                floatval($value_ai['descuento']),
+                                floatval($value_ai['total'])
                               );
                             } else {
                               if (isset($value_ai['importe_total'])) {
@@ -248,12 +248,12 @@ class AdeudosController extends \BaseController {
                                   "",
                                   "",
                                   "",
-                                  $value_ai['alumnos_total'],
-                                  $value_ai['importe_total'],
-                                  $value_ai['recargo_total'],
-                                  $value_ai['beca_total'],
-                                  $value_ai['descuento_total'],
-                                  $value_ai['total']
+                                  floatval($value_ai['alumnos_total']),
+                                  floatval($value_ai['importe_total']),
+                                  floatval($value_ai['recargo_total']),
+                                  floatval($value_ai['beca_total']),
+                                  floatval($value_ai['descuento_total']),
+                                  floatval($value_ai['total'])
                                 );
                               } else {
                                 if (intval($persona_ant)==intval($value_ai['clave'])) {
@@ -265,11 +265,11 @@ class AdeudosController extends \BaseController {
                                     "",
                                     $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
                                     1,
-                                    $value_ai['importe'],
-                                    $value_ai['recargo'],
-                                    $value_ai['beca'],
-                                    $value_ai['descuento'],
-                                    $value_ai['total']
+                                    floatval($value_ai['importe']),
+                                    floatval($value_ai['recargo']),
+                                    floatval($value_ai['beca']),
+                                    floatval($value_ai['descuento']),
+                                    floatval($value_ai['total'])
                                   );
                                 } else {
                                   $data_excel[]=array(
@@ -280,11 +280,11 @@ class AdeudosController extends \BaseController {
                                     $value_ai['nombre'].' '.$value_ai['apellido paterno'].' '.$value_ai['apellido materno'],
                                     $meses[date('m', strtotime($value_ai['fecha_limite']))-1],
                                     1,
-                                    $value_ai['importe'],
-                                    $value_ai['recargo'],
-                                    $value_ai['beca'],
-                                    $value_ai['descuento'],
-                                    $value_ai['total']
+                                    floatval($value_ai['importe']),
+                                    floatval($value_ai['recargo']),
+                                    floatval($value_ai['beca']),
+                                    floatval($value_ai['descuento']),
+                                    floatval($value_ai['total'])
                                   );
                                   $persona_ant=$value_ai['clave'];
                                 }
@@ -297,10 +297,7 @@ class AdeudosController extends \BaseController {
                   }
               }
               #var_dump($data_excel);die();
-              #$data['titulos_adeudos']=array();
               $sheet->fromArray($data_excel, null, 'A1', false,false);
-
-              #$sheet->fromArray($data['titulos_adeudos'], null, 'A6', false,false);
             });
           })->download('xls');
         } else {
