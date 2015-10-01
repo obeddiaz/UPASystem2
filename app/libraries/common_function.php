@@ -335,7 +335,8 @@ class Common_functions {
         return $data;
     }
     public function parseAdeudos_addAdeudoInfo($data,$sub_adeudo,$adeudo) {
-        $descuentos=DB::table('descuentos')
+        $recargo_total=0;
+            $descuentos=DB::table('descuentos')
                             ->where('adeudos_id','=',$sub_adeudo['id'])
                             ->Select(DB::raw("ifnull(SUM(importe),0) as descuento"))
                             ->first();
@@ -381,6 +382,7 @@ class Common_functions {
                     $beca=0;
                 }
 
+                $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
                 foreach ($data['periodos'] as $key_p => $periodo) {
                     foreach ($periodo['subconceptos'] as $key_s => $sc) {
                         if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
@@ -403,7 +405,6 @@ class Common_functions {
                                                 'total' => $sub_adeudo['importe_pago'],
                                             );
                                     } else {
-                                        $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
                                         $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
                                                 'clave' => $adeudo['id_persona'],
                                                 'matricula'=>$adeudo['matricula'],
