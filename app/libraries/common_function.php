@@ -374,7 +374,7 @@ class Common_functions {
                         $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
                         $recargo_total=$recargo*$sub_adeudo['meses_retraso'];
                     } else {
-                        $recargo = 0;
+                        $recargo_total = 0;
                     }
                     Becas::update_status_beca_alumno(array('id_persona'=>$adeudo['id_persona'],
                                                            'periodo'=>$sub_adeudo['periodo'],
