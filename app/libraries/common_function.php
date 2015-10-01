@@ -381,7 +381,6 @@ class Common_functions {
                     $beca=0;
                 }
 
-                $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
                 foreach ($data['periodos'] as $key_p => $periodo) {
                     foreach ($periodo['subconceptos'] as $key_s => $sc) {
                         if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
@@ -404,6 +403,7 @@ class Common_functions {
                                                 'total' => $sub_adeudo['importe_pago'],
                                             );
                                     } else {
+                                        $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
                                         $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
                                                 'clave' => $adeudo['id_persona'],
                                                 'matricula'=>$adeudo['matricula'],
