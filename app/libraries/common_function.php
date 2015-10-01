@@ -399,7 +399,7 @@ class Common_functions {
                                                 'fecha_pago' => $sub_adeudo['fecha_pago'],
                                                 'carrera' => $adeudo['carrera'],
                                                 'importe'=>$sub_adeudo['importe'],
-                                                'recargo'=>$recargo_total,
+                                                'recargo'=>$sub_adeudo['recargo_pago'],
                                                 'beca'=>$sub_adeudo['beca_pago'],
                                                 'descuento' =>$descuento,
                                                 'total' => $sub_adeudo['importe_pago'],
