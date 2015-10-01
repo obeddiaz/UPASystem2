@@ -389,6 +389,7 @@ class Common_functions {
                             #echo "<pre>" ;var_dump($sub_adeudo);echo "</pre>";die();
                                 if (intval($sub_adeudo['sub_concepto_id'])==intval($sc['sub_concepto_id'])) {
                                     if ($sub_adeudo['status_adeudo']==1) {
+                                        #var_dump(floatval($sub_adeudo['recargo_pago']));die();
                                             $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
                                                 'clave' => $adeudo['id_persona'],
                                                 'matricula'=>$adeudo['matricula'],
@@ -399,10 +400,10 @@ class Common_functions {
                                                 'fecha_pago' => $sub_adeudo['fecha_pago'],
                                                 'carrera' => $adeudo['carrera'],
                                                 'importe'=>$sub_adeudo['importe'],
-                                                'recargo'=>$sub_adeudo['recargo_pago'],
-                                                'beca'=>$sub_adeudo['beca_pago'],
-                                                'descuento' =>$descuento,
-                                                'total' => $sub_adeudo['importe_pago'],
+                                                'recargo'=>floatval($sub_adeudo['recargo_pago']),
+                                                'beca'=>floatval($sub_adeudo['beca_pago']),
+                                                'descuento' => floatval($descuento),
+                                                'total' => floatval($sub_adeudo['importe_pago']),
                                             );
                                     } else {
                                         $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
@@ -413,11 +414,11 @@ class Common_functions {
                                                 'apellido materno'=>$adeudo['apmat'],
                                                 'fecha_limite'=>$sub_adeudo['fecha_limite'],
                                                 'carrera' => $adeudo['carrera'],
-                                                'importe'=>$sub_adeudo['importe'],
-                                                'recargo'=>$recargo_total,
-                                                'beca'=>$beca,
-                                                'descuento'=>$descuento,
-                                                'total'=> $total_adeudo,
+                                                'importe'=>floatval($sub_adeudo['importe']),
+                                                'recargo'=>floatval($recargo_total),
+                                                'beca'=>floatval($beca),
+                                                'descuento'=>floatval($descuento),
+                                                'total'=> floatval($total_adeudo),
                                             );
                                     }
                                 }
