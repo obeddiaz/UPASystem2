@@ -110,7 +110,8 @@ class Planes_de_pagoController extends \BaseController {
                 $res['paquete'] = $paquete;
                 $res['data'] = Paquete::personasPaquete($paquete['id']);
                 if ($res['data'] || !empty($res['data'])) {
-                    $res['no_asignados'] = $commond->obtener_alumno_idPersona($res['data']);
+                    $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
+                    $res['no_asignados'] = $commond->obtener_alumno_No_idPersona($res['data']);
                     $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
                 } else {
                     $res['data'] = array();
