@@ -91,9 +91,16 @@ class Common_functions {
     public function obtener_alumno_No_idPersona($personas) {
         $alumnos = $this->sii->new_request('POST', '/alumnos/all');
         $res = array();
+        $per_temp=array();
         if (is_array($personas)) {
             foreach ($personas as $persona) {
-                $per_temp[] = $persona['id_persona'];
+                if (isset($persona['id_persona'])) {
+                    $per_temp[] = $persona['id_persona'];
+                } else {
+                    if (isset($persona['idpersonas'])) {
+                        $per_temp[] = $persona['idpersonas'];
+                    }
+                }
             }
             if (isset($per_temp)) {
                 foreach ($alumnos as $alumno) {
