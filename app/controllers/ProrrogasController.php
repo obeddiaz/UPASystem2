@@ -38,9 +38,13 @@ class ProrrogasController extends \BaseController {
 
 		if (!$validator->fails())
 		{
+			$adeudo=Adeudos::where('id','=',$parametros['adeudos_id'])->first();
+			/*Adeudos::where('periodo','=',$adeudo['periodo'])
+							->where('locker_manager','=','1')
+							->update(array('locker_manager' => '0'));*/
 			$fecha_limite=$parametros['fecha_limite'];
 			unset($parametros['fecha_limite']);
-			Adeudos::where('id', '=', $parametros['adeudos_id'])->update(array('fecha_limite' => $fecha_limite));
+			Adeudos::where('id', '=', $parametros['adeudos_id'])->update(array('fecha_limite' => $fecha_limite,'locker_manager'=>'0'));
 			$res['data']=Prorrogas::create($parametros);
 			$res['data']=Prorrogas::All();
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));

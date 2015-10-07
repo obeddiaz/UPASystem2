@@ -286,7 +286,9 @@ class Common_functions {
         }
     }
 
-    public function parseAdeudos($adeudos,$data=array()) {
+
+    public function parseAdeudos($adeudos,$filters) {
+        $data=array();    
         foreach ($adeudos['data']['alumnos'] as $key_a => $adeudo) {
               foreach ($adeudo['adeudos'] as $key_sa => $sub_adeudo) {
                 if (!isset($data['periodos'])) {
