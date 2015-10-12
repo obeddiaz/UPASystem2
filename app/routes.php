@@ -71,6 +71,7 @@ Route::group(array('before' => 'auth'), function() {
         Route::group(array('prefix' => '/adeudos'), function() {
             Route::get('/todos_periodo', array('as' => 'Adeudos_por_periodo', 'uses' => 'AdeudosController@show_by_periodo'));
             Route::get('/adeudos_reporte', array('as' => 'Adeudos_para_reporte', 'uses' => 'AdeudosController@show_adeudos_reporte'));
+            Route::get('/adeudos_reporte_ordenado', array('as' => 'Adeudos_para_reporte', 'uses' => 'AdeudosController@show_adeudos_reporte_ordenado'));
             Route::get('/alumno', array('as' => 'Adeudos_por_alumno_periodo', 'uses' => 'AdeudosController@show_adeudos_alumno'));
             #Route::get('/crear_reporte', array('as' => 'Crear_reporte', 'uses' => 'AdeudosController@create_reporte'));
             Route::get('/crear_reporte', array('as' => 'Crear_reporte', 'uses' => 'AdeudosController@create_reporte_key'));

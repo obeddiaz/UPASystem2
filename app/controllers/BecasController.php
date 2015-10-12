@@ -108,6 +108,10 @@ class BecasController extends \BaseController {
             $res['data']=array();
             foreach($info_excel as $key => $value)
             {
+                $meses[]=$value->mes_1;
+                $meses[]=$value->mes_2;
+                $meses[]=$value->mes_3;
+                $meses[]=$value->mes_4;
                 $beca= Becas::where('abreviatura', '=', $value->clave)->first();
                 if ($beca) {
                     $periodo_actual=$commond->periodo_actual();
@@ -141,6 +145,7 @@ class BecasController extends \BaseController {
                     $res['data']['nocreado'][]=$value->matricula;
                 }
                 $data=array();
+                $meses=array();
             }
             #echo json_encode($res);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));

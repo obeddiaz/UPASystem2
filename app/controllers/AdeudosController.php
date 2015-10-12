@@ -300,6 +300,34 @@ class AdeudosController extends \BaseController {
         return $final_response;
     }
 
+    public function show_adeudos_reporte_ordenado() {
+        ini_set('max_execution_time', 300);
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'fecha_desde' => 'date_format:Y-m-d',
+            'fecha_hasta' => 'date_format:Y-m-d',
+            'periodo' => 'integer',
+            'status' => 'required'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
+            $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
+            $res['data'] = $commond -> crear_key($parametros,$res['data']);
+            $res['data'] = $commond->get_by_key($res['data']['key']);
+            $res['data'] = $commond->parseAdeudos($res['data'],array());
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
