@@ -161,7 +161,6 @@ class Sii {
         $this->request->setContent(http_build_query($content));
         $this->request->fromUrl($this->url . "/persona/keepalive");
         $this->response = $this->send($this->client, $this->request);
-        Log::info(print_r($this->response, true));
         return array('response' => json_decode($this->response->getContent(), true), 'statuscode' => $this->response->getStatusCode());
     }
 

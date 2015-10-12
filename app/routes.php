@@ -56,6 +56,7 @@ Route::group(array('before' => 'auth'), function() {
                     Route::get('/catalogos', array('as' => 'muestra_catalogos', 'uses' => 'BecasController@show_catalogos'));
                     Route::post('/agregar', array('as' => 'crear_becas', 'uses' => 'BecasController@create'));
                     Route::post('/alumnos/agregar', array('as' => 'asignar_becas', 'uses' => 'BecasController@create_alumno'));
+                    Route::post('/subir', array('as' => 'referencia', 'uses' => 'BecasController@create_alumno_file'));
                     Route::put('/guardar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update'));
                     Route::put('/alumnos/asignar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update_alumno_activar'));
                     Route::put('/alumnos/cancelar', array('as' => 'actualizar_valor_becas', 'uses' => 'BecasController@update_alumno_desactivar'));

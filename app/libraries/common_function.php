@@ -68,6 +68,31 @@ class Common_functions {
         return $res;
     }
 
+    public function obtener_alumno_matricula($personas) {
+        $alumnos = $this->sii->new_request('POST', '/alumnos/all/idpersona');
+        $res = array();
+        if (is_array($personas)) {
+            foreach ($personas as $key_personas => $persona) {
+                foreach ($alumnos as $key_alumnos => $alumno) {
+                    if ($alumno['matricula'] == $persona['matricula']) {
+                        $persona_info = $persona;
+                        if (isset($persona_info['matricula'])) {
+                            unset($persona_info['matricula']);
+                        }
+                        if (!isset($persona_info['nivel'])) {
+                            $persona_info['idnivel']=$alumno['nivel'];
+                        }
+                        $persona_info['id_persona']=$alumno['idpersonas'];
+                        $res[] = $persona_info;
+                    }
+                }
+            }
+        } else {
+            return null;
+        }
+        return $res;
+    }
+
     public function obtener_alumno_idPersona($personas) {
         $alumnos = $this->sii->new_request('POST', '/alumnos/all');
         $res = array();

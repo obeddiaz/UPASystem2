@@ -51,11 +51,12 @@ Route::filter('permisos', function() {
 
 Route::filter('auth', function()
 {
+  $user=Session::get('user');
 	$sii= new Sii();
   if (!Session::has('user')) {
           return response::json(['error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0]);
   } else {
-    $keepalive=$sii->new_request('POST','/niveles');  
+    $keepalive=$sii->keepAlive($user["persona"]["token"]);  
   }
 });
 

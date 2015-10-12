@@ -98,6 +98,61 @@ class BecasController extends \BaseController {
         return $final_response;
     }
 
+    public function create_alumno_file() {
+        $commond = new Common_functions();
+        $file = Request::file('becas_file');
+        if (isset($file)) {    
+            $root=$file->getRealPath();
+            $data=array();            
+            $info_excel=Excel::load($root, function($archivo){})->get();
+            $res['data']=array();
+            foreach($info_excel as $key => $value)
+            {
+                $beca= Becas::where('abreviatura', '=', $value->clave)->first();
+                if ($beca) {
+                    $periodo_actual=$commond->periodo_actual();
+                    $data = $commond->obtener_alumno_matricula(
+                            array(
+                                array(
+                                    'periodo' => $periodo_actual['idperiodo'],
+                                    'matricula' => $value->matricula,
+                                    'idbeca' => $beca['id'],
+                                    'status' => 1)));
+                    #echo json_encode($value->matricula) . '<br/>';
+                    if (isset($data[0])) {
+                        $data=$data[0];
+                        $beca_existe = Becas::AlumnoBeca_Persona_Periodo(
+                            array('id_persona' => $data['id_persona'],
+                            'periodo'=>$data['periodo'])); // Consulta beca
+
+                        if ($beca_existe==false) {
+                            Becas::create_beca_alumno($data);
+                            $data['matricula']= $value->matricula;
+                            $res['data']['created'][]=$data;
+                        } else {
+                            //Becas::create_beca_alumno($data);
+                            $data['matricula']= $value->matricula;
+                            $res['data']['existente'][]=$data;
+                        }
+                    } else {
+                        $res['data']['nocreado'][]=$value->matricula;    
+                    }
+                } else {
+                    $res['data']['nocreado'][]=$value->matricula;
+                }
+                $data=array();
+            }
+            #echo json_encode($res);
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
+
     /**
      * Store a newly created resource in storage.
      *

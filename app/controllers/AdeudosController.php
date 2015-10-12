@@ -131,7 +131,7 @@ class AdeudosController extends \BaseController {
       }
       $reglas = array(
         'key' => 'required',
-        'filters' => 'required|array'
+        'filters' => 'required|array',
         'selected_columns' => 'required|array'
       );
       $validator = Validator::make($parametros, $reglas);
