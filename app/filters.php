@@ -56,7 +56,7 @@ Route::filter('auth', function()
   if (!Session::has('user')) {
           return response::json(['error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0]);
   } else {
-    $keepalive=$sii->keepAlive($user["persona"]["token"]);  
+    $keepalive=$sii->keepAlive($user["persona"]["token"],1);
   }
 });
 
