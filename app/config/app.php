@@ -175,4 +175,24 @@ return array(
         'View' => 'Illuminate\Support\Facades\View',
         
     ),
+    'meses_periodo' => array(
+      '1' => array(
+          1,
+          2,
+          3,
+          4
+        ),
+      '2' => array(
+          5,
+          6,
+          7,
+          8
+        ),
+      '3' => array(
+          9,
+          10,
+          11,
+          12
+        )
+    ),
 );

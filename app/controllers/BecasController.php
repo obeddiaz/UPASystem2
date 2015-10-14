@@ -101,6 +101,8 @@ class BecasController extends \BaseController {
     public function create_alumno_file() {
         $commond = new Common_functions();
         $file = Request::file('becas_file');
+        $config = Config::get('app');
+        $meses = $config['meses_periodo'];
         if (isset($file)) {    
             $root=$file->getRealPath();
             $data=array();            
@@ -129,6 +131,10 @@ class BecasController extends \BaseController {
                             array('id_persona' => $data['id_persona'],
                             'periodo'=>$data['periodo'])); // Consulta beca
 
+                        #$adeudos = Adeudos::where('id_persona','=',$data['id_persona'])
+                                            ->where('periodo','=',$data['periodo'])->get();
+
+                        #var_dump(json_encode($value));die();
                         if ($beca_existe==false) {
                             Becas::create_beca_alumno($data);
                             $data['matricula']= $value->matricula;
