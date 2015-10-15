@@ -131,7 +131,10 @@ class BecasController extends \BaseController {
                             array('id_persona' => $data['id_persona'],
                             'periodo'=>$data['periodo'])); // Consulta beca
 
-                        #$adeudos = Adeudos::where('id_persona','=',$data['id_persona'])->where('periodo','=',$data['periodo'])->get();
+                        $adeudos = Adeudos::where('id_persona','=',$data['id_persona'])
+                                        ->where('periodo','=',$data['periodo'])
+                                        ->where('locker_manager','=',0)
+                                        ->get();
 
                         #var_dump(json_encode($value));die();
                         if ($beca_existe==false) {
