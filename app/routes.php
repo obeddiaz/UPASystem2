@@ -12,12 +12,11 @@
  */
 header('Access-Control-Allow-Origin: *');
 Route::get('/', function() {
-    return View::make('hello');
+    return View::make('app/index');
 });
 Route::group(array('before' => 'auth'), function() {
     Route::group(array('before' => 'permisos'), function() {
         Route::group(array('prefix' => '/administracion'), function() {
-
             Route::group(array('prefix' => '/agrupaciones'), function() {
                 Route::get('/', array('as' => 'muestra_agrupaciones', 'uses' => 'AgrupacionesController@index'));
                 # /administracion/agrupaciones/
