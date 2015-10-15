@@ -130,17 +130,41 @@ class BecasController extends \BaseController {
                         $beca_existe = Becas::AlumnoBeca_Persona_Periodo(
                             array('id_persona' => $data['id_persona'],
                             'periodo'=>$data['periodo'])); // Consulta beca
-
-                        $adeudos = Adeudos::where('id_persona','=',$data['id_persona'])
-                                        ->where('periodo','=',$data['periodo'])
-                                        ->where('locker_manager','=',0)
-                                        ->get();
-
-                        #var_dump(json_encode($value));die();
+                        
                         if ($beca_existe==false) {
-                            Becas::create_beca_alumno($data);
-                            $data['matricula']= $value->matricula;
-                            $res['data']['created'][]=$data;
+                            $adeudos = Adeudos::obtener_adeudos_alumno(array('periodo'=>$data['periodo'],'id_persona'=>$data['id_persona']));
+                            $adeudos_no_inscripcion=array();
+                            $lock_adeudos=0;
+                            foreach ($adeudos as $key => $adeudo) {
+                                if (intval($adeudo['lock'])!=1) {
+                                    if (intval($adeudo['locker_manager'])==0) {
+                                        $adeudos_no_inscripcion[]=$adeudo;
+                                    }
+                                } else {
+                                    $lock_adeudos=1;
+                                    break;
+                                }
+                            }
+                            if (count($adeudos_no_inscripcion)>0 &&  $lock_adeudos==0) {
+                                foreach ($adeudos_no_inscripcion as $key => $adeudo) {
+                                    foreach ($meses as $key => $mes) {
+                                        if (intval($mes)==intval(date('m',strtotime($adeudo['fecha_limite'])))) {
+                                            //$ids_update_beca[]=$adeudo['id'];
+                                            Adeudos::where('id','=',$adeudo['id'])->update(array('aplica_beca'=>0));
+                                            break;
+                                        }
+                                    }
+                                }
+                                Becas::create_beca_alumno($data);
+                                $data['matricula']= $value->matricula;
+                                $res['data']['created'][]=$data;
+                            } else {
+                                if ($lock_adeudos==0) {
+                                    Becas::create_beca_alumno($data);
+                                    $data['matricula']= $value->matricula;
+                                    $res['data']['created'][]=$data;
+                                }
+                            }
                         } else {
                             //Becas::create_beca_alumno($data);
                             $data['matricula']= $value->matricula;
