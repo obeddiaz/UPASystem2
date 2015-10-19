@@ -30,7 +30,9 @@ class DescuentosController extends \BaseController {
 			array(
 			    'tipo_importe_id' => 'required|integer',
 			    'adeudos_id' => 'required|integer',
-			    'importe' => 'required'
+			    'importe' => 'required',
+			    'importe_recargo' => 'required',
+			    'no_officio' => 'required'
 			);
     	$validator = Validator::make($parametros,$reglas);
 

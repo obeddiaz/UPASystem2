@@ -57,6 +57,11 @@ Route::filter('auth', function()
           return response::json(['error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0]);
   } else {
     $keepalive=$sii->keepAlive($user["persona"]["token"],1);
+    if (isset($keepalive['response']['error']))  {
+      if ($keepalive['response']['error']=='Bad Token at keepAlive') {
+        return response::json(['error' => true, 'message' => 'Usuario no autenticado','respuesta'=>'','error_type'=>0]);
+      }    
+    }
   }
 });
 

@@ -84,6 +84,7 @@ class Common_functions {
                         }
                         $persona_info['id_persona']=$alumno['idpersonas'];
                         $res[] = $persona_info;
+                        break;
                     }
                 }
             }

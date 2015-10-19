@@ -109,13 +109,16 @@ class BecasController extends \BaseController {
             $info_excel=Excel::load($root, function($archivo){})->get();
             $res['data']=array();
             foreach($info_excel as $key => $value)
-            {
+            {   
+                /// #-----
                 $meses[]=$value->mes_1;
                 $meses[]=$value->mes_2;
                 $meses[]=$value->mes_3;
                 $meses[]=$value->mes_4;
-                $beca= Becas::where('abreviatura', '=', $value->clave)->first();
-                if ($beca) {
+                /// ------ # Obtiene los meses a los que se le asiganara la beca
+                $beca= Becas::where('abreviatura', '=', $value->clave)->first(); 
+                // Se obtiene la infotmacion de la beca con respecto a la clave dada
+                if ($beca) {    // Si existe la beca empieza el proceso de asignacion
                     $periodo_actual=$commond->periodo_actual();
                     $data = $commond->obtener_alumno_matricula(
                             array(
@@ -124,18 +127,19 @@ class BecasController extends \BaseController {
                                     'matricula' => $value->matricula,
                                     'idbeca' => $beca['id'],
                                     'status' => 1)));
-                    #echo json_encode($value->matricula) . '<br/>';
+
                     if (isset($data[0])) {
                         $data=$data[0];
                         $beca_existe = Becas::AlumnoBeca_Persona_Periodo(
                             array('id_persona' => $data['id_persona'],
                             'periodo'=>$data['periodo'])); // Consulta beca
-                        
-                        if ($beca_existe==false) {
-                            $adeudos = Adeudos::obtener_adeudos_alumno(array('periodo'=>$data['periodo'],'id_persona'=>$data['id_persona']));
+                        if ($beca_existe==false) { // si el alumno no tiene beca asignada en ese periodo realiza proceso
+                            $adeudos = Adeudos::obtener_adeudos_alumno(
+                                            array('periodo'=>$data['periodo'],
+                                                  'id_persona'=>$data['id_persona'])); // Se obtienen los Adeudos del alumno en el periodo
                             $adeudos_no_inscripcion=array();
-                            $lock_adeudos=0;
-                            foreach ($adeudos as $key => $adeudo) {
+                            $lock_adeudos=0; // Variable para no aplicar beca por retraso de pago en la inscripcion
+                            foreach ($adeudos as $key => $adeudo) { // Obtenemos los adedudos que no sean inscripcion y los seperamos
                                 if (intval($adeudo['lock'])!=1) {
                                     if (intval($adeudo['locker_manager'])==0) {
                                         $adeudos_no_inscripcion[]=$adeudo;
@@ -149,7 +153,7 @@ class BecasController extends \BaseController {
                                 foreach ($adeudos_no_inscripcion as $key => $adeudo) {
                                     foreach ($meses as $key => $mes) {
                                         if (intval($mes)==intval(date('m',strtotime($adeudo['fecha_limite'])))) {
-                                            //$ids_update_beca[]=$adeudo['id'];
+                                            #$ids_update_beca[]=array('ids'=>$adeudo['id'],'mes'=>$mes);
                                             Adeudos::where('id','=',$adeudo['id'])->update(array('aplica_beca'=>0));
                                             break;
                                         }
@@ -163,18 +167,22 @@ class BecasController extends \BaseController {
                                     Becas::create_beca_alumno($data);
                                     $data['matricula']= $value->matricula;
                                     $res['data']['created'][]=$data;
+                                }   else {
+                                    $res['data']['nocreado'][]=array('matricula' => $value->matricula,
+                                                                     'motivo' => 'No pago inscripcion a tiempo');
                                 }
                             }
                         } else {
-                            //Becas::create_beca_alumno($data);
                             $data['matricula']= $value->matricula;
                             $res['data']['existente'][]=$data;
                         }
                     } else {
-                        $res['data']['nocreado'][]=$value->matricula;    
+                        $res['data']['nocreado'][]=array('matricula' => $value->matricula,
+                                                                     'motivo' => 'Alumno no encontrado o inactico');    
                     }
                 } else {
-                    $res['data']['nocreado'][]=$value->matricula;
+                    $res['data']['nocreado'][]=array('matricula' => $value->matricula,
+                                                     'motivo' => 'La clave de la beca es incorrecta');
                 }
                 $data=array();
                 $meses=array();
