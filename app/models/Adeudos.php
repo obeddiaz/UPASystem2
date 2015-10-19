@@ -252,7 +252,7 @@ class Adeudos extends \Eloquent {
                 }
             } else {
                 $pago = strtotime($adeudo['fecha_pago']);
-                $fecha_pago = date('d', $pago);
+                $fecha_pago = date('d', $pago); 
                 $query[$key]['lock'] = 0;
                 if ($fecha_pago > $day) {
                     $query[$key]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
