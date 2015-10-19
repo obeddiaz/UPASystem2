@@ -469,6 +469,7 @@ class Common_functions {
             foreach ($data['periodos'] as $key_p => $periodo) {
                 $counter=0;
                 foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                    $idpersonas=0;
                     $alumnos_total=0;
                     $total=0;
                     $recargo_total=0;
@@ -476,12 +477,16 @@ class Common_functions {
                     $descuento_total=0;
                     $importe_total=0;
                     foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
+                        $idpersonas=intval($value_ai['id_persona']);
                         $total=$value_ai['total'] + $total; 
                         $recargo_total=$value_ai['recargo'] + $recargo_total;
                         $beca_total=$value_ai['beca'] + $beca_total;
                         $descuento_total=$value_ai['descuento'] + $descuento_total;
                         $importe_total=$value_ai['importe'] + $importe_total;
-                        $alumnos_total++;
+                        if ( intval($value_ai['id_persona'])!=$idpersonas) {
+                            $alumnos_total++;
+                        }
+                        
                         $counter++;
                     }
                     $counter++;
