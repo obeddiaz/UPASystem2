@@ -553,11 +553,16 @@ class BecasController extends \BaseController {
                         if ($parametros['aplica_beca']==0) {
                             $data['aplica_recargo']=0;
                             $data['aplica_beca']=$parametros['aplica_beca'];
+                            if (intval($adeudo['aplica_beca'])==1) {
+                                Adeudos::where('id', '=', $adeudo['id'])->update($data);
+                            }
                         } else {
                             $data['aplica_recargo']=1;
                             $data['aplica_beca']=$parametros['aplica_beca'];
+                            if (intval($adeudo['aplica_beca'])==0) {
+                                Adeudos::where('id', '=', $adeudo['id'])->update($data);
+                            }
                         }
-                        Adeudos::where('id', '=', $adeudo['id'])->update($data);
                     } else {
                         if (intval($parametros['id_adeudo'])==intval($adeudo['id'])) {
                             $bandera=true;
