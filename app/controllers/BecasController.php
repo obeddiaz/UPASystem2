@@ -526,20 +526,45 @@ class BecasController extends \BaseController {
             'id_adeudo'=> 'required|integer',
             'id_persona' => 'required|integer',
             'periodo' => 'required|integer',
-            'aplica_beca' => 'required|integer'
+            'aplica_beca' => 'required|integer',
+            'tipo' => 'required|integer'
         );
 
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
-            if ($parametros['aplica_beca']==0) {
-                $data['aplica_recargo']=0;
-                $data['aplica_beca']=$parametros['aplica_beca'];
-            } else {
-                $data['aplica_recargo']=1;
-                $data['aplica_beca']=$parametros['aplica_beca'];
+            if ($parametros['tipo']==1) {
+                if ($parametros['aplica_beca']==0) {
+                    $data['aplica_recargo']=0;
+                    $data['aplica_beca']=$parametros['aplica_beca'];
+                } else {
+                    $data['aplica_recargo']=1;
+                    $data['aplica_beca']=$parametros['aplica_beca'];
+                }
+                Adeudos::where('id', '=', $parametros['id_adeudo'])->update($data);
+            } elseif ($parametros['tipo']==2) {
+                $bandera = false;
+                $adeudos = Adeudos::where('periodo','=',$parametros['periodo'])
+                                    ->where('id_persona','=',$parametros['id_persona'])
+                                    ->orderBy('fecha_limite', 'asc')
+                                    ->get();
+                foreach ($adedudos as $key_adeudo => $adeudo) {
+                    if ($bandera==true) {
+                        if ($parametros['aplica_beca']==0) {
+                            $data['aplica_recargo']=0;
+                            $data['aplica_beca']=$parametros['aplica_beca'];
+                        } else {
+                            $data['aplica_recargo']=1;
+                            $data['aplica_beca']=$parametros['aplica_beca'];
+                        }
+                        Adeudos::where('id', '=', $adeudo['id'])->update($data);
+                    } else {
+                        if (intval($parametros['id_adeudo'])==intval($adeudo['id'])) {
+                            $bandera=true;
+                        }
+                    }
+                }
             }
-            Adeudos::where('id', '=', $parametros['id_adeudo'])->update($data);
             $res['data'] = Adeudos::obtener_adeudos_alumno(array('id_persona'=>$parametros['id_persona'],'periodo'=>$parametros['periodo']));
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         }   else {
