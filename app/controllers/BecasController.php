@@ -234,6 +234,33 @@ class BecasController extends \BaseController {
         return $final_response;
     }
 
+    public function show_alumno_reporte() {
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            //'id_persona' => 'required', 
+            'periodo' => 'required|integer',
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $personasBeca = Becas::where('periodo','=',$parametros['periodo'])
+                ->select('*')
+                ->get();
+            $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
+            if ($res['data'] == null) {
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+            }
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
+
     public function show_catalogos() {
 
         $res['data']['tipo_importe'] = Becas::obtenerTipoImporte();
