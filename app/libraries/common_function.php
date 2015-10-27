@@ -477,13 +477,13 @@ class Common_functions {
                     $descuento_total=0;
                     $importe_total=0;
                     foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
-                        $idpersonas=intval($value_ai['id_persona']);
+						$idpersonas=intval($value_ai['clave']);
                         $total=$value_ai['total'] + $total; 
                         $recargo_total=$value_ai['recargo'] + $recargo_total;
                         $beca_total=$value_ai['beca'] + $beca_total;
                         $descuento_total=$value_ai['descuento'] + $descuento_total;
                         $importe_total=$value_ai['importe'] + $importe_total;
-                        if ( intval($value_ai['id_persona'])!=$idpersonas) {
+                        if ( intval($value_ai['clave'])!=$idpersonas) {
                             $alumnos_total++;
                         }
                         
