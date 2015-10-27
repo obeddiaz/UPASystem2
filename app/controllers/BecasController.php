@@ -244,16 +244,20 @@ class BecasController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
-            $personasBeca = Becas::where('periodo','=',$parametros['periodo'])
-                ->select('*')
+            DB::setFetchMode(PDO::FETCH_ASSOC);
+            $personasBeca = DB::table('becas')->join('becas_alumno', 'becas_alumno.idbeca', '=', 'becas.id')
+                ->join('tipo_importe', 'tipo_importe.id', '=', 'becas.tipo_importe_id')
+                ->where('becas_alumno.periodo','=',$parametros['periodo'])
+                ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona','tipo_importe.nombre as tipo_cobro')
                 ->get();
+
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             if ($res['data'] == null) {
                 $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
             }
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
-            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error parametros incorrectos.', 'respuesta' => null));
         }
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
