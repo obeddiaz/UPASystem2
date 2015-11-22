@@ -133,7 +133,7 @@ class APIServicesController extends \BaseController {
         $selected= Config::get('matriculas');
         
             $alumnos = $this->sii->new_request('POST', '/alumnos/all/persona');
-            var_dump($alumnos[0]);die();
+            #var_dump($alumnos[0]);die();
         try {
             foreach ($selected as $key => $value) {
                 foreach ($alumnos as $key_alumno => $alumno) {

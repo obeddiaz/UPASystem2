@@ -71,7 +71,7 @@ class Sub_ConceptosController extends \BaseController {
         );
         $reglas = array(
             'descripcion' => 'required',
-            'sub_concepto' => 'required|max:30',
+            'sub_concepto' => 'required|max:70',
             'conceptos_id' => 'required|integer',
             'importe' => 'required|numeric',
             'periodo' => 'required',
