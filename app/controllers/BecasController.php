@@ -473,10 +473,18 @@ class BecasController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-
-            Becas::destroy($parametros['id']);
-            $res['data'] = Becas::orderBy('importe', 'desc')->get();
-            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            $asignaciones=DB::table('becas_alumno')
+                            ->Select('*')
+                            ->Where('idbeca','=',$parametros['id'])
+                            ->get();
+            if (count($asignaciones) == 0){
+                Becas::destroy($parametros['id']);
+                $res['data'] = Becas::orderBy('importe', 'desc')->get();
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            } else {
+                $res['data'] = '';
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'No se puede borrar la beca ya que existen alumnos asignados', 'respuesta' => $res));
+            }
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
