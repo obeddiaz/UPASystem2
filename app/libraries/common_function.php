@@ -371,15 +371,17 @@ class Common_functions {
     }
     public function parseAdeudos_addAdeudoInfo($data,$sub_adeudo,$adeudo) {
         $recargo_total=0;
-            $descuentos=DB::table('descuentos')
-                            ->where('adeudos_id','=',$sub_adeudo['id'])
-                            ->Select(DB::raw("ifnull(SUM(importe),0) as descuento"))
-                            ->first();
+            $descuentos =   Descuentos::where('adeudos_id','=',$sub_adeudo['id'])
+                             ->first();
+
                 if (!isset($descuentos->descuento)) {
                     $descuento=0;
+                    $descuento_recargo = 0;
                 } else {
                     $descuento=$descuentos->descuento;
+                    $descuento=$descuentos->descuento_recargo;
                 }
+
                 $now = strtotime('now'); // Se obtiene la fecha actual
                 $daynow = date('d', $now); // Dia actual
                 $fecha_limite = strtotime($sub_adeudo['fecha_limite']);
@@ -407,7 +409,8 @@ class Common_functions {
                     if ($sub_adeudo['aplica_recargo']==1) {
                         //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
                         $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
-                        $recargo_total=$recargo*$sub_adeudo['meses_retraso'];
+                        $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
+                        $recargo_total = $recargo_total - $descuento_recargo;
                     } else {
                         $recargo_total = 0;
                     }
@@ -438,6 +441,7 @@ class Common_functions {
                                                 'recargo'=>floatval($sub_adeudo['recargo_pago']),
                                                 'beca'=>floatval($sub_adeudo['beca_pago']),
                                                 'descuento' => floatval($descuento),
+                                                'descuento_recargo' => floatval($descuento_recargo),
                                                 'total' => floatval($sub_adeudo['importe_pago']),
                                             );
                                     } else {
@@ -453,6 +457,7 @@ class Common_functions {
                                                 'recargo'=>floatval($recargo_total),
                                                 'beca'=>floatval($beca),
                                                 'descuento'=>floatval($descuento),
+                                                'descuento_recargo' => floatval($descuento_recargo),
                                                 'total'=> floatval($total_adeudo),
                                             );
                                     }
@@ -475,6 +480,7 @@ class Common_functions {
                     $recargo_total=0;
                     $beca_total=0;
                     $descuento_total=0;
+                    $descuento_recargo_total=0;
                     $importe_total=0;
                     foreach ($sc['adeudo_info'] as $key_ai => $value_ai) {
 						$idpersonas=intval($value_ai['clave']);
@@ -482,6 +488,7 @@ class Common_functions {
                         $recargo_total=$value_ai['recargo'] + $recargo_total;
                         $beca_total=$value_ai['beca'] + $beca_total;
                         $descuento_total=$value_ai['descuento'] + $descuento_total;
+                        $descuento_recargo_total=$value_ai['descuento_recargo'] + $descuento_recargo_total;
                         $importe_total=$value_ai['importe'] + $importe_total;
                         if ( intval($value_ai['clave'])!=$idpersonas) {
                             $alumnos_total++;
@@ -494,6 +501,7 @@ class Common_functions {
                     $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['recargo_total']=$recargo_total;
                     $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['beca_total']=$beca_total;
                     $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['descuento_total']=$descuento_total;
+                    $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['descuento_recargo_total']=$descuento_recargo_total;
                     $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['importe_total']=$importe_total;
                     $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info']['total_subconceptos']['total']=$total;
                 }

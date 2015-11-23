@@ -104,7 +104,7 @@ class Adeudos extends \Eloquent {
         $Temporaltable = DB::table('adeudos');
         $query = $Temporaltable
                 ->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
-                #->join('descuentos as des', 'des.adeudos_id','=','adeudos.id')
+                #->join('descuentos as des', 'des.adeudos_id','=','adeudos.id','right')
                 ->select('adeudos.*', 
                           DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
                           'sc.aplica_beca', 

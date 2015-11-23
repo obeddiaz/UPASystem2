@@ -313,6 +313,7 @@ class AdeudosController extends \BaseController {
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
+
             $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
             $res['data'] = $commond -> crear_key($parametros,$res['data']);
