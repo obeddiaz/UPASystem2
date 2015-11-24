@@ -373,13 +373,12 @@ class Common_functions {
         $recargo_total=0;
             $descuentos =   Descuentos::where('adeudos_id','=',$sub_adeudo['id'])
                              ->first();
-
-                if (!isset($descuentos->descuento)) {
+                if (!isset($descuentos['importe'])) {
                     $descuento=0;
                     $descuento_recargo = 0;
                 } else {
-                    $descuento=$descuentos->descuento;
-                    $descuento=$descuentos->descuento_recargo;
+                    $descuento=$descuentos['importe'];
+                    $descuento_recargo=$descuentos['importe_recargo'];
                 }
 
                 $now = strtotime('now'); // Se obtiene la fecha actual
