@@ -515,7 +515,7 @@ class BecasController extends \BaseController {
 
             Becas::delete_beca_alumno($parametros);
 
-            $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
+            $personasBeca = DB::table('becas_alumno')->Select('*')->where('periodo','=',$parametros['periodo']);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
