@@ -504,22 +504,17 @@ class BecasController extends \BaseController {
             'status' => Input::get('status')
         );
         $reglas = array(
-            'id_persona' => 'required|array',
-            'idbeca' => 'required|numeric',
+            'id_persona' => 'required|integer',
+            'idbeca' => 'required|integer',
             'idnivel' => 'integer',
             'periodo' => 'required|integer',
             'status' => 'integer'
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-            $array_insert = $parametros;
-            unset($array_insert['id_persona']);
-            $data_todos = $array_insert;
-            unset($data_todos['status']);
-            foreach ($parametros['id_persona'] as $key => $value) {
-                $array_insert['id_persona'] = $value;
-                Becas::delete_beca_alumno($array_insert);
-            }
+
+            Becas::delete_beca_alumno($parametros);
+
             $personasBeca = Becas::obtenerAlumnosBecas($data_todos);
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
