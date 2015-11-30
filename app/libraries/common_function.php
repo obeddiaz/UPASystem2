@@ -376,8 +376,8 @@ class Common_functions {
         $descuentos = Descuentos::obtenerDescuentoPorAdeudo($sub_adeudo['id']);   
         $descuento_officio = "";
         foreach ($descuentos as $key_d => $descuentodata) {
-            $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
-            $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
+            $descuento_tmp = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
+            $descuento_recargo_temp = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
             
             $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
             $descuento = $descuento + $descuento_tmp;
