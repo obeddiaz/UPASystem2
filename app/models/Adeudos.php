@@ -198,7 +198,6 @@ class Adeudos extends \Eloquent {
                 $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                 $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
                 $query[$key]['tiene_desceunto'] = 1;
-                $query[$key]['importe']-=$descuento_tmp;
                 $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
                 $descuento = $descuento + $descuento_tmp;
             }
@@ -239,10 +238,11 @@ class Adeudos extends \Eloquent {
                     }
                     $query[$key]['recargo_total'] = $recargo-$descuento_recargo;
                     #$query[$key]['recargo_total'] = $query[$key]['recargo_total']
-                    $query[$key]['importe']+=($recargo + $query[$key]['recargo_total']);
+                    $query[$key]['importe'] += ($query[$key]['importe'] + $query[$key]['recargo_total']) - $descuento;
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {
                     $beca = $commond->calcular_importe_por_tipo($adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
                     $query[$key]['importe']-=$beca;
+                    $query[$key]['importe']-=$descuento;
                     $query[$key]['beca'] = $beca;
                 }
                 if ($lock==true) {
