@@ -192,7 +192,7 @@ class Adeudos extends \Eloquent {
 
             $fecha_limite = strtotime($adeudo['fecha_limite']);
             $day = date('d', $fecha_limite);
-            $descuento = 0
+            $descuento = 0;
             $descuento_recargo=0;
             foreach ($tiene_desceunto as $key_d => $descuentodata) {
                 $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
