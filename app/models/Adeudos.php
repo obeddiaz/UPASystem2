@@ -192,17 +192,17 @@ class Adeudos extends \Eloquent {
 
             $fecha_limite = strtotime($adeudo['fecha_limite']);
             $day = date('d', $fecha_limite);
-            $descuentos = array();
+            $descuento = 0
             $descuento_recargo=0;
             foreach ($tiene_desceunto as $key_d => $descuentodata) {
-                $descuento = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
+                $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                 $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
                 $query[$key]['tiene_desceunto'] = 1;
                 $query[$key]['importe']-=$descuento;
                 $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
-                $descuentos[] = $descuento;
+                $descuento = $descuento + $descuento_tmp;
             }
-            $query[$key]['descuento'] = $descuentos;
+            $query[$key]['descuento'] = $descuento;
             $query[$key]['descuento_recargo'] = $descuento_recargo;
             if (!$tiene_beca) {
                 $query[$key]['beca'] = 'N/A';
