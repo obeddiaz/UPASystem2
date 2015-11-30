@@ -198,7 +198,7 @@ class Adeudos extends \Eloquent {
                 $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                 $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
                 $query[$key]['tiene_desceunto'] = 1;
-                $query[$key]['importe']-=$descuento;
+                $query[$key]['importe']-=$descuento_tmp;
                 $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
                 $descuento = $descuento + $descuento_tmp;
             }
