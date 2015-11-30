@@ -358,7 +358,10 @@ class AdeudosController extends \BaseController {
             'grado' => 'integer',
             'recargo' => 'numeric',
             'tipo_recargo' => 'integer',
-            'paquete_id' => 'integer'
+            'paquete_id' => 'integer',
+            'recargo_pago' => 'numeric',
+            'beca_pago' => 'numeric',
+            'importe_pago' => 'numeric'
         );
         $validator = Validator::make($parametros, $reglas);
 

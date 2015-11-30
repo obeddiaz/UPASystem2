@@ -426,7 +426,9 @@ class BecasController extends \BaseController {
             'idbeca' => Input::get('idbeca'),
             'idnivel' => Input::get('idnivel'),
             'periodo' => Input::get('periodo'),
-            'status' => 0
+            'status' => 0,
+            'motivo_cancelacion' => Input::ger('motivo_cancelacion'),
+            'fecha_cancelacion' =>  date('Y-m-d')
         );
         $reglas = array(
             'id_persona' => 'required|array',
