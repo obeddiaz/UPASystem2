@@ -374,12 +374,14 @@ class Common_functions {
         $descuento=0;
         $descuento_recargo=0;
         $descuentos = Descuentos::obtenerDescuentoPorAdeudo($sub_adeudo['id']);   
+        $descuento_officio = "";
         foreach ($descuentos as $key_d => $descuentodata) {
             $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
             $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
             
             $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
             $descuento = $descuento + $descuento_tmp;
+            $descuento_officio = $descuentodata['no_officio'];
         }
 
         $now = strtotime('now'); // Se obtiene la fecha actual
@@ -443,6 +445,7 @@ class Common_functions {
                                         'descuento' => floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total' => floatval($sub_adeudo['importe_pago']),
+                                        'descuento_officio' = $descuento_officio
                                     );
                             } else {
                                 $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
@@ -459,6 +462,7 @@ class Common_functions {
                                         'descuento'=>floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total'=> floatval($total_adeudo),
+                                        'descuento_officio' = $descuento_officio
                                     );
                             }
                         }
