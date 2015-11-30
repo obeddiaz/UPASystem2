@@ -371,100 +371,101 @@ class Common_functions {
     }
     public function parseAdeudos_addAdeudoInfo($data,$sub_adeudo,$adeudo) {
         $recargo_total=0;
-            $descuentos =   Descuentos::where('adeudos_id','=',$sub_adeudo['id'])
-                             ->first();
-                if (!isset($descuentos['importe'])) {
-                    $descuento=0;
-                    $descuento_recargo = 0;
-                } else {
-                    $descuento=$descuentos['importe'];
-                    $descuento_recargo=$descuentos['importe_recargo'];
-                }
+        $descuento=0;
+        $descuento_recargo=0;
+        $descuentos = Descuentos::obtenerDescuentoPorAdeudo($sub_adeudo['id']);   
+        foreach ($descuentos as $key_d => $descuentodata) {
+            $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
+            $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
+            
+            $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
+            $descuento = $descuento + $descuento_tmp;
+        }
 
-                $now = strtotime('now'); // Se obtiene la fecha actual
-                $daynow = date('d', $now); // Dia actual
-                $fecha_limite = strtotime($sub_adeudo['fecha_limite']);
-                $day = date('d', $fecha_limite);
-                if ($daynow > $day) {
-                    $sub_adeudo['meses_retraso'] = $sub_adeudo['meses_retraso'] + 1;
-                }
+        $now = strtotime('now'); // Se obtiene la fecha actual
+        $daynow = date('d', $now); // Dia actual
+        $fecha_limite = strtotime($sub_adeudo['fecha_limite']);
+        $day = date('d', $fecha_limite);
+        if ($daynow > $day) {
+            $sub_adeudo['meses_retraso'] = $sub_adeudo['meses_retraso'] + 1;
+        }
 
-                //verifica si tiene beca
-                $tiene_beca=Becas::AlumnoBeca_Persona_Periodo(array('id_persona'=>$adeudo['id_persona'],'periodo'=>$sub_adeudo['periodo'])); // Consulta beca
-                if ($tiene_beca) {
-                    if ($sub_adeudo['aplica_beca']==1 ) { // Verifica si al adeudo le aplica beca
-                        //Si aplica beca la calcula, ya que puede ser por pocentaje o importe fijo
-                        $beca = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
-                    } else {
-                        $beca = 0;
-                    }
-                }   else {
-                    $beca=0;
-                }
-                if ($sub_adeudo['meses_retraso'] <= 0) { // si no se atrazo respeta beca y no genera adeudo
-                    $recargo_total = 0;
-                }
-                if ($sub_adeudo['meses_retraso'] > 0) { // Si se atrazo con un pago genera adeudo y quitara beca
-                    if ($sub_adeudo['aplica_recargo']==1) {
-                        //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
-                        $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
-                        $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
-                        $recargo_total = $recargo_total - $descuento_recargo;
-                    } else {
-                        $recargo_total = 0;
-                    }
-                    Becas::update_status_beca_alumno(array('id_persona'=>$adeudo['id_persona'],
-                                                           'periodo'=>$sub_adeudo['periodo'],
-                                                           'status'=> 0)); // Cancelar Beca en periodo 
-                    $beca=0;
-                }
+        //verifica si tiene beca
+        $tiene_beca=Becas::AlumnoBeca_Persona_Periodo(array('id_persona'=>$adeudo['id_persona'],'periodo'=>$sub_adeudo['periodo'])); // Consulta beca
+        if ($tiene_beca) {
+            if ($sub_adeudo['aplica_beca']==1 ) { // Verifica si al adeudo le aplica beca
+                //Si aplica beca la calcula, ya que puede ser por pocentaje o importe fijo
+                $beca = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
+            } else {
+                $beca = 0;
+            }
+        }   else {
+            $beca=0;
+        }
+        if ($sub_adeudo['meses_retraso'] <= 0) { // si no se atrazo respeta beca y no genera adeudo
+            $recargo_total = 0;
+        }
+        if ($sub_adeudo['meses_retraso'] > 0) { // Si se atrazo con un pago genera adeudo y quitara beca
+            if ($sub_adeudo['aplica_recargo']==1) {
+                //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
+                $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
+                $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
+                $recargo_total = $recargo_total - $descuento_recargo;
+            } else {
+                $recargo_total = 0;
+            }
+            Becas::update_status_beca_alumno(array('id_persona'=>$adeudo['id_persona'],
+                                                   'periodo'=>$sub_adeudo['periodo'],
+                                                   'status'=> 0)); // Cancelar Beca en periodo 
+            $beca=0;
+        }
 
-                $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
-                foreach ($data['periodos'] as $key_p => $periodo) {
-                    foreach ($periodo['subconceptos'] as $key_s => $sc) {
-                        if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
-                            #echo "<pre>" ;var_dump($sub_adeudo);echo "</pre>";die();
-                                if (intval($sub_adeudo['sub_concepto_id'])==intval($sc['sub_concepto_id'])) {
-                                    if ($sub_adeudo['status_adeudo']==1) {
-                                        #var_dump(floatval($sub_adeudo['recargo_pago']));die();
-                                            $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
-                                                'clave' => $adeudo['id_persona'],
-                                                'matricula'=>$adeudo['matricula'],
-                                                'nombre'=>$adeudo['nom'],
-                                                'apellido paterno'=>$adeudo['appat'],
-                                                'apellido materno'=>$adeudo['apmat'],
-                                                'fecha_limite' => $sub_adeudo['fecha_limite'],
-                                                'fecha_pago' => $sub_adeudo['fecha_pago'],
-                                                'carrera' => $adeudo['carrera'],
-                                                'importe'=>$sub_adeudo['importe'],
-                                                'recargo'=>floatval($sub_adeudo['recargo_pago']),
-                                                'beca'=>floatval($sub_adeudo['beca_pago']),
-                                                'descuento' => floatval($descuento),
-                                                'descuento_recargo' => floatval($descuento_recargo),
-                                                'total' => floatval($sub_adeudo['importe_pago']),
-                                            );
-                                    } else {
-                                        $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
-                                                'clave' => $adeudo['id_persona'],
-                                                'matricula'=>$adeudo['matricula'],
-                                                'nombre'=>$adeudo['nom'],
-                                                'apellido paterno'=>$adeudo['appat'],
-                                                'apellido materno'=>$adeudo['apmat'],
-                                                'fecha_limite'=>$sub_adeudo['fecha_limite'],
-                                                'carrera' => $adeudo['carrera'],
-                                                'importe'=>floatval($sub_adeudo['importe']),
-                                                'recargo'=>floatval($recargo_total),
-                                                'beca'=>floatval($beca),
-                                                'descuento'=>floatval($descuento),
-                                                'descuento_recargo' => floatval($descuento_recargo),
-                                                'total'=> floatval($total_adeudo),
-                                            );
-                                    }
-                                }
+        $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
+        foreach ($data['periodos'] as $key_p => $periodo) {
+            foreach ($periodo['subconceptos'] as $key_s => $sc) {
+                if (intval($sub_adeudo['periodo'])==intval($periodo['periodo'])) {
+                    #echo "<pre>" ;var_dump($sub_adeudo);echo "</pre>";die();
+                        if (intval($sub_adeudo['sub_concepto_id'])==intval($sc['sub_concepto_id'])) {
+                            if ($sub_adeudo['status_adeudo']==1) {
+                                #var_dump(floatval($sub_adeudo['recargo_pago']));die();
+                                    $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
+                                        'clave' => $adeudo['id_persona'],
+                                        'matricula'=>$adeudo['matricula'],
+                                        'nombre'=>$adeudo['nom'],
+                                        'apellido paterno'=>$adeudo['appat'],
+                                        'apellido materno'=>$adeudo['apmat'],
+                                        'fecha_limite' => $sub_adeudo['fecha_limite'],
+                                        'fecha_pago' => $sub_adeudo['fecha_pago'],
+                                        'carrera' => $adeudo['carrera'],
+                                        'importe'=>$sub_adeudo['importe'],
+                                        'recargo'=>floatval($sub_adeudo['recargo_pago']),
+                                        'beca'=>floatval($sub_adeudo['beca_pago']),
+                                        'descuento' => floatval($descuento),
+                                        'descuento_recargo' => floatval($descuento_recargo),
+                                        'total' => floatval($sub_adeudo['importe_pago']),
+                                    );
+                            } else {
+                                $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
+                                        'clave' => $adeudo['id_persona'],
+                                        'matricula'=>$adeudo['matricula'],
+                                        'nombre'=>$adeudo['nom'],
+                                        'apellido paterno'=>$adeudo['appat'],
+                                        'apellido materno'=>$adeudo['apmat'],
+                                        'fecha_limite'=>$sub_adeudo['fecha_limite'],
+                                        'carrera' => $adeudo['carrera'],
+                                        'importe'=>floatval($sub_adeudo['importe']),
+                                        'recargo'=>floatval($recargo_total),
+                                        'beca'=>floatval($beca),
+                                        'descuento'=>floatval($descuento),
+                                        'descuento_recargo' => floatval($descuento_recargo),
+                                        'total'=> floatval($total_adeudo),
+                                    );
+                            }
                         }
-                    }
                 }
-            return $data;
+            }
+        }
+        return $data;
     }
 
 

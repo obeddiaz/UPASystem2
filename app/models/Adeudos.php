@@ -203,7 +203,7 @@ class Adeudos extends \Eloquent {
                 $descuentos[] = $descuento;
             }
             $query[$key]['descuento'] = $descuentos;
-
+            $query[$key]['descuento_recargo'] = $descuento_recargo;
             if (!$tiene_beca) {
                 $query[$key]['beca'] = 'N/A';
             }
