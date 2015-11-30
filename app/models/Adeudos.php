@@ -238,7 +238,7 @@ class Adeudos extends \Eloquent {
                     }
                     $query[$key]['recargo_total'] = $recargo-$descuento_recargo;
                     #$query[$key]['recargo_total'] = $query[$key]['recargo_total']
-                    $query[$key]['importe'] += ($query[$key]['importe'] + $query[$key]['recargo_total']) - $descuento;
+                    $query[$key]['importe'] += ($query[$key]['recargo_total'] - $descuento);
                 } elseif ($tiene_beca && ($adeudo['aplica_beca'] == 1)) {
                     $beca = $commond->calcular_importe_por_tipo($adeudo['importe'], $tiene_beca['importe'], $tiene_beca['tipo_importe_id']);
                     $query[$key]['importe']-=$beca;
