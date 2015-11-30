@@ -445,7 +445,7 @@ class Common_functions {
                                         'descuento' => floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total' => floatval($sub_adeudo['importe_pago']),
-                                        'descuento_officio' = $descuento_officio
+                                        'descuento_officio' => $descuento_officio
                                     );
                             } else {
                                 $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
@@ -462,7 +462,7 @@ class Common_functions {
                                         'descuento'=>floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total'=> floatval($total_adeudo),
-                                        'descuento_officio' = $descuento_officio
+                                        'descuento_officio' => $descuento_officio
                                     );
                             }
                         }
