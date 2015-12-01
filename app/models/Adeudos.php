@@ -18,8 +18,9 @@ class Adeudos extends \Eloquent {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $Temporaltable = DB::table('adeudos');
         $query = $Temporaltable->join('sub_conceptos', 'adeudos.sub_concepto_id', '=', 'sub_conceptos.id')
+                ->join('conceptos','sub_conceptos.conceptos_id','=','conceptos.id')
                 ->where('adeudos.periodo', '=', $periodo)
-                ->select('sub_conceptos.sub_concepto', 'adeudos.*')
+                ->select('sub_conceptos.sub_concepto', 'adeudos.*','conceptos.concepto', 'conceptos.descripcion as descripcion_concepto')
                 ->get();
         return $query;
     }
@@ -104,11 +105,14 @@ class Adeudos extends \Eloquent {
         $Temporaltable = DB::table('adeudos');
         $query = $Temporaltable
                 ->join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+                ->join('conceptos','sc.conceptos_id','=','conceptos.id')
                 #->join('descuentos as des', 'des.adeudos_id','=','adeudos.id','right')
                 ->select('adeudos.*', 
                           DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
                           'sc.aplica_beca', 
-                          'sc.sub_concepto');
+                          'sc.sub_concepto',
+                          'conceptos.concepto', 
+                          'conceptos.descripcion as descripcion_concepto');
         if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
             $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
                     ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta'])

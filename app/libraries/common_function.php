@@ -421,7 +421,6 @@ class Common_functions {
                                                    'status'=> 0)); // Cancelar Beca en periodo 
             $beca=0;
         }
-
         $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
         foreach ($data['periodos'] as $key_p => $periodo) {
             foreach ($periodo['subconceptos'] as $key_s => $sc) {
@@ -445,7 +444,9 @@ class Common_functions {
                                         'descuento' => floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total' => floatval($sub_adeudo['importe_pago']),
-                                        'descuento_officio' => $descuento_officio
+                                        'descuento_officio' => $descuento_officio,
+                                        'concepto' => $sub_adeudo['concepto'],
+                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
                                     );
                             } else {
                                 $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
@@ -462,7 +463,9 @@ class Common_functions {
                                         'descuento'=>floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total'=> floatval($total_adeudo),
-                                        'descuento_officio' => $descuento_officio
+                                        'descuento_officio' => $descuento_officio,
+                                        'concepto' => $sub_adeudo['concepto'],
+                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
                                     );
                             }
                         }
