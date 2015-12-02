@@ -245,12 +245,14 @@ class BecasController extends \BaseController {
 
         if (!$validator->fails()) {
             DB::setFetchMode(PDO::FETCH_ASSOC);
+        
             $personasBeca = DB::table('becas')->join('becas_alumno', 'becas_alumno.idbeca', '=', 'becas.id')
                 ->join('tipo_importe', 'tipo_importe.id', '=', 'becas.tipo_importe_id')
                 ->where('becas_alumno.periodo','=',$parametros['periodo'])
                 ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona','tipo_importe.nombre as tipo_cobro')
+                ->distinct()
                 ->get();
-
+                
             $res['data'] = $commond->obtener_alumno_idPersona($personasBeca);
             if ($res['data'] == null) {
                 $respuesta = json_encode(array('error' => true, 'mensaje' => 'Error en la busqueda de datos.', 'respuesta' => null));

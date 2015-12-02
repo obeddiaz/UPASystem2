@@ -105,6 +105,7 @@ class Common_functions {
 
                         unset($persona_info['id_persona']);
                         $res[] = array_merge($alumno, $persona_info);
+                        break;
                     }
                 }
             }
