@@ -194,17 +194,25 @@ class Adeudos extends \Eloquent {
             $query[$key]['contador'] = $sub_cont[$adeudo['sub_concepto_id']];
             $tiene_desceunto = Descuentos::obtenerDescuentoPorAdeudo($adeudo['id']);
 
+            // Limitando a solo un descuento por adeudo 
+            $descuentos_limitado = array();
+            if (isset($tiene_desceunto[0])) {
+                $descuentos_limitado[0] = $tiene_desceunto[0];
+            }
             $fecha_limite = strtotime($adeudo['fecha_limite']);
             $day = date('d', $fecha_limite);
             $descuento = 0;
-            $descuento_recargo=0;
-            foreach ($tiene_desceunto as $key_d => $descuentodata) {
+            $descuento_recargo =0;
+            $descuento_id = null;
+            foreach ($descuentos_limitado as $key_d => $descuentodata) {
                 $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                 $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
                 $query[$key]['tiene_desceunto'] = 1;
                 $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
                 $descuento = $descuento + $descuento_tmp;
+                $descuento_id = $descuentodata['id'];
             }
+            $query[$key]['descuento_id'] = $descuento_id;
             $query[$key]['descuento'] = $descuento;
             $query[$key]['descuento_recargo'] = $descuento_recargo;
             if (!$tiene_beca) {
@@ -240,6 +248,7 @@ class Adeudos extends \Eloquent {
                     if ($adeudo['recargo_acumulado'] == 1) {
                         $recargo*= $query[$key]['meses_retraso'];
                     }
+                    $query[$key]['recargo_no_descuento'] = $recargo;
                     $query[$key]['recargo_total'] = $recargo-$descuento_recargo;
                     #$query[$key]['recargo_total'] = $query[$key]['recargo_total']
                     $query[$key]['importe'] += ($query[$key]['recargo_total'] - $descuento);
@@ -271,6 +280,7 @@ class Adeudos extends \Eloquent {
                     } else {
                         $recargo = 0;
                     }
+                    $query[$key]['recargo_no_descuento'] = null;
                     if ($adeudo['recargo_acumulado'] == 1) {
                         $recargo*= $query[$key]['meses_retraso'];
                     }
