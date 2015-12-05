@@ -25,7 +25,7 @@ class Planes_de_pagoController extends \BaseController {
         $parametros = Input::all();
         $reglas = array(
                     'descripcion' => 'required',
-                    'clave_plan' => 'required|max:6',
+                    'clave_plan' => 'required|max:50',
                     'id_agrupaciones' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
