@@ -96,8 +96,9 @@ class DescuentosController extends \BaseController {
 		$parametros= Input::get();	
 		$reglas = 
 			array(
-			    'id' => 'required|integer',
-			    'importe' => 'required'
+			    'importe' => 'numeric',
+			    'importe_recargo' => 'numeric',
+			    'id' => 'required|integer'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
