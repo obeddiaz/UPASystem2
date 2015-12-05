@@ -22,7 +22,7 @@ class Sii {
     private $response;
     private $logFile;
     private $token;
-    private $minutesToCache = 20;
+    private $minutesToCache = 86400;
 
     public function __construct($config = null) {
         ini_set('max_execution_time', 300);
