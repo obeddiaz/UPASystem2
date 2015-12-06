@@ -20,6 +20,7 @@ class Planes_de_pago extends \Eloquent {
         DB::setFetchMode(PDO::FETCH_ASSOC);
         $query = Planes_de_pago::join('paqueteplandepago', 'plan_de_pago.id', '=', 'paqueteplandepago.id_plandepago')
                         ->where('id_plandepago', '=', $data['id'])
+                        ->where('idnivel', '=',$data['idnivel'])
                         ->where('periodo', '=', $data['periodo'])->first();
         return $query;
     }

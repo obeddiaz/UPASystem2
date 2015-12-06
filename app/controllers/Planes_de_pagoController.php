@@ -168,7 +168,8 @@ class Planes_de_pagoController extends \BaseController {
         $parametros = Input::get();
         $reglas = array(
                     'id' => 'required|integer',
-                    'periodo' => 'required|integer'
+                    'periodo' => 'required|integer',
+                    'idnivel' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
 
