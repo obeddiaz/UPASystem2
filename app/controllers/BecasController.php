@@ -586,7 +586,7 @@ class BecasController extends \BaseController {
                                     ->where('id_persona','=',$parametros['id_persona'])
                                     ->orderBy('fecha_limite', 'asc')
                                     ->get();
-                foreach ($adedudos as $key_adeudo => $adeudo) {
+                foreach ($adeudos as $key_adeudo => $adeudo) {
                     if ($bandera==true) {
                         if ($parametros['aplica_beca']==0) {
                             $data['aplica_recargo']=0;
