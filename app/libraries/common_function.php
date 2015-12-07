@@ -407,12 +407,13 @@ class Common_functions {
         }
         if ($sub_adeudo['meses_retraso'] <= 0) { // si no se atrazo respeta beca y no genera adeudo
             $recargo_total = 0;
+            $recargo_total_no_descuento = 0;
         }
         if ($sub_adeudo['meses_retraso'] > 0) { // Si se atrazo con un pago genera adeudo y quitara beca
             if ($sub_adeudo['aplica_recargo']==1) {
                 //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
                 $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
-                if ($adeudo['recargo_acumulado'] == 1) {
+                if ($sub_adeudo['recargo_acumulado'] == 1) {
                     $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
                 }  else {
                     $recargo_total = $recargo;
