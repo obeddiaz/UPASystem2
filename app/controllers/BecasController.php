@@ -78,6 +78,8 @@ class BecasController extends \BaseController {
             unset($data_todos['status']);
             foreach ($parametros['id_persona'] as $key => $value) {
                 $array_insert['id_persona'] = $value;
+                $array_insert['created_at'] = date('Y-m-d H:i:s');
+                $array_insert['updated_at'] = date('Y-m-d H:i:s');
                 $beca = Becas::AlumnoBeca_Persona_Periodo(
                     array('id_persona' => $value,
                     'periodo'=>$parametros['periodo'])); // Consulta beca
@@ -249,7 +251,7 @@ class BecasController extends \BaseController {
             $personasBeca = DB::table('becas')->join('becas_alumno', 'becas_alumno.idbeca', '=', 'becas.id')
                 ->join('tipo_importe', 'tipo_importe.id', '=', 'becas.tipo_importe_id')
                 ->where('becas_alumno.periodo','=',$parametros['periodo'])
-                ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona','tipo_importe.nombre as tipo_cobro')
+                ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona','tipo_importe.nombre as tipo_cobro','becas_alumno.created_at')
                 ->distinct()
                 ->get();
                 
