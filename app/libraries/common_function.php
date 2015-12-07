@@ -412,7 +412,12 @@ class Common_functions {
             if ($sub_adeudo['aplica_recargo']==1) {
                 //Si aplica recago lo calcula, ya que puede ser por pocentaje o importe fijo y lo muliplica por No. de meses rerasado
                 $recargo = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $sub_adeudo['recargo'], $sub_adeudo['tipo_recargo']);
-                $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
+                if ($adeudo['recargo_acumulado'] == 1) {
+                    $recargo_total = $recargo*$sub_adeudo['meses_retraso'];
+                }  else {
+                    $recargo_total = $recargo;
+                }
+                $recargo_total_no_descuento = $recargo_total;
                 $recargo_total = $recargo_total - $descuento_recargo;
             } else {
                 $recargo_total = 0;
@@ -460,6 +465,7 @@ class Common_functions {
                                         'carrera' => $adeudo['carrera'],
                                         'importe'=>floatval($sub_adeudo['importe']),
                                         'recargo'=>floatval($recargo_total),
+                                        'recargo_no_descuento'=>floatval($recargo_total_no_descuento),
                                         'beca'=>floatval($beca),
                                         'descuento'=>floatval($descuento),
                                         'descuento_recargo' => floatval($descuento_recargo),
