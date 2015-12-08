@@ -78,8 +78,8 @@ class BecasController extends \BaseController {
             unset($data_todos['status']);
             foreach ($parametros['id_persona'] as $key => $value) {
                 $array_insert['id_persona'] = $value;
-                $array_insert['created_at'] = date('Y-m-d H:i:s');
-                $array_insert['updated_at'] = date('Y-m-d H:i:s');
+//                $array_insert['created_at'] = date('Y-m-d H:i:s');
+//                $array_insert['updated_at'] = date('Y-m-d H:i:s');
                 $beca = Becas::AlumnoBeca_Persona_Periodo(
                     array('id_persona' => $value,
                     'periodo'=>$parametros['periodo'])); // Consulta beca
