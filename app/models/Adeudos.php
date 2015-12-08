@@ -165,14 +165,16 @@ class Adeudos extends \Eloquent {
             $query = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
                 #->where("adeudos.id_persona", "=", $data['id_persona'])
                 #->where("adeudos.periodo", "=", $data['periodo'])
-                ->orderBy('fecha_limite', 'desc')
+                ->orderBy('locker_manager', 'desc')
+                ->orderBy('fecha_limite', 'asc')
                 ->where("adeudos.id","=",$data['id'])
                 ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'adeudos.aplica_beca', 'sc.sub_concepto')
                 ->get(); // Se obtienen los adeudos de una persona en el periodo solicitado
                 $now = strtotime($data['fecha_pago']); // Se obtiene la fecha actual
         } else {
             $query = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
-                ->orderBy('fecha_limite', 'desc')
+                ->orderBy('locker_manager', 'desc')
+                ->orderBy('fecha_limite', 'asc')
                 ->where("adeudos.id_persona", "=", $data['id_persona'])
                 ->where("adeudos.periodo", "=", $data['periodo'])
                 ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'adeudos.aplica_beca', 'sc.sub_concepto')
