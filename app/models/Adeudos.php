@@ -114,9 +114,15 @@ class Adeudos extends \Eloquent {
                           'conceptos.concepto', 
                           'conceptos.descripcion as descripcion_concepto');
         if (isset($data['fecha_desde']) && isset($data['fecha_hasta'])) {
-            $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
+            if ($data['status']==1) {
+              $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
+                    ->where("adeudos.fecha_pago", "<=", $data['fecha_hasta'])
+                    ->where("adeudos.status_adeudo","=",$data['status']);
+            } else {
+              $query = $query->where("adeudos.fecha_limite", ">=", $data['fecha_desde'])
                     ->where("adeudos.fecha_limite", "<=", $data['fecha_hasta'])
                     ->where("adeudos.status_adeudo","=",$data['status']);
+            }
         } else {
             if (isset($data['periodo'])) {
                 $query = $query->where("adeudos.periodo", "=", $data['periodo'])

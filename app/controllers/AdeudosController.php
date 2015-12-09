@@ -289,7 +289,7 @@ class AdeudosController extends \BaseController {
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
-            $res['data'] = $commond -> crear_key($parametros,$res['data']);
+            //$res['data'] = $commond -> crear_key($parametros,$res['data']);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
