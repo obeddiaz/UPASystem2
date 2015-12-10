@@ -12,7 +12,7 @@ class AdeudosController extends \BaseController {
     }
 
     public function index() {
-      
+
     }
 
     /**
@@ -145,8 +145,77 @@ class AdeudosController extends \BaseController {
         return $final_response;
     }
 
-    public function create_file() {
+    public function create_byFile() {
+        $commond = new Common_functions();
 
+        $parametros = array(
+            'paquete_id' => Input::get('paquete_id')
+            //'id_personas' => Input::get('id_personas')
+        );
+        $reglas = array(
+            'paquete_id' => 'required|integer'
+            //'id_personas' => 'required|array'
+        );
+        $validator = Validator::make($parametros, $reglas);
+        if (!$validator->fails()) {
+          $file = Request::file('paquete_file');
+          if (isset($file)) {    
+            $root=$file->getRealPath();
+            $info_excel=Excel::load($root, function($archivo){})->get();
+            $parametros['id_personas'] = array();
+            //$selected= Config::get('matriculas');
+            $todos = $this->sii->new_request('POST', '/alumnos/all');
+            foreach($info_excel as $key => $value){ 
+                foreach ($todos     as $key_todos => $todos_row) {
+                    if ($value->matricula == $todos_row['matricula']) {
+                        $parametros['id_personas'][]= $todos_row['idpersonas'];
+                        break;
+                    }
+                }
+            }
+            $periodo_actual = $commond->periodo_actual();
+            $paquete = Paquete::find($parametros['paquete_id']);
+            $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
+            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            $personas_ids['no_asignados'] = array();
+            $personas_ids['asignados'] = array();
+            foreach ($parametros['id_personas'] as $alumno) {
+                $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
+                                ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                                ->where('status_adeudo', '=', 0)->count();
+                $persona = array();
+                foreach ($todos as $key_todos => $todos_row) {
+                  if (intval($todos_row['idpersonas']) == intval($alumno)) {
+                    $persona = $todos_row;
+                    break;
+                  }
+                }
+                if (isset($persona['estatus_admin'])) {
+                  if ($persona['estatus_admin']=='ACTIVO') {
+                    if ($adeudos_no_pagados == 0) {
+                      Adeudos::agregar_adeudos($alumno);
+                      $personas_ids['asignados'][] = $persona;
+                    } else {
+                      $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                      $personas_ids['no_asignados'][] = $persona;
+                    }
+                  } else {
+                      $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
+                      $personas_ids['no_asignados'][] = $persona;
+                  }
+                }
+            }
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
+          }  else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No se subio archivo o se subio incorrectamente.', 'respuesta' => null));  
+          }
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
     }
 
     public function create_reporte_key() {

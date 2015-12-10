@@ -25,6 +25,7 @@ Route::group(array('before' => 'auth'), function() {
                 Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
                 Route::group(array('prefix' => '/alumnos_paquete'), function() {
                     Route::post('/agregar', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create'));
+                    Route::post('/agregar_archivo', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create_byFile'));
                 });
             });
             Route::group(array('prefix' => '/generales'), function() {
