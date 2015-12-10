@@ -22,7 +22,7 @@ class Sii {
     private $response;
     private $logFile;
     private $token;
-    private $minutesToCache = 86400;
+    private $minutesToCache = 21600;
 
     public function __construct($config = null) {
         ini_set('max_execution_time', 300);
@@ -118,9 +118,9 @@ class Sii {
         $datosToCache['service'] = $service;
         $keyToService = md5(json_encode($datosToCache));
 
-        if (Cache::has($keyToService)) {
-            $response = Cache::get($keyToService);
-        } else {
+        //if (Cache::has($keyToService)) {
+        //    $response = Cache::get($keyToService);
+        //} else {
             $this->request->addHeader('Authorization: Basic ' . base64_encode($this->name . ':' . $this->password));
             $datos['token'] = $this->token;
             if ($datos) {
@@ -138,7 +138,7 @@ class Sii {
                 echo json_encode(array('error' => true,'message'=> $response['error'],'response'=>''));
                 die();
             }
-        }
+        //}
         return $response;
     }
 

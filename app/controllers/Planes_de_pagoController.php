@@ -211,7 +211,7 @@ class Planes_de_pagoController extends \BaseController {
         $parametros = Input::get();
         $reglas = array(
                     'id' => 'required|integer',
-                    'clave_plan' => 'max:6',
+                    'clave_plan' => 'max:50',
                     'id_agrupaciones' => 'integer',
                     'descripcion' => ''
         );
