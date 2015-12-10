@@ -49,6 +49,9 @@ class Paquete extends \Eloquent {
             }
         }
         foreach ($data['sub_concepto'] as $subconcepto) {
+            if (!isset($subconcepto['recargo_acumulado'])) {
+                $subconcepto['recargo_acumulado'] = 0;
+            }
             $table = DB::table(Paquete::$subconceptos_paquete);
             $data_subconcepto = array( // Crea el array para generar el adeudo
                 "sub_concepto_id" => $subconcepto['id'],

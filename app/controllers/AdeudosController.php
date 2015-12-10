@@ -1,14 +1,18 @@
 <?php
 
 class AdeudosController extends \BaseController {
-
+    private $sii;
     /**
      * Display a listing of the resource.
      *
      * @return Response
      */
+    public function __construct() {
+        $this->sii = new Sii();
+    }
+
     public function index() {
-        
+      
     }
 
     /**
@@ -29,21 +33,40 @@ class AdeudosController extends \BaseController {
         );
         $validator = Validator::make($parametros, $reglas);
         if (!$validator->fails()) {
-
+            $todos = $this->sii->new_request('POST', '/alumnos/all');
             $periodo_actual = $commond->periodo_actual();
             $paquete = Paquete::find($parametros['paquete_id']);
             $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
             Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            $personas_ids['no_asignados'] = array();
+            $personas_ids['asignados'] = array();
             foreach ($parametros['id_personas'] as $alumno) {
                 $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
                                 ->where('periodo', '!=', $periodo_actual['idperiodo'])
                                 ->where('status_adeudo', '=', 0)->count();
-
-                if ($adeudos_no_pagados == 0) {
-                    Adeudos::agregar_adeudos($alumno);
+                $persona = array();
+                foreach ($todos as $key_todos => $todos_row) {
+                  if (intval($todos_row['idpersonas']) == intval($alumno)) {
+                    $persona = $todos_row;
+                    break;
+                  }
+                }
+                if (isset($persona['estatus_admin'])) {
+                  if ($persona['estatus_admin']=='ACTIVO') {
+                    if ($adeudos_no_pagados == 0) {
+                      Adeudos::agregar_adeudos($alumno);
+                      $personas_ids['asignados'][] = $persona;
+                    } else {
+                      $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                      $personas_ids['no_asignados'][] = $persona;
+                    }
+                  } else {
+                      $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
+                      $personas_ids['no_asignados'][] = $persona;
+                  }
                 }
             }
-            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => ''));
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
@@ -120,6 +143,10 @@ class AdeudosController extends \BaseController {
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
         return $final_response;
+    }
+
+    public function create_file() {
+
     }
 
     public function create_reporte_key() {
