@@ -146,6 +146,10 @@ class AdeudosController extends \BaseController {
     }
 
     public function create_byFile() {
+        ini_set('memory_limit', '1000M');
+        ini_set('post_max_size', '10M');
+        ini_set('upload_max_filesize', '150M');
+      
         $commond = new Common_functions();
 
         $parametros = array(
@@ -179,6 +183,8 @@ class AdeudosController extends \BaseController {
             Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
             $personas_ids['no_asignados'] = array();
             $personas_ids['asignados'] = array();
+            $count_asigned = 0;
+            $count_no_asigned = 0;
             foreach ($parametros['id_personas'] as $alumno) {
                 $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
                                 ->where('periodo', '!=', $periodo_actual['idperiodo'])
@@ -190,21 +196,32 @@ class AdeudosController extends \BaseController {
                     break;
                   }
                 }
-                if (isset($persona['estatus_admin'])) {
-                  if ($persona['estatus_admin']=='ACTIVO') {
+                //if (isset($persona['estatus_admin'])) {
+                  //if ($persona['estatus_admin']=='ACTIVO') {
+                if ($persona['estatus_admin']!='EGRESADO') { // temporal condition
                     if ($adeudos_no_pagados == 0) {
                       Adeudos::agregar_adeudos($alumno);
                       $personas_ids['asignados'][] = $persona;
+                      $count_asigned++;
                     } else {
                       $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
                       $personas_ids['no_asignados'][] = $persona;
+                      $count_no_asigned++;
                     }
                   } else {
                       $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
                       $personas_ids['no_asignados'][] = $persona;
+                      $count_no_asigned++;
                   }
-                }
+                  //} else {
+                  //    $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
+                  //    $personas_ids['no_asignados'][] = $persona;
+                  //    $count_no_asigned++;
+                  //}
+                //}
             }
+            $personas_ids['total_asignados']=$count_asigned;
+            $personas_ids['total_no_asignados']=$count_no_asigned;
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
           }  else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No se subio archivo o se subio incorrectamente.', 'respuesta' => null));  
