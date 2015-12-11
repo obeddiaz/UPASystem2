@@ -24,7 +24,7 @@ class Descuentos extends \Eloquent {
 
     public static function obtenerDescuentoPorAdeudo($id = null) {
 
-        $query = Descuentos::join('adeudos', 'adeudos.id', '=', 'descuentos.adeudos_id', 'descuentos.no_officio')
+        $query = Descuentos::join('adeudos', 'adeudos.id', '=', 'descuentos.adeudos_id')
                 ->join('sub_conceptos', 'adeudos.sub_concepto_id', '=', 'sub_conceptos.id')
                 ->select('descuentos.*');
 
