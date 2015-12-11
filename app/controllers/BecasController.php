@@ -101,6 +101,10 @@ class BecasController extends \BaseController {
     }
 
     public function create_alumno_file() {
+        ini_set('memory_limit', '1000M');
+        ini_set('post_max_size', '10M');
+        ini_set('upload_max_filesize', '150M');
+        
         $commond = new Common_functions();
         $file = Request::file('becas_file');
         $config = Config::get('app');
