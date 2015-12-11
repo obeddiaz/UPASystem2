@@ -12,7 +12,7 @@
  */
 header('Access-Control-Allow-Origin: *');
 Route::get('/', function() {
-    return View::make('app/index');
+    return View::make('app/index',array('app_version'=>'1.0'));
 });
 Route::group(array('before' => 'auth'), function() {
     Route::group(array('before' => 'permisos'), function() {
