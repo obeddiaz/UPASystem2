@@ -189,7 +189,6 @@ class Adeudos extends \Eloquent {
         }
 
         $tiene_beca = Becas::AlumnoBeca_Persona_Periodo($data); // Consulta beca
-
         $daynow = date('d', $now); // Dia actual
         $sub_cont = array(); // Contador de adeudos
         $lock=false;
@@ -230,9 +229,6 @@ class Adeudos extends \Eloquent {
             $query[$key]['descuento_officio'] = $descuento_officio;
             if (!$tiene_beca) {
                 $query[$key]['beca'] = 'N/A';
-                $query['beca']['beca_abreviatura'] = 'N/A';
-                $query['beca']['status'] = 'N/A';
-                $query['beca']['beca_descripcion'] = 'N/A';
             }
 
             if ($adeudo['status_adeudo'] == 0) {
@@ -247,9 +243,7 @@ class Adeudos extends \Eloquent {
                         $lock=true;
                     }
                     $query[$key]['beca'] = 'N/A';
-                    $query['beca']['beca_abreviatura'] = 'N/A';
-                    $query['beca']['status'] = 'CANCELADA';
-                    $query['beca']['beca_descripcion'] = 'N/A';
+
                     if ($tiene_beca) {
                         $databeca = array(
                             "id_persona" => $data['id_persona'],
@@ -276,9 +270,6 @@ class Adeudos extends \Eloquent {
                     $query[$key]['importe']-=$beca;
                     $query[$key]['importe']-=$descuento;
                     $query[$key]['beca'] = $beca;
-                    $query['beca']['beca_abreviatura'] = $tiene_beca['abreviatura'];
-                    $query['beca']['status'] = 'ACTIVA';
-                    $query['beca']['beca_descripcion'] = $tiene_beca['descripcion'];
                 }
                 if ($lock==true) {
                     $query[$key]['lock'] = 1;   
