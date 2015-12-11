@@ -351,7 +351,7 @@ class AdeudosController extends \BaseController {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         } else {
             $alumno = Adeudos::obtener_adeudos_alumno($parametros);
-            $alumno['beca'] = Becas::AlumnoBeca_Persona_Periodo($parametros); // Consulta beca
+            //$alumno['beca'] = Becas::AlumnoBeca_Persona_Periodo($parametros); // Consulta beca
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
         }
         $final_response = Response::make($respuesta, 200);
