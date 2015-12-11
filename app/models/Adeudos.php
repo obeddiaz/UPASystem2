@@ -214,6 +214,7 @@ class Adeudos extends \Eloquent {
             $descuento = 0;
             $descuento_recargo =0;
             $descuento_id = null;
+            $descuento_officio= null;
             foreach ($descuentos_limitado as $key_d => $descuentodata) {
                 $descuento_tmp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
                 $descuento_recargo_temp = $commond->calcular_importe_por_tipo($adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
@@ -221,12 +222,16 @@ class Adeudos extends \Eloquent {
                 $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
                 $descuento = $descuento + $descuento_tmp;
                 $descuento_id = $descuentodata['id'];
+                $descuento_officio = $descuentodata['no_officio'];
             }
             $query[$key]['descuento_id'] = $descuento_id;
             $query[$key]['descuento'] = $descuento;
             $query[$key]['descuento_recargo'] = $descuento_recargo;
+            $query[$key]['descuento_officio'] = $descuento_officio;
             if (!$tiene_beca) {
                 $query[$key]['beca'] = 'N/A';
+                $query[$key]['beca_abreviatura'] = 'N/A';
+                $query[$key]['beca_descripcion'] = 'N/A';
             }
 
             if ($adeudo['status_adeudo'] == 0) {
@@ -241,6 +246,8 @@ class Adeudos extends \Eloquent {
                         $lock=true;
                     }
                     $query[$key]['beca'] = 'N/A';
+                    $query[$key]['beca_abreviatura'] = 'N/A';
+                    $query[$key]['beca_descripcion'] = 'N/A';
                     if ($tiene_beca) {
                         $databeca = array(
                             "id_persona" => $data['id_persona'],
@@ -267,6 +274,8 @@ class Adeudos extends \Eloquent {
                     $query[$key]['importe']-=$beca;
                     $query[$key]['importe']-=$descuento;
                     $query[$key]['beca'] = $beca;
+                    $query[$key]['beca_abreviatura'] = $tiene_beca['abreviatura'];
+                    $query[$key]['beca_descripcion'] = $tiene_beca['descripcion'];
                 }
                 if ($lock==true) {
                     $query[$key]['lock'] = 1;   
