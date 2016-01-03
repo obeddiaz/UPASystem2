@@ -70,8 +70,10 @@ class BecasController extends \BaseController {
             'status' => 'required|integer'
         );
         $validator = Validator::make($parametros, $reglas);
+        $user = Session::all();
 
         if (!$validator->fails()) {
+            $parametros['asignada_por']=$user['user']['persona']['iemail'];
             $array_insert = $parametros;
             unset($array_insert['id_persona']);
             $data_todos = $array_insert;
@@ -110,6 +112,7 @@ class BecasController extends \BaseController {
         $config = Config::get('app');
         $meses = $config['meses_periodo'];
         if (isset($file)) {    
+            $use = Session::all();
             $root=$file->getRealPath();
             $data=array();            
             $info_excel=Excel::load($root, function($archivo){})->get();
@@ -165,6 +168,7 @@ class BecasController extends \BaseController {
                                         }
                                     }
                                 }
+                                $data['asignada_por']=$user['user']['persona']['iemail'];
                                 Becas::create_beca_alumno($data);
                                 $data['matricula']= $value->matricula;
                                 $res['data']['created'][]=$data;
@@ -255,7 +259,10 @@ class BecasController extends \BaseController {
             $personasBeca = DB::table('becas')->join('becas_alumno', 'becas_alumno.idbeca', '=', 'becas.id')
                 ->join('tipo_importe', 'tipo_importe.id', '=', 'becas.tipo_importe_id')
                 ->where('becas_alumno.periodo','=',$parametros['periodo'])
-                ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona','tipo_importe.nombre as tipo_cobro','becas_alumno.created_at')
+                ->select('becas.*','becas_alumno.periodo', 'becas_alumno.id_persona',
+                         'tipo_importe.nombre as tipo_cobro','becas_alumno.created_at',
+                         'becas_alumno.asignada_por','becas_alumno.cancelada_por',
+                         'becas_alumno.cancelada_motivo','becas_alumno.cancelada_fecha')
                 ->distinct()
                 ->get();
                 
@@ -408,6 +415,9 @@ class BecasController extends \BaseController {
 
         if (!$validator->fails()) {
             $array_insert = $parametros;
+            $parametros['cancelada_motivo'] = NULL;
+            $parametros['cancelada_fecha'] = NULL;
+            $parametros['cancelada_por'] = NULL;
             unset($array_insert['id_persona']);
             $data_todos = $array_insert;
             unset($data_todos['status']);
@@ -435,8 +445,7 @@ class BecasController extends \BaseController {
             'idnivel' => Input::get('idnivel'),
             'periodo' => Input::get('periodo'),
             'status' => 0,
-            'motivo_cancelacion' => Input::ger('motivo_cancelacion'),
-            'fecha_cancelacion' =>  date('Y-m-d')
+            'cancelada_motivo' => Input::ger('motivo_cancelacion'),
         );
         $reglas = array(
             'id_persona' => 'required|array',
@@ -444,10 +453,14 @@ class BecasController extends \BaseController {
             'idnivel' => 'integer',
             'periodo' => 'required|integer',
             'status' => 'required|integer'
+            'cancelada_motivo' => 'required'
         );
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
+            $user = Session::all();
+            $parametros['cancelada_fecha'] = date('Y-m-d');
+            $parametros['cancelada_por'] = $user['user']['persona']['iemail'];
             $array_insert = $parametros;
             unset($array_insert['id_persona']);
             $data_todos = $array_insert;

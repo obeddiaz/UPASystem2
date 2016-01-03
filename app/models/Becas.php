@@ -92,7 +92,9 @@ class Becas extends \Eloquent {
         $query = $Temporaltable
                 ->where('id_persona', '=', $data['id_persona'])
                 ->where('periodo', '=', $data['periodo'])
-                ->update(array('status' => $data['status']));
+                ->update(array('status' => $data['status'], 'cancelada_por' => $data['cancelada_por'], 
+                                'cancelada_fecha'=> $data['cancelada_fecha'], 
+                                'cancelada_motivo'=> $data['cancelada_motivo']));
         return $query;
     }
 

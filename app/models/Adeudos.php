@@ -246,6 +246,9 @@ class Adeudos extends \Eloquent {
 
                     if ($tiene_beca) {
                         $databeca = array(
+                            "cancelada_motivo" => "Pago retrasado",
+                            "cancelada_fecha" => date("Y-m-d"),
+                            "cancelada_por" => "Sistema",
                             "id_persona" => $data['id_persona'],
                             "periodo" => $data['periodo'],
                             "status" => 0
