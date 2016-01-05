@@ -452,7 +452,7 @@ class BecasController extends \BaseController {
             'idbeca' => 'required|numeric',
             'idnivel' => 'integer',
             'periodo' => 'required|integer',
-            'status' => 'required|integer'
+            'status' => 'required|integer',
             'cancelada_motivo' => 'required'
         );
         $validator = Validator::make($parametros, $reglas);

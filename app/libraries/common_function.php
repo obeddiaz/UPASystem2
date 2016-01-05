@@ -423,9 +423,17 @@ class Common_functions {
             } else {
                 $recargo_total = 0;
             }
+//              $curr_user = Session::all();
+//        $data['cancelada_por'] = $curr_user['user']['persona']['iemail'];
+//        $data['cancelada_por'], 
+//                                'cancelada_fecha'=> $data['cancelada_fecha'], 
+//                                'cancelada_motivo'=> $data['cancelada_motivo']));
             Becas::update_status_beca_alumno(array('id_persona'=>$adeudo['id_persona'],
                                                    'periodo'=>$sub_adeudo['periodo'],
-                                                   'status'=> 0)); // Cancelar Beca en periodo 
+                                                   'status'=> 0,
+                                                   'cancelada_por'=>"Sistema",
+                                                   'cancelada_fecha'=> date('Y-m-d'),
+                                                   'cancelada_motivo' => "Retraso en Pago")); // Cancelar Beca en periodo 
             $beca=0;
         }
         $total_adeudo=((($sub_adeudo['importe'] + $recargo_total)-$descuento)-$beca);
