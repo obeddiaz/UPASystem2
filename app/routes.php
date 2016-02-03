@@ -109,6 +109,7 @@ Route::group(array('before' => 'auth'), function() {
             Route::group(array('prefix' => '/descuentos'), function() {
                 Route::get('/', array('as' => 'muestra_todos_descuentos', 'uses' => 'DescuentosController@index'));
                 Route::get('/actualiza', array('as' => 'muestra_descuentos', 'uses' => 'DescuentosController@show'));
+                Route::get('/reporte', array('as' => 'muestra_descuentos', 'uses' => 'DescuentosController@show_reporte'));
                 #   Route::get('/descuentos/actualiza/descuentos', array('as' => 'muestra_descuentos_concepto', 'uses' => 'ConceptosController@show_descuentos'));
                 Route::post('/agregar', array('as' => 'crear_descuento', 'uses' => 'DescuentosController@create'));
                 Route::put('/guardar', array('as' => 'actualizar_valor_descuento', 'uses' => 'DescuentosController@update'));

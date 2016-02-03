@@ -376,6 +376,7 @@ class Common_functions {
         $descuento_recargo=0;
         $descuentos = Descuentos::obtenerDescuentoPorAdeudo($sub_adeudo['id']);   
         $descuento_officio = "";
+        $descuento_descripcion = "";
         foreach ($descuentos as $key_d => $descuentodata) {
             $descuento_tmp = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $descuentodata['importe'], $descuentodata['tipo_importe_id']);
             $descuento_recargo_temp = $this->calcular_importe_por_tipo($sub_adeudo['importe'], $descuentodata['importe_recargo'], $descuentodata['tipo_importe_id']);
@@ -383,6 +384,7 @@ class Common_functions {
             $descuento_recargo = $descuento_recargo + $descuento_recargo_temp;
             $descuento = $descuento + $descuento_tmp;
             $descuento_officio = $descuentodata['no_officio'];
+            $descuento_descripcion = $descuentodata['descripcion_officio'];
         }
 
         $now = strtotime('now'); // Se obtiene la fecha actual
@@ -462,6 +464,7 @@ class Common_functions {
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total' => floatval($sub_adeudo['importe_pago']),
                                         'descuento_officio' => $descuento_officio,
+                                        'descuento_descripcion_officio' => $descuento_descripcion,
                                         'concepto' => $sub_adeudo['concepto'],
                                         'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
                                     );
@@ -484,6 +487,7 @@ class Common_functions {
                                         'descuento_recargo' => floatval($descuento_recargo),
                                         'total'=> floatval($total_adeudo),
                                         'descuento_officio' => $descuento_officio,
+                                        'descuento_descripcion_officio' => $descuento_descripcion,
                                         'concepto' => $sub_adeudo['concepto'],
                                         'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
                                     );

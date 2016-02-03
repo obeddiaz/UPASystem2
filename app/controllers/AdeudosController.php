@@ -430,8 +430,6 @@ class AdeudosController extends \BaseController {
 
             $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
-            ///$res['data'] = $commond -> crear_key($parametros,$res['data']);
-            //$res['data'] = $commond->get_by_key($res['data']['key']);
             $res['data'] = $commond->parseAdeudos($res,array());
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

@@ -32,7 +32,8 @@ class DescuentosController extends \BaseController {
 			    'adeudos_id' => 'required|integer',
 			    'importe' => 'required',
 			    'importe_recargo' => 'required',
-			    'no_officio' => 'required'
+			    'no_officio' => 'required',
+			    'descripcion_officio' => 'required'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
@@ -70,6 +71,48 @@ class DescuentosController extends \BaseController {
 	public function show($id)
 	{
 		//
+	}
+
+
+	/**
+	 * Display the  resource by period or date.
+	 *
+	 * @param  int  $id
+	 * @return Response
+	 */
+	public function show_reporte()
+	{
+		ini_set('max_execution_time', 300);
+        $commond = new Common_functions();
+        $parametros = Input::get();
+        $reglas = array(
+            'fecha_desde' => 'date_format:Y-m-d',
+            'fecha_hasta' => 'date_format:Y-m-d',
+            'periodo' => 'integer'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+        	if (isset($parametros['periodo'])) {
+	        	$res = DB::table('descuentos')->join('alumnos', 'alumnos.id', '=', 'descuentos.adeudos_id')
+                	->where('alumnos.periodo','=',$parametros['periodo'])
+                	->select('descuentos.*')
+                	->get();
+        	} else {
+        		$res = DB::table('descuentos')->join('alumnos', 'alumnos.id', '=', 'descuentos.adeudos_id')
+                	->where("adeudos.fecha_limite", ">=", $parametros['fecha_desde'])
+                    ->where("adeudos.fecha_limite", "<=", $parametros['fecha_hasta'])
+                	->select('descuentos.*')
+                	->get();
+        	}
+            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
 	}
 
 
