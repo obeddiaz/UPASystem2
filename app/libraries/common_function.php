@@ -371,6 +371,23 @@ class Common_functions {
         return $data;
     }
     public function parseAdeudos_addAdeudoInfo($data,$sub_adeudo,$adeudo) {
+        if ($sub_adeudo['tipo_pagoid']!=null) {
+            $tipo_pago_echo = Tipo_pago::where('id','=',$sub_adeudo['tipo_pagoid'])->first();
+            $tipo_pago_echo = $tipo_pago_echo['nombre'];
+        } else {
+            $tipo_pago_echo = "";
+        }
+
+        if ($sub_adeudo['cuenta_pagoid']!=null) {
+            $cuenta_pago_echo = Cuentas::where('id','=',$sub_adeudo['cuenta_pagoid'])->first();
+            $banco_pago_echo = Bancos::where('id','=',$cuenta_pago_echo['bancos_id']);
+            $cuenta_pago_echo = $cuenta_pago_echo['cuenta'];
+            $banco_pago_echo =  $banco_pago_echo['banco'];
+        } else {
+            $cuenta_pago_echo = "";
+            $banco_pago_echo = "";
+        }
+
         $recargo_total=0;
         $descuento=0;
         $descuento_recargo=0;
@@ -466,7 +483,10 @@ class Common_functions {
                                         'descuento_officio' => $descuento_officio,
                                         'descuento_descripcion_officio' => $descuento_descripcion,
                                         'concepto' => $sub_adeudo['concepto'],
-                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
+                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto'],
+                                        'tipo_pago' => $tipo_pago_echo,
+                                        'cuenta' => $cuenta_pago_echo,
+                                        'banco' => $banco_pago_echo
                                     );
                             } else {
                                 $data['periodos'][$key_p]['subconceptos'][$key_s]['adeudo_info'][]=array(
@@ -489,7 +509,9 @@ class Common_functions {
                                         'descuento_officio' => $descuento_officio,
                                         'descuento_descripcion_officio' => $descuento_descripcion,
                                         'concepto' => $sub_adeudo['concepto'],
-                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto']
+                                        'descripcion_concepto' => $sub_adeudo['descripcion_concepto'],
+                                        'cuenta' => $cuenta_pago_echo,
+                                        'banco' => $banco_pago_echo
                                     );
                             }
                         }

@@ -8,7 +8,7 @@ class Adeudos extends \Eloquent {
         'sub_concepto_id', 'grado', 'recargo',
         'tipo_recargo', 'paquete_id', 'subconcepto_paquete_id',
         'digito_referencia', 'descripcion_sc', 'recargo_acumulado',
-        'aplica_beca','aplica_recargo','locker_manager','recargo_pago','beca_pago','importe_pago'];
+        'aplica_beca','aplica_recargo','locker_manager','recargo_pago','beca_pago','importe_pago','tipo_pagoid','cuenta_pagoid'];
     protected $table = 'adeudos';
     protected $table_tipoadeudos = 'adeudo_tipopago';
     public $timestamps = true;
@@ -84,7 +84,8 @@ class Adeudos extends \Eloquent {
                 "descripcion_sc" => $subconcepto->descripcion_sc,
                 "recargo_acumulado" => $subconcepto->recargo_acumulado,
                 "aplica_beca" => $subconcepto->aplica_beca,
-                "locker_manager" => $subconcepto->locker_manager
+                "locker_manager" => $subconcepto->locker_manager,
+                "cuenta_pagoid" => $subconcepto->cuenta_id
             );
             $adeudo = Adeudos::create($adeudo);
             //  Se gnera el registro de los tipos de pago que tendra el adeudo

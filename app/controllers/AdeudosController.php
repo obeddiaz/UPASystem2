@@ -103,7 +103,7 @@ class AdeudosController extends \BaseController {
             }
             if ($adeudos_no_pagados == 0) {
                 $subconcepto = Sub_conceptos::find($parametros['subconcepto_id']);
-
+                $concepto = Conceptos::where($subconcepto['conceptos_id'])->first();
                 $parametros['digito_referencia'] = intval(DB::table('subconcepto_paqueteplandepago')
                                 ->where('sub_concepto_id', $parametros['subconcepto_id'])
                                 ->max('digito_referencia'));
@@ -118,7 +118,8 @@ class AdeudosController extends \BaseController {
                     'id_persona' => $parametros['id_personas'],
                     'periodo' => $parametros['periodo'],
                     'digito_referencia' => $parametros['digito_referencia'] + 1,
-                    'recargo_acumulado' => $parametros['recargo_acumulado']
+                    'recargo_acumulado' => $parametros['recargo_acumulado'],
+                    'cuenta_pagoid' => $concepto['cuenta_id']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
@@ -535,7 +536,16 @@ class AdeudosController extends \BaseController {
                     unset($parametros[$key]);
                 }
             }
-            Adeudos::where('id', '=', $parametros['id'])->update($parametros);
+            $info_adeudo = Adeudos::where('id','=',$parametros['id'])->first();
+            $info_adeudo = Adeudos::obtener_adeudos_alumno(array('id_persona' => $info_adeudo['id_persona'],
+                                                                  'periodo'=>$info_adeudo['periodo']));
+            Adeudos::where('id', '=', $parametros['id'])->update(
+                                                                array(
+                                                                  'recargo_pago' => $info_adeudo['recargo'],
+                                                                  'beca_pago' => $info_adeudo['beca'],
+                                                                  'importe_pago'=> $info_adeudo['importe'],
+                                                                  'status_adeudo' => $parametros['status_adeudo'],
+                                                                  'tipo_pagoid' => 2));
             $res['data'] = Adeudos::find($parametros['id']);
             if ($parametros['status_adeudo'] == 1) {
                 Ingresos::create(

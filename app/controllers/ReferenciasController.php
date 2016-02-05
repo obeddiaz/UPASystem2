@@ -258,7 +258,8 @@ class ReferenciasController extends \BaseController {
                                     'recargo_pago' => $adeudo_up[0]['recargo_total'],
                                     'importe_pago' => $adeudo_up[0]['importe'],
                                     'status_adeudo' => 1,
-                                    'fecha_pago' => $value['fecha_de_pago']
+                                    'fecha_pago' => $value['fecha_de_pago'],
+                                    'tipo_pagoid' => 1
                         ));
                     } else {
                         Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
