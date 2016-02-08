@@ -380,7 +380,7 @@ class Common_functions {
 
         if ($sub_adeudo['cuenta_pagoid']!=null) {
             $cuenta_pago_echo = Cuentas::where('id','=',$sub_adeudo['cuenta_pagoid'])->first();
-            $banco_pago_echo = Bancos::where('id','=',$cuenta_pago_echo['bancos_id']);
+            $banco_pago_echo = Bancos::where('id','=',$cuenta_pago_echo['bancos_id'])->first();
             $cuenta_pago_echo = $cuenta_pago_echo['cuenta'];
             $banco_pago_echo =  $banco_pago_echo['banco'];
         } else {

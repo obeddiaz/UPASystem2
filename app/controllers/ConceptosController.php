@@ -27,12 +27,16 @@ class ConceptosController extends \BaseController {
 	{
 		$parametros=array(
 			'descripcion' => Input::get('descripcion'), 
-			'concepto' => Input::get('concepto')
+			'concepto' => Input::get('concepto'),
+			'banco_id'  => Input::get('banco_id'),
+			'cuenta_id'  => Input::get('cuenta_id')
 		);		
 		$reglas = 
 			array(
 			    'descripcion' => 'required',
-			    'concepto' => 'required|max:30'
+			    'concepto' => 'required|max:30',
+			    'banco_id'  => 'required|integer',
+				'cuenta_id'  => 'required|integer'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
@@ -147,7 +151,10 @@ class ConceptosController extends \BaseController {
 			array(
 			    'id' => 'required|integer',
 			    'concepto' => 'max:30',
-			    'descripcion' => ''
+			    'descripcion' => '',
+			    'banco_id'  => 'integer',
+				'cuenta_id'  => 'integer'
+
 			);
     	$validator = Validator::make($parametros,$reglas);
 		if (!$validator->fails())
@@ -157,8 +164,12 @@ class ConceptosController extends \BaseController {
 					unset($parametros[$key]);	
 				}
 			}
+			$last_info = Conceptos::where('id','=',$parametros['id'])->first();
 			Conceptos::where('id','=',$parametros['id'])->update($parametros);
-			$res['data']=Conceptos::find($parametros['id']);
+			if (isset($parametros['cuenta_id'])) {
+				Conceptos::where('cuenta','=',$last_info['cuenta_id'])->update(array('cuenta_pagoid' => $parametros['cuenta_id']));
+			}
+			$res['data'] = Conceptos::find($parametros['id']);
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
