@@ -66,8 +66,8 @@ class ReferenciasController extends \BaseController {
                     $data['periodo'] = $value['periodo'];
                     $data['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $value['id_persona']));
                     $existe_referencia = Referencia::where('referencia', '=', $data['referencias'][$key]['referencia'])->first();
-                    $cuentas = Cuentas::where('activo_cobros', '=', 1)->first();
-                    $data['convenio'] = $value['cuenta_pagoid'];
+                    $cuentas = Cuentas::where('id', '=', $value['cuenta_pagoid'])->first();
+                    $data['convenio'] = $cuentas['cuenta'];
                     if (!$existe_referencia) {
                         Referencia::create(
                                 array(
