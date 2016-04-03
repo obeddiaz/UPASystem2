@@ -20,6 +20,7 @@ class Sub_ConceptosController extends \BaseController {
             $res['data'] = Sub_conceptos::where('periodo', '=', $parametros['periodo'])
                     ->where('nivel_id', '=', $parametros['nivel_id'])
                     ->where('conceptos_id', '=', $parametros['conceptos_id'])
+                    ->orderBy('sub_concepto','asc')
                     ->get();
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

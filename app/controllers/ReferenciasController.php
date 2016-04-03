@@ -243,7 +243,7 @@ class ReferenciasController extends \BaseController {
                         if ($adeudo_up[0]['beca']=="N/A") {
                             $adeudo_up[0]['beca']=0;
                         }
-                        if ($value['importe'] >= (intval($adeudo_up[0]['importe']) + 100)) {
+                        if ($value['importe'] >= intval($adeudo_up[0]['importe'])) {
                             Devoluciones::create(array(
                                 'periodo' => $adeudo['adeudo']['periodo'],
                                 'fecha_devolucion' => date('Y-m-d'),

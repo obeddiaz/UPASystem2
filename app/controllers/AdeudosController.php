@@ -40,31 +40,47 @@ class AdeudosController extends \BaseController {
             Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
             $personas_ids['no_asignados'] = array();
             $personas_ids['asignados'] = array();
+            $count_asigned = 0;
+            $count_no_asigned = 0;
             foreach ($parametros['id_personas'] as $alumno) {
+
                 $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
-                                ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                                ->where('periodo', '<', intval($paquete['periodo']))
                                 ->where('status_adeudo', '=', 0)->count();
+
                 $persona = array();
+                
                 foreach ($todos as $key_todos => $todos_row) {
                   if (intval($todos_row['idpersonas']) == intval($alumno)) {
                     $persona = $todos_row;
                     break;
                   }
                 }
-                if (isset($persona['estatus_admin'])) {
-                  if ($persona['estatus_admin']=='ACTIVO') {
-                    if ($adeudos_no_pagados == 0) {
-                      Adeudos::agregar_adeudos($alumno);
-                      $personas_ids['asignados'][] = $persona;
-                    } else {
-                      $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+
+                    $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
+                                                    ->where('id_persona','=',$alumno)
+                                                    ->where('periodo','=',$paquete['periodo'])
+                                                    ->count();
+                //if ($persona['estatus_admin']!='EGRESADO') {
+                    if ($asignados_paquete > 0) {
+                      $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
                       $personas_ids['no_asignados'][] = $persona;
+                      
+                    } else {
+                    //  if ($adeudos_no_pagados == 0) {
+                        Adeudos::agregar_adeudos($alumno);
+                        $personas_ids['asignados'][] = $persona;
+                    /*  } else {
+                        $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                        $personas_ids['no_asignados'][] = $persona;
+                        $count_no_asigned++;
+                      } */
                     }
-                  } else {
+                /*  } else {
                       $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
                       $personas_ids['no_asignados'][] = $persona;
-                  }
-                }
+                      $count_no_asigned++;
+                  }*/
             }
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
         } else {
@@ -93,7 +109,7 @@ class AdeudosController extends \BaseController {
         if (!$validator->fails()) {
             $periodo_actual = $commond->periodo_actual();
             $adeudos_no_pagados = Adeudos::where('id_persona', '=', $parametros['id_personas'])
-                            ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                            ->where('periodo', '<', $periodo_actual['idperiodo'])
                             ->where('status_adeudo', '=', 0)->count();
             $grado = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $parametros['id_personas']));
             if (isset($grado[0]['grado'])) {
@@ -146,10 +162,96 @@ class AdeudosController extends \BaseController {
         return $final_response;
     }
 
+    public function create_array() {
+        $commond = new Common_functions();
+
+        $parametros = array(
+            'paquete_id' => Input::get('paquete_id')
+        );
+
+        $reglas = array(
+            'paquete_id' => 'required|integer'
+            //'id_personas' => 'required|array'
+        );
+        $validator = Validator::make($parametros, $reglas);
+
+        if (!$validator->fails()) {
+            $matriculasFile = Config::get('matriculas');
+
+            $todos = $this->sii->new_request('POST', '/alumnos/all');
+            foreach($matriculasFile as $key => $value)  { 
+                foreach ($todos as $key_todos => $todos_row) {
+                    if ($value == $todos_row['matricula']) {
+                        $parametros['id_personas'][]= $todos_row['idpersonas'];
+                        break;
+                    }
+                }
+            }
+            
+            $periodo_actual = $commond->periodo_actual();
+            $paquete = Paquete::find($parametros['paquete_id']);
+            $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
+            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            $personas_ids['no_asignados'] = array();
+            $personas_ids['asignados'] = array();
+            $count_asigned = 0;
+            $count_no_asigned = 0;
+
+            foreach ($parametros['id_personas'] as $alumno) {
+                $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
+                                ->where('periodo', '<', intval($paquete['periodo']))
+                                ->where('status_adeudo', '=', 0)->count();
+                $persona = array();
+                foreach ($todos as $key_todos => $todos_row) {
+                  if (intval($todos_row['idpersonas']) == intval($alumno)) {
+                    $persona = $todos_row;
+                    break;
+                  }
+                }
+
+                $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
+                                                    ->where('id_persona','=',$alumno)
+                                                    ->where('periodo','=',$paquete['periodo'])
+                                                    ->count();
+                //if ($persona['estatus_admin']!='EGRESADO') {
+                    if ($asignados_paquete > 0) {
+                      $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
+                      $personas_ids['no_asignados'][] = $persona;
+                      $count_no_asigned++;
+                    } else {
+                    //  if ($adeudos_no_pagados == 0) {
+                        Adeudos::agregar_adeudos($alumno);
+                        $personas_ids['asignados'][] = $persona;
+                        $count_asigned++;
+                    /*  } else {
+                        $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                        $personas_ids['no_asignados'][] = $persona;
+                        $count_no_asigned++;
+                      } */
+                    }
+                /*  } else {
+                      $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
+                      $personas_ids['no_asignados'][] = $persona;
+                      $count_no_asigned++;
+                  }*/
+            }
+            $personas_ids['total_asignados']=$count_asigned;
+            $personas_ids['total_no_asignados']=$count_no_asigned;
+            $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
+        } else {
+            $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
+        }
+        $final_response = Response::make($respuesta, 200);
+        $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+        return $final_response;
+    }
+
     public function create_byFile() {
-        ini_set('memory_limit', '1000M');
-        ini_set('post_max_size', '10M');
-        ini_set('upload_max_filesize', '150M');
+        ini_set('max_execution_time', 300000000);
+        ini_set('memory_limit', '100000M');
+        ini_set('post_max_size', '10000M');
+        ini_set('upload_max_filesize', '300000M');
       
         $commond = new Common_functions();
 
@@ -166,13 +268,18 @@ class AdeudosController extends \BaseController {
           $file = Request::file('paquete_file');
           if (isset($file)) {    
             $root=$file->getRealPath();
-            $info_excel=Excel::load($root, function($archivo){})->get();
+            $info_excel=Excel::load($root, function($archivo){
+            })->all();
+            $matriculasFile = array();
+            foreach ($info_excel as $key => $value) {
+              $matriculasFile[] = $value['matricula'];
+            }
             $parametros['id_personas'] = array();
             //$selected= Config::get('matriculas');
             $todos = $this->sii->new_request('POST', '/alumnos/all');
-            foreach($info_excel as $key => $value){ 
-                foreach ($todos     as $key_todos => $todos_row) {
-                    if ($value->matricula == $todos_row['matricula']) {
+            foreach($matriculasFile as $key => $value)  { 
+                foreach ($todos as $key_todos => $todos_row) {
+                    if ($value == $todos_row['matricula']) {
                         $parametros['id_personas'][]= $todos_row['idpersonas'];
                         break;
                     }
@@ -186,9 +293,10 @@ class AdeudosController extends \BaseController {
             $personas_ids['asignados'] = array();
             $count_asigned = 0;
             $count_no_asigned = 0;
+
             foreach ($parametros['id_personas'] as $alumno) {
                 $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
-                                ->where('periodo', '!=', $periodo_actual['idperiodo'])
+                                ->where('periodo', '<', intval($paquete['periodo']))
                                 ->where('status_adeudo', '=', 0)->count();
                 $persona = array();
                 foreach ($todos as $key_todos => $todos_row) {
@@ -197,29 +305,31 @@ class AdeudosController extends \BaseController {
                     break;
                   }
                 }
-                //if (isset($persona['estatus_admin'])) {
-                  //if ($persona['estatus_admin']=='ACTIVO') {
-                if ($persona['estatus_admin']!='EGRESADO') { // temporal condition
-                    if ($adeudos_no_pagados == 0) {
-                      Adeudos::agregar_adeudos($alumno);
-                      $personas_ids['asignados'][] = $persona;
-                      $count_asigned++;
-                    } else {
-                      $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                    $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
+                                                    ->where('id_persona','=',$alumno)
+                                                    ->where('periodo','=',$paquete['periodo'])
+                                                    ->count();
+                //if ($persona['estatus_admin']!='EGRESADO') {
+                    if ($asignados_paquete > 0) {
+                      $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
                       $personas_ids['no_asignados'][] = $persona;
                       $count_no_asigned++;
+                    } else {
+                    //  if ($adeudos_no_pagados == 0) {
+                        Adeudos::agregar_adeudos($alumno);
+                        $personas_ids['asignados'][] = $persona;
+                        $count_asigned++;
+                    /*  } else {
+                        $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+                        $personas_ids['no_asignados'][] = $persona;
+                        $count_no_asigned++;
+                      } */
                     }
-                  } else {
+                /*  } else {
                       $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
                       $personas_ids['no_asignados'][] = $persona;
                       $count_no_asigned++;
-                  }
-                  //} else {
-                  //    $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
-                  //    $personas_ids['no_asignados'][] = $persona;
-                  //    $count_no_asigned++;
-                  //}
-                //}
+                  }*/
             }
             $personas_ids['total_asignados']=$count_asigned;
             $personas_ids['total_no_asignados']=$count_no_asigned;

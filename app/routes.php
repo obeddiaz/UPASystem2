@@ -24,7 +24,14 @@ Route::group(array('before' => 'auth'), function() {
                 # /administracion/agrupaciones/clasificaciones
                 Route::post('/agregar', array('as' => 'crear_agrupacion', 'uses' => 'AgrupacionesController@create'));
                 Route::group(array('prefix' => '/alumnos_paquete'), function() {
-                    Route::post('/agregar', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create'));
+                    Route::post('/agregar', array(
+                            'as' => 'agrega_alumos_paquete', 
+                            'uses' => 'AdeudosController@create')
+                    );
+                    Route::get('/agregar_array', array(
+                            'as' => 'agrega_alumos_paquete_array', 
+                            'uses' => 'AdeudosController@create_array')
+                    );
                     Route::post('/agregar_archivo', array('as' => 'agrega_alumos_paquete', 'uses' => 'AdeudosController@create_byFile'));
                 });
             });
@@ -47,6 +54,13 @@ Route::group(array('before' => 'auth'), function() {
                         #Route::put('/guardar', array('as' => 'actualizar_valor_paquete', 'uses' => 'PaqueteController@update_subconceptos_paquetes'));
                         Route::delete('/eliminar', array('as' => 'eliminar_paquete', 'uses' => 'PaqueteController@destroy'));
                     });
+                });
+                Route::group(array('prefix' => '/registro_pago'), function() {
+                    Route::get('/', array('as' => 'muestra_registro_pagos', 'uses' => 'RegistroPagoController@index'));
+                    Route::get('/expediente', array('as' => 'muestra_registro_pagos_uno', 'uses' => 'RegistroPagoController@show'));
+                    Route::post('/agregar', array('as' => 'crear_registro_pago', 'uses' => 'RegistroPagoController@create'));
+                    Route::put('/guardar', array('as' => 'editar_registro_pago', 'uses' => 'RegistroPagoController@update'));
+                    Route::delete('/eliminar', array('as' => 'eliminar_cuenta', 'uses' => 'RegistroPagoController@destroy'));
                 });
                 Route::group(array('prefix' => '/becas'), function() {
                     Route::get('/', array('as' => 'muestra_becas', 'uses' => 'BecasController@index'));
@@ -132,11 +146,11 @@ Route::group(array('before' => 'auth'), function() {
             Route::delete('/eliminar', array('as' => 'eliminar_prorrogas', 'uses' => 'ProrrogasController@destroy'));
         });
         Route::group(array('prefix' => '/tipo_pagos'), function() {
-            Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@index'));
-            Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudo@show'));
-            Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Tipo_adeudo@create'));
-            Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudo@update'));
-            Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudo@destroy'));
+            Route::get('/', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudoController@index'));
+            Route::get('/expediente', array('as' => 'muestra_planes', 'uses' => 'Tipo_adeudoController@show'));
+            Route::post('/agregar', array('as' => 'crear_planes', 'uses' => 'Tipo_adeudoController@create'));
+            Route::put('/guardar', array('as' => 'actualizar_valor_planes', 'uses' => 'Tipo_adeudoController@update'));
+            Route::delete('/eliminar', array('as' => 'eliminar_planes', 'uses' => 'Tipo_adeudoController@destroy'));
         });
         Route::group(array('prefix' => '/bancos'), function() {
             Route::get('/', array('as' => 'muestra_bancos', 'uses' => 'BancosController@index'));
