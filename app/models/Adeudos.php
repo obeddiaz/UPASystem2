@@ -231,6 +231,7 @@ class Adeudos extends \Eloquent {
             if (!$tiene_beca) {
                 $query[$key]['beca'] = 'N/A';
             }
+            $query[$key]['registro_pago'] = Registros::where('adeudo_id','=',$adeudo['id'])->get();
 
             if ($adeudo['status_adeudo'] == 0) {
                 if ($daynow > $day) {
