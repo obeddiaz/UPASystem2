@@ -37,6 +37,7 @@ class RegistroPagoController extends \BaseController {
 		if (!$validator->fails())
 		{
 			$adeudo_info = Adeudos::find($parametros['adeudo_id']);
+
 			if ($adeudo_info['status_adeudo']==0) {
 
 				$adeudo_up = Adeudos::obtener_adeudos_alumno(array(
@@ -80,7 +81,7 @@ class RegistroPagoController extends \BaseController {
                         array(
                             'beca_pago' => $beca,
                             'recargo_pago' => $adeudo_up[0]['recargo'],
-                            'importe_pago' => $parametros['importe_registro_pago'],
+                            'importe_pago' => $adeudo_up[0]['importe'],
                             'status_adeudo' => 1,
                             'fecha_pago' => date('Y-m-d H:i:s'),
                             'tipo_pagoid' => 1
@@ -101,11 +102,15 @@ class RegistroPagoController extends \BaseController {
 				}
 
 				$parametros['asignada_por']=$user['user']['persona']['iemail'];
-				$res['data'] = Registros::create($parametros);
+				Registros::create($parametros);
+				$res['data'] = Adeudos::obtener_adeudos_alumno(
+					array('id_persona' =>$adeudo_info['id_persona'],'periodo' =>$adeudo_info['periodo']));
 				$respuesta = json_encode(array('error' => false, 'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 
 			} else {
-				$respuesta = json_encode(array('error' => true, 'mensaje'=>'El pago habia sido realizado correctamente anterriormente, no se realizo accion', 'respuesta'=>''));
+				$res['data'] = Adeudos::obtener_adeudos_alumno(
+					array('id_persona' =>$adeudo_info['id_persona'],'periodo' =>$adeudo_info['periodo']));
+				$respuesta = json_encode(array('error' => true, 'mensaje'=>'El pago habia sido realizado correctamente anterriormente, no se realizo accion', 'respuesta'=>$res));
 			}
 		} else {
 			$respuesta = json_encode(
