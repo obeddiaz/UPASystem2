@@ -9,6 +9,154 @@ class Common_functions {
         $this->sii = new Sii();
     }
 
+    public function getPago($adeudo_id, $tipo = 1 ) {
+        $pagos = Pagos::where('adeudos_id','=',$adeudo_id)
+                ->get()->toArray();
+
+        if ( count($pagos) == 0 ) {
+            return 0;
+        }
+
+        foreach ($pagos as $key_pago => $pago) {
+            switch ($tipo) {
+                case 1:
+                    if (isset($respuesta)) {
+                        $respuesta  +=   $pago['importe'];
+                    }   else {
+                        $respuesta  =   $pago['importe'];
+                    }
+                    break;
+                case 2:
+                    if (isset($respuesta)) {
+                        $respuesta  +=   $pago['importe_recargo'];
+                    }   else {
+                        $respuesta  =   $pago['importe_recargo'];
+                    }
+                    break;
+                case 3:
+                    if (isset($respuesta)) {
+                        $respuesta  +=   $pago['beca'];
+                    }   else {
+                        $respuesta  =   $pago['beca'];
+                    }
+                    break;
+                case 4:
+                    if (isset($respuesta)) {
+                        $respuesta  +=   $pago['descuento'];
+                    }   else {
+                        $respuesta  =   $pago['descuento'];
+                    }
+                    break;
+                case 4:
+                    if (isset($respuesta)) {
+                        $respuesta  +=   $pago['descuento_recargo'];
+                    }   else {
+                        $respuesta  =   $pago['descuento_recargo'];
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+
+        return $respuesta;
+    }
+
+    public function getDescuento($adeudo_id, $tipo   =   1)  {
+        $adeudo = Adeudos::where('id','=',$adeudo_id)->first();
+        $descuentos    =    Descuentos::where('adeudos_id','=',$adeudo_id)
+                                    ->get()->toArray();
+
+        if ( count($descuentos) == 0 ) {
+            return 0;
+        }
+
+        foreach ($descuentos as $key_descuento => $descuento) {
+            switch ($tipo) {
+                case 1:
+                    if (isset($respuesta)) {
+                        $respuesta  +=  $this->calcular_importe_por_tipo(   $adeudo['importe'],
+                                                                            $descuento['importe'],
+                                                                            $descuento['tipo_importe_id']);
+                    }   else {
+                        $respuesta  =   $this->calcular_importe_por_tipo(   $adeudo['importe'],
+                                                                            $descuento['importe'],
+                                                                            $descuento['tipo_importe_id']);
+                    }
+                    break;
+                case 2:
+                    if (isset($respuesta)) {
+                        $respuesta  +=  $this->calcular_importe_por_tipo(   $adeudo['importe_recargo'],
+                                                                            $descuento['importe_recargo'],
+                                                                            $descuento['tipo_importe_id']);
+                    }   else {
+                        $respuesta  =   $this->calcular_importe_por_tipo(   $adeudo['importe_recargo'],
+                                                                            $descuento['importe_recargo'],
+                                                                            $descuento['tipo_importe_id']);
+                    }
+                    break;
+                default:
+                    # code...
+                    break;
+            }
+        }
+        if ($tipo == 3) {
+            return trim($respuesta, '-');
+        }
+        return $respuesta;
+    }
+
+    public function getInfoiIDPersona($id_persona){
+        $todos = $this->sii->new_request('POST', '/alumnos/all');
+
+        foreach ($todos as $key_todos => $todos_row) {
+            if (intval($todos_row['idpersonas']) == intval($id_persona)) {
+                return $todos_row;
+                break;
+            }
+        }
+
+        return array();
+    }
+
+    public function validarInfoCrearAdeudo($alumno, $periodo,   $paquete) {
+        $respuesta  =   array();
+        $periodo_actual = $this->periodo_actual();
+        
+        $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
+                                ->where('periodo', '<', intval($periodo))
+                                ->where('status_adeudo', '=', 0)->count();
+
+        $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
+                                        ->where('id_persona','=',$alumno)
+                                        ->where('periodo','=',$periodo)
+                                        ->count();
+
+        //if ($persona['estatus_admin']!='EGRESADO') {
+        if ($asignados_paquete > 0) {
+            $respuesta['status']   =   false;
+            $respuesta['motivo']    =   'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';         
+
+            return $respuesta;
+        } else {
+        //  if ($adeudos_no_pagados == 0) {
+            
+        /*  } else {
+            $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
+            $personas_ids['no_asignados'][] = $persona;
+            $count_no_asigned++;
+          } */
+        }
+    /*  } else {
+          $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
+          $personas_ids['no_asignados'][] = $persona;
+          $count_no_asigned++;
+      }*/
+        $respuesta['status']    =   true;
+        return $respuesta;
+    }
+
     public function crear_key($datos, $results) {
         $datos = $this->sii->orderParamsToKeyCache($datos);
         $keyToService = md5(json_encode($datos));

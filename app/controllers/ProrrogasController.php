@@ -38,13 +38,9 @@ class ProrrogasController extends \BaseController {
 
 		if (!$validator->fails())
 		{
-			$adeudo=Adeudos::where('id','=',$parametros['adeudos_id'])->first();
-			/*Adeudos::where('periodo','=',$adeudo['periodo'])
-							->where('locker_manager','=','1')
-							->update(array('locker_manager' => '0'));*/
-			$fecha_limite=$parametros['fecha_limite'];
+			$fecha_limite = $parametros['fecha_limite'];
 			unset($parametros['fecha_limite']);
-			Adeudos::where('id', '=', $parametros['adeudos_id'])->update(array('fecha_limite' => $fecha_limite,'locker_manager'=>'0'));
+			Adeudos::where('id','=',$parametros['adeudos_id'])->update(array('fecha_limite' => $fecha_limite));
 			$res['data']=Prorrogas::create($parametros);
 			$res['data']=Prorrogas::All();
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
@@ -109,16 +105,16 @@ class ProrrogasController extends \BaseController {
 				'no_oficio'  => 'required|integer',
 				'nombre_responsable' => 'required',
 				'rason_prorroga'  => 'required',
+				'fecha_limite' => 'required'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
-			foreach ($parametros as $key => $value) {
-				if (!array_key_exists($key,$reglas)) {
-					unset($parametros[$key]);	
-				}
-			}
+			$prorroga = Prorrogas::where('id','=',$parametros['id'])->first();
+			$fecha_limite = $parametros['fecha_limite'];
+			unset($parametros['fecha_limite']);
+			Adeudos::where('id','=',$prorroga['adeudos_id'])->update(array('fecha_limite' => $fecha_limite));
 			Prorrogas::where('id','=',$parametros['id'])->update($parametros);
 			$res['data']=Prorrogas::find($parametros['id']);
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));

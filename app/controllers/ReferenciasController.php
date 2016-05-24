@@ -212,87 +212,93 @@ class ReferenciasController extends \BaseController {
         $commond = new Common_functions();
         $file = Input::file('referencia_archivo');
         if (isset($file)) {
-            $data_file = Archivo_referencias::leer($file);
-            $data_file['infoFile']['nombre_archivo'] = Input::file('referencia_archivo')->getClientOriginalName();
-            $infoarchivo = array(
-                'no_transacciones' => $data_file['infoFile']['TRANSACCIONES'],
-                'cobro_inmediato' => $data_file['infoFile']['COBROINMEDIATO'],
-                'comisiones_creadas' => $data_file['infoFile']['COMISIONESCOBRADAS'],
-                'remesas' => $data_file['infoFile']['REMESAS'],
-                'comisiones_remesas' => $data_file['infoFile']['COMISIONREMESAS'],
-                'abonado' => $data_file['infoFile']['ABONADO'],
-                'monto' => $data_file['infoFile']['ABONADO'],
-                'nombre_archivo' => $data_file['infoFile']['nombre_archivo'],
-                'fecha' => date('Y-m-d')
-            );
-            $personas = array();
-            $i = 0;
-            foreach ($data_file['referencias'] as $key => $value) {
-                $adeudo = Referencia::with('adeudos')
-                                ->where('referencia', '=', $value['referencia'])->first();
+            if ($file->getClientOriginalExtension() == "txt") {
+                $data_file = Archivo_referencias::leer($file);
+                $data_file['infoFile']['nombre_archivo'] = Input::file('referencia_archivo')->getClientOriginalName();
+                $infoarchivo = array(
+                    'no_transacciones' => $data_file['infoFile']['TRANSACCIONES'],
+                    'cobro_inmediato' => $data_file['infoFile']['COBROINMEDIATO'],
+                    'comisiones_creadas' => $data_file['infoFile']['COMISIONESCOBRADAS'],
+                    'remesas' => $data_file['infoFile']['REMESAS'],
+                    'comisiones_remesas' => $data_file['infoFile']['COMISIONREMESAS'],
+                    'abonado' => $data_file['infoFile']['ABONADO'],
+                    'monto' => $data_file['infoFile']['ABONADO'],
+                    'nombre_archivo' => $data_file['infoFile']['nombre_archivo'],
+                    'fecha' => date('Y-m-d')
+                );
+                $personas = array();
+                $i = 0;
+                echo "<pre>";var_dump($data_file['referencias']);die();
+                foreach ($data_file['referencias'] as $key => $value) {
+                    /*$adeudo = Referencia::with('adeudos')
+                                    ->where('referencia', '=', $value['referencia'])->first();
 
-                if ($adeudo && !empty($adeudo)) {
-                    $adeudo_up = Adeudos::obtener_adeudos_alumno(array(
-                        'id' => $adeudo['adeudos']['id'],
-                        'fecha_pago' => $value['fecha_de_pago'],
-                        'id_persona' => $adeudo['id_persona'],
-                        'periodo' => $adeudo['periodo']
-                    ));
-                    $referencia_info = Referencia::where('referencia', '=', $value['referencia'])->first();
-                    if ($value['importe'] >= $adeudo_up[0]['importe']) {
-                        if ($adeudo_up[0]['beca']=="N/A") {
-                            $adeudo_up[0]['beca']=0;
-                        }
-                        if ($value['importe'] >= intval($adeudo_up[0]['importe'])) {
-                            Devoluciones::create(array(
-                                'periodo' => $adeudo['adeudo']['periodo'],
-                                'fecha_devolucion' => date('Y-m-d'),
-                                'importe' => $adeudo_up[0]['importe'] - $value['importe'],
-                                'id_persona' => $id_persona,
-                                'status_devolucion' => 0
-                            ));   
-                        }
-                        Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
-                                array(
-                                    'beca_pago' => $adeudo_up[0]['beca'],
-                                    'recargo_pago' => $adeudo_up[0]['recargo_total'],
-                                    'importe_pago' => $adeudo_up[0]['importe'],
-                                    'status_adeudo' => 1,
-                                    'fecha_pago' => $value['fecha_de_pago'],
-                                    'tipo_pagoid' => 1
+                    if ($adeudo && !empty($adeudo)) {
+                        $adeudo_up = Adeudos::obtener_adeudos_alumno(array(
+                            'id' => $adeudo['adeudos']['id'],
+                            'fecha_pago' => $value['fecha_de_pago'],
+                            'id_persona' => $adeudo['id_persona'],
+                            'periodo' => $adeudo['periodo']
                         ));
+                        $referencia_info = Referencia::where('referencia', '=', $value['referencia'])->first();
+                        if ($value['importe'] >= $adeudo_up[0]['importe']) {
+                            if ($adeudo_up[0]['beca']=="N/A") {
+                                $adeudo_up[0]['beca']=0;
+                            }
+                            if ($value['importe'] >= intval($adeudo_up[0]['importe'])) {
+                                Devoluciones::create(array(
+                                    'periodo' => $adeudo['adeudo']['periodo'],
+                                    'fecha_devolucion' => date('Y-m-d'),
+                                    'importe' => $adeudo_up[0]['importe'] - $value['importe'],
+                                    'id_persona' => $id_persona,
+                                    'status_devolucion' => 0
+                                ));   
+                            }
+                            Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
+                                    array(
+                                        'beca_pago' => $adeudo_up[0]['beca'],
+                                        'recargo_pago' => $adeudo_up[0]['recargo_total'],
+                                        'importe_pago' => $adeudo_up[0]['importe'],
+                                        'status_adeudo' => 1,
+                                        'fecha_pago' => $value['fecha_de_pago'],
+                                        'tipo_pagoid' => 1
+                            ));
+                        } else {
+                            Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
+                                    array(
+                                        'beca_pago' => $adeudo_up[0]['beca'],
+                                        'recargo_pago' => $adeudo_up[0]['recargo_total'],
+                                        'importe_pago' => $adeudo_up[0]['importe'],
+                                        'importe' => floatval(floatval($value['importe'] - $adeudo_up[0]['importe'])),
+                                        'fecha_pago' => $value['fecha_de_pago']
+                            ));
+                        }
+                        $referencia_pagada = array(
+                            'id_referencia' => $referencia_info['id'],
+                            'fecha_de_pago' => $value['fecha_de_pago'],
+                            'importe' => $value['importe'],
+                            'estado' => $value['estado']
+                        );
+                        Referencia::create_referencia_pagada($referencia_pagada);
+                        Ingresos::create(
+                                array('tipo_pago' => 1,
+                                    'importe' => $value['importe'],
+                                    'fecha_pago' => $value['fecha_de_pago']));
+                        $personas['existe_referencia'][$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
+                        $personas['existe_referencia'][$i]['referencia'] = $value;
+                        $i++;
                     } else {
-                        Adeudos::where('id', '=', $adeudo['adeudos']['id'])->update(
-                                array(
-                                    'beca_pago' => $adeudo_up[0]['beca'],
-                                    'recargo_pago' => $adeudo_up[0]['recargo_total'],
-                                    'importe_pago' => $adeudo_up[0]['importe'],
-                                    'importe' => floatval(floatval($value['importe'] - $adeudo_up[0]['importe'])),
-                                    'fecha_pago' => $value['fecha_de_pago']
-                        ));
-                    }
-                    $referencia_pagada = array(
-                        'id_referencia' => $referencia_info['id'],
-                        'fecha_de_pago' => $value['fecha_de_pago'],
-                        'importe' => $value['importe'],
-                        'estado' => $value['estado']
-                    );
-                    Referencia::create_referencia_pagada($referencia_pagada);
-                    Ingresos::create(
-                            array('tipo_pago' => 1,
-                                'importe' => $value['importe'],
-                                'fecha_pago' => $value['fecha_de_pago']));
-                    $personas['existe_referencia'][$i]['persona'] = $commond->obtener_infoAlumno_idPersona(array('id_persona' => $adeudo['adeudos']['id_persona']));
-                    $personas['existe_referencia'][$i]['referencia'] = $value;
-                    $i++;
-                } else {
-                    $personas['no_existe_referencia'][$i]['referencia'] = $value;
-                    $i++;
+                        $personas['no_existe_referencia'][$i]['referencia'] = $value;
+                        $i++;
+                    }*/
                 }
+                $res['data'] = $personas;
+                Respuesta_bancaria::create($infoarchivo);
+                $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+            }   else {
+                $respuesta = json_encode(array('error' => true, 'mensaje' => 'El tipo de archivo es incorrecto. (txt)', 'respuesta' => ''));
             }
-            $res['data'] = $personas;
-            Respuesta_bancaria::create($infoarchivo);
-            $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
+
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay archivo o tiene errores.', 'respuesta' => ''));
         }

@@ -31,57 +31,37 @@ class AdeudosController extends \BaseController {
             'paquete_id' => 'required|integer',
             'id_personas' => 'required|array'
         );
+
         $validator = Validator::make($parametros, $reglas);
+
         if (!$validator->fails()) {
-            $todos = $this->sii->new_request('POST', '/alumnos/all');
-            $periodo_actual = $commond->periodo_actual();
             $paquete = Paquete::find($parametros['paquete_id']);
             $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
-            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
+            
             $personas_ids['no_asignados'] = array();
             $personas_ids['asignados'] = array();
+            
             $count_asigned = 0;
             $count_no_asigned = 0;
+            
             foreach ($parametros['id_personas'] as $alumno) {
-
-                $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
-                                ->where('periodo', '<', intval($paquete['periodo']))
-                                ->where('status_adeudo', '=', 0)->count();
-
-                $persona = array();
-                
-                foreach ($todos as $key_todos => $todos_row) {
-                  if (intval($todos_row['idpersonas']) == intval($alumno)) {
-                    $persona = $todos_row;
-                    break;
-                  }
-                }
-
-                    $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
-                                                    ->where('id_persona','=',$alumno)
-                                                    ->where('periodo','=',$paquete['periodo'])
-                                                    ->count();
-                //if ($persona['estatus_admin']!='EGRESADO') {
-                    if ($asignados_paquete > 0) {
-                      $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
-                      $personas_ids['no_asignados'][] = $persona;
-                      
-                    } else {
-                    //  if ($adeudos_no_pagados == 0) {
-                        Adeudos::agregar_adeudos($alumno);
+                $persona = $commond->getInfoiIDPersona($alumno);
+                if (!empty($persona)) {
+                    $validacionAlumno = $commond->validarInfoCrearAdeudo($alumno, $paquete['periodo'], $paquete);
+                    if ($validacionAlumno['status']) {
+                        $count_asigned++;
+                        Adeudos::agregar_adeudos($alumno, $subconceptos, $paquete);
                         $personas_ids['asignados'][] = $persona;
-                    /*  } else {
-                        $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
-                        $personas_ids['no_asignados'][] = $persona;
+                    }   else   {
                         $count_no_asigned++;
-                      } */
+                        $persona['motivo_no_asignacion'] = $validacionAlumno['motivo'];
+                        $personas_ids['no_asignados'][] = $persona;
                     }
-                /*  } else {
-                      $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
-                      $personas_ids['no_asignados'][] = $persona;
-                      $count_no_asigned++;
-                  }*/
+                }
             }
+            $personas_ids['total_asignados']=$count_asigned;
+            $personas_ids['total_no_asignados']=$count_no_asigned;
+
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Subconceptos Agregados Correctamente a Paquete', 'respuesta' => $personas_ids));
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
@@ -101,6 +81,7 @@ class AdeudosController extends \BaseController {
             'fecha_limite' => 'date_format:Y-m-d',
             'tipos_pago' => 'required|array',
             'recargo_acumulado' => 'required|integer',
+            'descripcion_sc'    =>  'size:30',
             'aplica_beca'   => 'integer',
             'aplica_recargo' => 'integer'
         );
@@ -134,8 +115,7 @@ class AdeudosController extends \BaseController {
                     'id_persona' => $parametros['id_personas'],
                     'periodo' => $parametros['periodo'],
                     'digito_referencia' => $parametros['digito_referencia'] + 1,
-                    'recargo_acumulado' => $parametros['recargo_acumulado'],
-                    'cuenta_pagoid' => $concepto['cuenta_id']
+                    'recargo_acumulado' => $parametros['recargo_acumulado']
                 );
                 $adeudo_creado = Adeudos::create($adeudo);
                 foreach ($parametros['tipos_pago'] as $key => $value) {
@@ -188,52 +168,27 @@ class AdeudosController extends \BaseController {
                 }
             }
             
-            $periodo_actual = $commond->periodo_actual();
             $paquete = Paquete::find($parametros['paquete_id']);
             $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
-            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
             $personas_ids['no_asignados'] = array();
             $personas_ids['asignados'] = array();
             $count_asigned = 0;
             $count_no_asigned = 0;
             if (isset($parametros['id_personas'])) {
                 foreach ($parametros['id_personas'] as $alumno) {
-                    $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
-                                    ->where('periodo', '<', intval($paquete['periodo']))
-                                    ->where('status_adeudo', '=', 0)->count();
-                    $persona = array();
-                    foreach ($todos as $key_todos => $todos_row) {
-                      if (intval($todos_row['idpersonas']) == intval($alumno)) {
-                        $persona = $todos_row;
-                        break;
-                      }
-                    }
-
-                    $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
-                                                        ->where('id_persona','=',$alumno)
-                                                        ->where('periodo','=',$paquete['periodo'])
-                                                        ->count();
-                    //if ($persona['estatus_admin']!='EGRESADO') {
-                        if ($asignados_paquete > 0) {
-                          $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
-                          $personas_ids['no_asignados'][] = $persona;
-                          $count_no_asigned++;
-                        } else {
-                        //  if ($adeudos_no_pagados == 0) {
-                            Adeudos::agregar_adeudos($alumno);
-                            $personas_ids['asignados'][] = $persona;
+                    $persona = $commond->getInfoiIDPersona($alumno);
+                    if (!empty($persona)) {
+                        $validacionAlumno = $commond->validarInfoCrearAdeudo($alumno, $paquete['periodo'], $paquete);
+                        if ($validacionAlumno['status']) {
                             $count_asigned++;
-                        /*  } else {
-                            $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
-                            $personas_ids['no_asignados'][] = $persona;
+                            Adeudos::agregar_adeudos($alumno, $subconceptos, $paquete);
+                            $personas_ids['asignados'][] = $persona;
+                        }   else   {
                             $count_no_asigned++;
-                          } */
+                            $persona['motivo_no_asignacion'] = $validacionAlumno['motivo'];
+                            $personas_ids['no_asignados'][] = $persona;
                         }
-                    /*  } else {
-                          $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
-                          $personas_ids['no_asignados'][] = $persona;
-                          $count_no_asigned++;
-                      }*/
+                    }
                 }
                 $personas_ids['total_asignados']=$count_asigned;
                 $personas_ids['total_no_asignados']=$count_no_asigned;
@@ -288,51 +243,27 @@ class AdeudosController extends \BaseController {
                     }
                 }
             }
-            $periodo_actual = $commond->periodo_actual();
             $paquete = Paquete::find($parametros['paquete_id']);
             $subconceptos = Paquete::show_paquete_subconceptos($parametros['paquete_id']);
-            Adeudos::$custom_data = array("paquete" => $paquete, "subconcepto" => $subconceptos);
             $personas_ids['no_asignados'] = array();
             $personas_ids['asignados'] = array();
             $count_asigned = 0;
             $count_no_asigned = 0;
 
             foreach ($parametros['id_personas'] as $alumno) {
-                $adeudos_no_pagados = Adeudos::where('id_persona', '=', $alumno)
-                                ->where('periodo', '<', intval($paquete['periodo']))
-                                ->where('status_adeudo', '=', 0)->count();
-                $persona = array();
-                foreach ($todos as $key_todos => $todos_row) {
-                  if (intval($todos_row['idpersonas']) == intval($alumno)) {
-                    $persona = $todos_row;
-                    break;
-                  }
-                }
-                    $asignados_paquete = Adeudos::where('paquete_id', '=',$paquete['id'])
-                                                    ->where('id_persona','=',$alumno)
-                                                    ->where('periodo','=',$paquete['periodo'])
-                                                    ->count();
-                //if ($persona['estatus_admin']!='EGRESADO') {
-                    if ($asignados_paquete > 0) {
-                      $persona['motivo_no_asignacion'] = 'Ya ha sido asignado el paquete a el alumno en el periodo seleccionado';
-                      $personas_ids['no_asignados'][] = $persona;
-                      $count_no_asigned++;
-                    } else {
-                    //  if ($adeudos_no_pagados == 0) {
-                        Adeudos::agregar_adeudos($alumno);
-                        $personas_ids['asignados'][] = $persona;
+                $persona = $commond->getInfoiIDPersona($alumno);
+                if (!empty($persona)) {
+                    $validacionAlumno = $commond->validarInfoCrearAdeudo($alumno, $paquete['periodo'], $paquete);
+                    if ($validacionAlumno['status']) {
                         $count_asigned++;
-                    /*  } else {
-                        $persona['motivo_no_asignacion'] = 'Tiene adeudos pendientes';
-                        $personas_ids['no_asignados'][] = $persona;
+                        Adeudos::agregar_adeudos($alumno, $subconceptos, $paquete);
+                        $personas_ids['asignados'][] = $persona;
+                    }   else   {
                         $count_no_asigned++;
-                      } */
+                        $persona['motivo_no_asignacion'] = $validacionAlumno['motivo'];
+                        $personas_ids['no_asignados'][] = $persona;
                     }
-                /*  } else {
-                      $persona['motivo_no_asignacion'] = 'No esta ACTIVO';
-                      $personas_ids['no_asignados'][] = $persona;
-                      $count_no_asigned++;
-                  }*/
+                }
             }
             $personas_ids['total_asignados']=$count_asigned;
             $personas_ids['total_no_asignados']=$count_no_asigned;
@@ -347,94 +278,6 @@ class AdeudosController extends \BaseController {
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
         return $final_response;
-    }
-
-    public function create_reporte_key() {
-      $commond = new Common_functions();
-      $excel_body = new Excel_body();
-      $parametros = Input::get();
-      if (isset($parametros['filters'])) {
-        $parametros['filters'] = json_decode($parametros['filters']);
-      }
-      $reglas = array(
-        'key' => 'required',
-        'filters' => 'required|array',
-        'selected_columns' => 'required|array'
-      );
-      $validator = Validator::make($parametros, $reglas);
-      if ($validator->fails()) {
-        $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
-        $final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
-
-        return $final_response;
-      } else {
-        $adeudos = $commond->get_by_key($parametros['key']);
-        $filters = $parametros["filters"];
-        $selected = $parametros['selected_columns'];
-        #$selected = array("Periodo","Sub Concepto","Clave","Matricula","Alumno","Mes");
-        if ($adeudos) {
-          $adeudos=$commond->parseAdeudos($adeudos,$filters);
-          $excel_body->crear_reporte_adeudos_pagos($adeudos,$selected);
-          
-        } else {
-          return View::make('excel.error_excel')->with('key', $parametros['key']);
-        }
-      }
-    }
-
-    public function create_reporte() {
-//        $commond = new Common_functions();
-//        $parametros = Input::get();
-//        $reglas = array(
-//            'fecha_desde' => 'date_format:Y-m-d',
-//            'fecha_hasta' => 'date_format:Y-m-d',
-//            'periodo' => 'integer'
-//        );
-//        $validator = Validator::make($parametros, $reglas);
-//
-//        if (!$validator->fails()) {
-//            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
-//            $res['data'] = $commond->obtener_alumno_idPersona($res['data']);
-//            echo json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
-//        } else {
-//            echo json_encode(array('error' => true, 'mensaje' => 'No hay parametros o no están mal', 'respuesta' => null));
-//        }
-
-
-
-        $commond = new Common_functions();
-        $parametros = Input::get();
-        $campos = explode(',', $parametros['campos']);
-        Adeudos::obtener_adeudos_reporte_filtrado($parametros,$campos);
-        var_dump($campos);
-//        var_dump($parametros['adeudos_ids']);
-//        var_dump(base64_decode($parametros['adeudos_ids']));
-        //$data=Adeudos::obtener_adeudos_reporte_filtrado($parametros);
-        //echo json_encode($data);
-        die();
-        $parametros['adeudos_ids'] = json_decode($parametros['adeudos_ids']);
-        $parametros['adeudos_campos'] = json_decode($parametros['adeudos_campos']);
-        $reglas = array(
-            'adeudos_ids' => 'required|array',
-            'adeudos_campos' => 'required|array'
-        );
-
-        $validator = Validator::make($parametros, $reglas);
-        if ($validator->fails()) {
-          return json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));    
-        } else {
-          foreach ($parametros['adeudos_ids'] as $key => $id) {
-              $adeudos_consulta[] = Adeudos::obtener_adeudos_id($id);
-          }
-          $adeudos_info = $commond->obtener_alumno_idPersona($adeudos_consulta);
-          $adeudos=$commond -> crear_key($parametros,$adeudos_info);
-          Excel::create('Reporte '.date('Y-m-d'), function($excel) use($adeudos) {
-              $excel->sheet('Sheetname', function($sheet) use($adeudos) {
-                  $sheet->fromArray($adeudos["data"]);
-              });
-          })->download('xlsx');
-        }
     }
 
     /**
@@ -465,7 +308,6 @@ class AdeudosController extends \BaseController {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         } else {
             $alumno = Adeudos::obtener_adeudos_alumno($parametros);
-            //$alumno['beca'] = Becas::AlumnoBeca_Persona_Periodo($parametros); // Consulta beca
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Referencias de alumno.', 'respuesta' => $alumno));
         }
         $final_response = Response::make($respuesta, 200);
@@ -490,7 +332,7 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
             $res['data'] = Adeudos::obtener_adeudos_periodo($parametros['periodo']);
-            $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
+            $res['data'] = $commond -> procesar_adeudos_reporte($res['data']);
             $res['data'] = $commond -> crear_key($parametros,$res['data']);
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));
         } else {

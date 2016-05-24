@@ -3,12 +3,12 @@
 class Paquete extends \Eloquent {
 
     protected $fillable = [
-                            'created_at', 'id', 'id_plandepago', 'idnivel', 
-                            'nivel', 'periodo', 'recargo', 'recargo_inscripcion', 
-                            'updated_at'
+                            'id', 'id_plandepago', 'idnivel', 
+                            'nivel', 'periodo', 'es_propedeutico'
                             ];
     protected $table = 'paqueteplandepago';
     public static $subconceptos = 'sub_conceptos';
+
     public static $subconceptos_paquete = 'subconcepto_paqueteplandepago';
     public $timestamps = true;
 
@@ -27,9 +27,12 @@ class Paquete extends \Eloquent {
     }
 
     public static function create_subconceptos_paquetes($data) {
+        $config = Config::get('utilities');
+
         $table = DB::table(Paquete::$subconceptos_paquete);
         $ids_sub = array();
         $paquete = $data['paquete_id'];
+        
         foreach ($data['sub_concepto'] as $subconcepto) {
             if (isset($subconcepto['idsub_paqueteplan'])) {
                 $ids_sub[] = intval($subconcepto['idsub_paqueteplan']); // si existe un paquete cacha el id
@@ -62,7 +65,8 @@ class Paquete extends \Eloquent {
                 "tipos_pago" => json_encode($data['tipos_pago']),
                 "digito_referencia" => $subconcepto['digito_referencia'],
                 "descripcion_sc" => $subconcepto['descripcion_sc'],
-                "recargo_acumulado"=>$subconcepto['recargo_acumulado']
+                "recargo_acumulado"=>$subconcepto['recargo_acumulado'],
+                "mes"   => $config['meses'][date('m',strtotime($subconcepto['fecha']))-1]
             );
             if (isset($subconcepto['idsub_paqueteplan'])) { // Verifica si existe un subconcepto en el paquete
                 $id = $subconcepto['idsub_paqueteplan']; // obtiene el id del registro subconcepto_paqueteplandepago
@@ -81,7 +85,8 @@ class Paquete extends \Eloquent {
                         "paquete_id" => $data['paquete_id'],
                         "digito_referencia" => $subconcepto['digito_referencia'],
                         "descripcion_sc" => $subconcepto['descripcion_sc'],
-                        "recargo_acumulado"=> $subconcepto['recargo_acumulado']
+                        "recargo_acumulado"=> $subconcepto['recargo_acumulado'],
+                        "mes"   => $config['meses'][date('m',strtotime($subconcepto['fecha']))-1]
                     ));
                     foreach ($data['tipos_pago'] as $key => $value) {
                         $adeudo_tipopago['adeudos_id'] = $adeudo['id'];
@@ -125,8 +130,8 @@ class Paquete extends \Eloquent {
                     'sc.id', 'sc.importe', 'scp.fecha_de_vencimiento',
                     'scp.recargo', 'scp.tipo_recargo', 'scp.tipos_pago',
                     'scp.recargo_acumulado' ,'scp.id as idsub_paqueteplan', 
-                    'scp.digito_referencia', 'scp.descripcion_sc','scp.recargo_acumulado',
-                    'sc.aplica_beca','sc.locker_manager','conceptos.cuenta_id'
+                    'scp.digito_referencia', 'scp.descripcion_sc','scp.recargo_acumulado', 'sc.sub_concepto',
+                    'sc.aplica_beca','sc.es_inscripcion','sc.tipo_adeudo','scp.mes','conceptos.cuenta_id'
                 )
                 ->get();
         return $query;

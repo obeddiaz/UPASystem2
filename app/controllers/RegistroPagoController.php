@@ -28,90 +28,44 @@ class RegistroPagoController extends \BaseController {
 		$user = Session::all();
 		$parametros= Input::get();	
 		$reglas = array(
-			    'importe_registro_pago' => 'required',
+				'tipo_pago' => 'integer',
+				'asignada_por'	=>	'required',
+			    'importe' => 'required',
+			    'importe_recargo'	=> 'required',
 			    'adeudo_id' => 'required',
 			    'razon' => 'required'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
-		if (!$validator->fails())
-		{
-			$adeudo_info = Adeudos::find($parametros['adeudo_id']);
-
-			if ($adeudo_info['status_adeudo']==0) {
-
-				$adeudo_up = Adeudos::obtener_adeudos_alumno(array(
-                    'id' => $adeudo_info['id'],
-                    'fecha_pago' => $adeudo_info['fecha_pago'],
-                    'id_persona' => $adeudo_info['id_persona'],
-                    'periodo' => $adeudo_info['periodo']
-                ));
-
-				if ($adeudo_up[0]['importe'] == $parametros['importe_registro_pago']) {
-					if ($adeudo_up[0]['beca'] != "N/A") {
-						$beca = $adeudo_up[0]['beca'];
-					} else {
-						$beca = 0;
-					}
-					Adeudos::where('id', '=', $adeudo_info['id'])->update(
-                        array(
-                            'beca_pago' => $beca,
-                            'recargo_pago' => $adeudo_up[0]['recargo'],
-                            'importe_pago' => $parametros['importe_registro_pago'],
-                            'status_adeudo' => 1,
-                            'fecha_pago' => date('Y-m-d H:i:s'),
-                            'tipo_pagoid' => 1
-                	));
-                	$res['status_pago'] = 'Pago realizado correctamente';
-				}
-				if ($adeudo_up[0]['importe'] > $parametros['importe_registro_pago']) {
-					if ($adeudo_up[0]['beca'] != "N/A") {
-						$beca = $adeudo_up[0]['beca'];
-					} else {
-						$beca = 0;
-					}
-					Devoluciones::create(array(
-                        'periodo' => $adeudo_info['periodo'],
-                        'fecha_devolucion' => date('Y-m-d'),
-                        'importe' => $parametros['importe_registro_pago'] - $adeudo_up[0]['importe'],
-                        'id_persona' => $id_persona,
-                        'status_devolucion' => 0
-                    ));   
-                    Adeudos::where('id', '=', $adeudo_info['id'])->update(
-                        array(
-                            'beca_pago' => $beca,
-                            'recargo_pago' => $adeudo_up[0]['recargo'],
-                            'importe_pago' => $adeudo_up[0]['importe'],
-                            'status_adeudo' => 1,
-                            'fecha_pago' => date('Y-m-d H:i:s'),
-                            'tipo_pagoid' => 1
-                	));
-                    $res['status_pago'] = 'Se ha pagado de mas, se ha generado una Devolucion de: $'.
-                    						$parametros['importe_registro_pago'] - $adeudo_up[0]['importe'];
-				}
-				if ($adeudo_up[0]['importe'] < $parametros['importe_registro_pago']) {
-					Adeudos::where('id', '=', $adeudo_info['id'])->update(
-                        array(
-                            'importe' => $adeudo_up[0]['importe'] - $parametros['importe_registro_pago'],
-                            'status_adeudo' => 0,
-                            'fecha_pago' => date('Y-m-d H:i:s'),
-                            'tipo_pagoid' => 1
-                	));
-                    $res['status_pago'] = 'Pago no liberado, se pago una cantidad menor al adeudo total, se debe:'.
-						$adeudo_up[0]['importe'] - $parametros['importe_registro_pago'];
-				}
-
-				$parametros['asignada_por']=$user['user']['persona']['iemail'];
-				Registros::create($parametros);
-				$res['data'] = Adeudos::obtener_adeudos_alumno(
-					array('id_persona' =>$adeudo_info['id_persona'],'periodo' =>$adeudo_info['periodo']));
-				$respuesta = json_encode(array('error' => false, 'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
-
-			} else {
-				$res['data'] = Adeudos::obtener_adeudos_alumno(
-					array('id_persona' =>$adeudo_info['id_persona'],'periodo' =>$adeudo_info['periodo']));
-				$respuesta = json_encode(array('error' => true, 'mensaje'=>'El pago habia sido realizado correctamente anterriormente, no se realizo accion', 'respuesta'=>$res));
+		if (!$validator->fails()) {
+			
+			$adeudo = Adeudos::where('id','=',$parametros['adeudo_id'])->first();
+			
+			if (isset($parametros['tipo_pago'])) {
+				$tipo_pago = $parametros['tipo_pago'];
+				unset($parametros['tipo_pago']);
+			}	else	{
+				$tipo_pago = 1;
 			}
+			
+			$pago = Pagos::create(array(
+				'tipo_pago' => $tipo_pago,
+				'importe' => $parametros['importe'],
+				'importe_recargo' => $parametros['importe_recargo']
+				'fecha_pago'	=>  date('Y-m-d H:i:s',date(strtotime('now')))
+				));
+
+			unset($parametros['importe']);
+			unset($parametros['importe_recargo']);
+
+			$parametros['pago_id'] = $pago['id'];
+			$parametros['email_login_asignacion']=$user['user']['persona']['iemail'];
+			
+			Registros::create($parametros);
+			
+			$res['data'] = Adeudos::obtener_adeudos_alumno(array('id_persona' =>$adeudo['id_persona'],
+							'periodo' => $adeudo['periodo']));
+			$respuesta = json_encode(array('error' => false, 'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
 			$respuesta = json_encode(
 				array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null));
@@ -188,21 +142,36 @@ class RegistroPagoController extends \BaseController {
 		$reglas = 
 			array(
 			    'id' => 'required|integer',
-			    'importe_registro_pago' => 'numeric',
-			    'adeudo_id' => 'integer',
-			    'razon' => ''
+			    'asignada_por'	=>	'size:200',
+			    'importe' => 'numeric',
+			    'importe_recargo' => 'numeric',
+			    'adeudo_id' => 'required|integer',
+			    'pago_id' => 'required|integer'
+			    'razon' => 'size:200',
+			    'tipo_pago' => 'integer'
 			);
     	$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
-			foreach ($parametros as $key => $value) {
-				if (!array_key_exists($key,$reglas)) {
-					unset($parametros[$key]);	
-				}
+			if (isset($parametros['tipo_pago'])) {
+				$parametrosPago['tipo_pago'] = $parametros['tipo_pago'];
+				unset($parametros['tipo_pago']);
+			}	else	{
+				$parametrosPago['tipo_pago'] = 1;
 			}
+			$adeudo = Adeudos::where('id','=',$parametros['adeudo_id'])->first();
+			$parametrosPago['importe'] = $parametros['importe'];
+			$parametrosPago['importe_recargo'] = $parametros['importe_recargo'];
+			unset($parametros['importe']);
+			unset($parametros['importe_recargo']);
+			Pagos::where('id','=',$parametros['pago_id'])->update($parametrosPago);
 			Registros::where('id','=',$parametros['id'])->update($parametros);
-			$res['data']=Registros::find($parametros['id']);
+			$res['data'] = Adeudos::obtener_adeudos_alumno(
+															array(
+																'id_persona' => $adeudo['id_persona'],
+																'periodo' => $adeudo['periodo'])
+															);
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
@@ -231,8 +200,15 @@ class RegistroPagoController extends \BaseController {
 
 		if (!$validator->fails())
 		{
+			$registro = Registros::where('id','=',$parametros['id'])->first();
+			$adeudo = Adeudos::where('id','=',$registro['adeudo_id'])->first();
+
 			Registros::destroy($parametros['id']);
-			$res['data']=Registros::All();
+			$res['data'] = Adeudos::obtener_adeudos_alumno(
+															array(
+																'id_persona' =>$adeudo['id_persona'],
+																'periodo' => $adeudo['periodo'])
+															);
 			$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		} else {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));

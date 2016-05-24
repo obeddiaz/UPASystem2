@@ -18,22 +18,26 @@ class PaqueteController extends \BaseController {
      */
     public function create() {
         $parametros = Input::all();
+        
         $reglas = array(
             'id_plandepago' => 'required',
             'idnivel' => 'required|integer',
             'nivel' => 'required',
             'periodo' => 'required|integer',
-            'recargo' => 'required|numeric',
-            'recargo_inscripcion' => 'required|numeric'
+            'es_propedeutico'   => 'integer'
         );
+
         $validator = Validator::make($parametros, $reglas);
 
         if (!$validator->fails()) {
+
             $res['data'] = Paquete::create($parametros);
             $respuesta = json_encode(array('error' => false, 'mensaje' => 'Nuevo registro', 'respuesta' => $res));
+            
         } else {
             $respuesta = json_encode(array('error' => true, 'mensaje' => 'No hay parametros o estan mal.', 'respuesta' => null));
         }
+
         $final_response = Response::make($respuesta, 200);
         $final_response->header('Content-Type', "application/json; charset=utf-8");
 
