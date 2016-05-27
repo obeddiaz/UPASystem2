@@ -76,9 +76,15 @@ class ReferenciasController extends \BaseController {
           $cuentas = Cuentas::where('id', '=', $adeudo_info['cuenta_id'])->first();
           $data['convenio'] = $cuentas['cuenta'];
           if (!$existe_referencia) {
-              Referencia::create(array( 'referencia' => $data['referencias'][$key]['referencia'],
-                                        'adeudos_id' => $adeudo_info['id'],
-                                        'cuentas_id' => $cuentas['id']));
+            Referencia::create(array( 'referencia' => $data['referencias'][$key]['referencia'],
+                                      'adeudos_id' => $adeudo_info['id'],
+                                      'cuentas_id' => $cuentas['id'],
+                                      'importe'    => $adeudo_info['importe']));
+          } else {
+            Referencia::where('id', '=', $existe_referencia['id'])
+                        ->update(array(
+                                      'cuentas_id' => $cuentas['id'],
+                                      'importe'    => $adeudo_info['importe']));
           }
         }
       }
