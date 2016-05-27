@@ -84,26 +84,41 @@ class Adeudos extends \Eloquent {
 
       if (isset($parametros['id'])) {
           $adeudos =  Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+              ->join('conceptos as c', 'c.id', '=', 'sc.conceptos_id')
               ->orderBy('es_inscripcion', 'desc')
               ->orderBy('fecha_limite', 'asc')
               ->where("adeudos.id", "=", $parametros['id'])
               ->select( 'adeudos.*', 
                         DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
                         'sc.aplica_beca',
-                        'sc.sub_concepto')
+                        'sc.sub_concepto',
+                        'c.concepto',
+                        'c.cuenta_id',
+                        'c.banco_id')
               ->get()->toArray(); // Se obtienen los adeudos de una persona en el periodo solicitado
 
       }   else {
           $adeudos = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+              ->join('conceptos as c', 'c.id', '=', 'sc.conceptos_id')
               ->orderBy('es_inscripcion', 'desc')
               ->orderBy('fecha_limite', 'asc')
               ->where("adeudos.id_persona", "=", $parametros['id_persona'])
               ->where("adeudos.periodo", "=", $parametros['periodo'])
-              ->select('adeudos.*', DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 'sc.aplica_beca', 'sc.sub_concepto')
+              ->select( 'adeudos.*', 
+                        DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
+                        'sc.aplica_beca', 
+                        'sc.sub_concepto',
+                        'c.concepto',
+                        'c.cuenta_id',
+                        'c.banco_id')
               ->get()->toArray(); // Se obtienen los adeudos de una persona en el periodo solicitado
       }
-        
-      $beca =   Becas::AlumnoBeca_Persona_Periodo($parametros); // Consulta beca
+      if (count($adeudos) > 0) {
+        $beca = Becas::AlumnoBeca_Persona_Periodo(array(  'periodo' => $adeudos[0]['periodo'],
+                                                          'id_persona' => $adeudos[0]['id_persona'])); // Consulta beca
+      } else {
+        $beca = array();
+      }
       $diaActual =   date('d', $now); // Dia actual
       $lock   =   false;    // blockea impresion de referencia de pago si no se pago a tiempo la inscripción
       $contadores =   array();    //  array para contadores por subconcepto
@@ -203,10 +218,11 @@ class Adeudos extends \Eloquent {
             $adeudos[$key_adeudo]['lock'] = 0;   
         }
       }
-
-
-
-      return $adeudos;
+      if ( isset($parametros['id']) ) {
+        return $adeudos[0];
+      } else {
+        return $adeudos;
+      }
     }
 
 }
