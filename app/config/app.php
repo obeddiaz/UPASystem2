@@ -175,6 +175,7 @@ return array(
         'View' => 'Illuminate\Support\Facades\View',
         
     ),
+
     'meses_periodo' => array(
       '1' => array(
           1,
@@ -195,4 +196,12 @@ return array(
           12
         )
     ),
+
+    'formas_de_pago' => array(
+      'EFE' =>  1,
+    ),
+
+    'estados' => array(
+      'AGUASCALIE' => 'Aguascalientes'
+    )
 );

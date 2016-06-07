@@ -384,7 +384,7 @@ class AdeudosController extends \BaseController {
 
         if (!$validator->fails()) {
 
-            $res['data'] = Adeudos::obtener_adeudos_reporte($parametros);
+            $res['data'] = Adeudos::obtener_adeudos_alumno($parametros);
             $res['data'] = $commond->procesar_adeudos_reporte($res['data']);
             $res['data'] = $commond->parseAdeudos($res,array());
             $respuesta = json_encode(array('error' => false, 'mensaje' => '', 'respuesta' => $res));

@@ -83,20 +83,24 @@ class Adeudos extends \Eloquent {
       $now = strtotime('now'); // Se obtiene la fecha actual
 
       if (isset($parametros['id'])) {
-          $adeudos =  Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
-              ->join('conceptos as c', 'c.id', '=', 'sc.conceptos_id')
-              ->orderBy('es_inscripcion', 'desc')
-              ->orderBy('fecha_limite', 'asc')
-              ->where("adeudos.id", "=", $parametros['id'])
-              ->select( 'adeudos.*', 
-                        DB::raw("period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso"), 
-                        'sc.aplica_beca',
-                        'sc.sub_concepto',
-                        'c.concepto',
-                        'c.cuenta_id',
-                        'c.banco_id')
-              ->get()->toArray(); // Se obtienen los adeudos de una persona en el periodo solicitado
+          if (isset($parametros['fecha']))  
+            $query_mesesDiff = "period_diff(date_format('". date('Y-m-d H:i:s',strtotime($parametros['fecha'])) ."', '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso";
+          else 
+            $query_mesesDiff = "period_diff(date_format(now(), '%Y%m'), date_format(`fecha_limite`, '%Y%m')) as meses_retraso";
 
+          $adeudos =  Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
+            ->join('conceptos as c', 'c.id', '=', 'sc.conceptos_id')
+            ->orderBy('es_inscripcion', 'desc')
+            ->orderBy('fecha_limite', 'asc')
+            ->where("adeudos.id", "=", $parametros['id'])
+            ->select( 'adeudos.*', 
+                      DB::raw($query_mesesDiff), 
+                      'sc.aplica_beca',
+                      'sc.sub_concepto',
+                      'c.concepto',
+                      'c.cuenta_id',
+                      'c.banco_id')
+            ->get()->toArray(); // Se obtienen los adeudos de una persona en el periodo solicitado
       }   else {
           $adeudos = Adeudos::join('sub_conceptos as sc', 'sc.id', '=', 'adeudos.sub_concepto_id')
               ->join('conceptos as c', 'c.id', '=', 'sc.conceptos_id')
@@ -132,7 +136,7 @@ class Adeudos extends \Eloquent {
         }
         
         $diaFechaLimite = date('d', $fecha_limite);     //  Se obtiene el No. de día de la fecha limite
-        if ($diaActual > $diaFechaLimite) {     //  Se compara si el dia ya paso para agregarle un mes de reacargo
+        if ($diaActual > $diaFechaLimite && $adeudo['meses_retraso'] == 0) {     //  Se compara si el dia ya paso para agregarle un mes de reacargo
             $adeudos[$key_adeudo]['meses_retraso'] = $adeudo['meses_retraso'] + 1;
         }
 
@@ -142,9 +146,9 @@ class Adeudos extends \Eloquent {
                                                                 ->toArray();    // Tipos de pago
         $adeudos[$key_adeudo]['importe_inicial']    =   $adeudo['importe'];
 
-        $adeudos[$key_adeudo]['descuetos']  =   Descuentos::where('adeudos_id','=',$adeudo['id'])->get()->toArray();
-        $adeudos[$key_adeudo]['descueto']   =   $commond->getDescuento($adeudo['id']);
-        $adeudos[$key_adeudo]['descueto_recargo']   =   $commond->getDescuento($adeudo['id'],2);
+        $adeudos[$key_adeudo]['descuentos']  =   Descuentos::where('adeudos_id','=',$adeudo['id'])->get()->toArray();
+        $adeudos[$key_adeudo]['descuento']   =   $commond->getDescuento($adeudo['id']);
+        $adeudos[$key_adeudo]['descuento_recargo']   =   $commond->getDescuento($adeudo['id'],2);
         $adeudos[$key_adeudo]['prorrogas'] = Prorrogas::where('adeudos_id','=',$adeudo['id'])->get()->toArray();
         $adeudos[$key_adeudo]['pagos']  =   Pagos::leftJoin('referencias','pagos.referencia_id','=','referencias.id','left')
                                                     ->where('pagos.adeudos_id','=',$adeudo['id'])
@@ -152,73 +156,88 @@ class Adeudos extends \Eloquent {
                                                     ->get()
                                                     ->toArray();
 
-        $adeudos[$key_adeudo]['pago']   =   $commond->getPago($adeudo['id']);
+        $adeudos[$key_adeudo]['pago_importe']   =   $commond->getPago($adeudo['id']);
         $adeudos[$key_adeudo]['pago_recargo']   =   $commond->getPago($adeudo['id'],2);
         $adeudos[$key_adeudo]['pago_beca']   =   $commond->getPago($adeudo['id'],3);
         $adeudos[$key_adeudo]['pago_descuento']   =   $commond->getPago($adeudo['id'],4);
         $adeudos[$key_adeudo]['pago_descuento_recargo']   =   $commond->getPago($adeudo['id'],4);
-
+        $adeudos[$key_adeudo]['pago_total']   =   $commond->getPago($adeudo['id'],5);
         if ($adeudos[$key_adeudo]['status_adeudo']  ==  0) {
           if ($adeudos[$key_adeudo]['meses_retraso'] == 0) {      // Si no tiene meses de  retraso no tendra recargo
-            $adeudos[$key_adeudo]['recargo_total'] = 0;
-            
-            $adeudos[$key_adeudo]['importe']-= $commond->calcular_importe_por_tipo(    $adeudo['importe'], $beca['importe'], $beca['tipo_importe_id']);
-            $adeudos[$key_adeudo]['importe']-= $adeudos[$key_adeudo]['descueto'];
+            // Se le resta la cantidad calculada de la beca.
+            if ($beca) {
+              $adeudos[$key_adeudo]['importe'] -=   $commond->calcular_importe_por_tipo(  $adeudo['importe'], 
+                                                                                          $beca['importe'], 
+                                                                                          $beca['tipo_importe_id']);
+              $adeudos[$key_adeudo]['beca']     =   $commond->calcular_importe_por_tipo(  $adeudo['importe'], 
+                                                                                          $beca['importe'], 
+                                                                                          $beca['tipo_importe_id']);
+            } else {
+              $adeudos[$key_adeudo]['beca']     =   "N/A";
+            }
 
-            $adeudos[$key_adeudo]['beca'] = $commond->calcular_importe_por_tipo(  $adeudo['importe'], 
-                                                                                  $beca['importe'], 
-                                                                                  $beca['tipo_importe_id']);
-            $adeudos[$key_adeudo]['recargo_no_descuento'] = 0;
-            $adeudos[$key_adeudo]['recargo_total'] = 0;
+            $adeudos[$key_adeudo]['importe']               -=  $adeudos[$key_adeudo]['pago_total'];
+            $adeudos[$key_adeudo]['importe_no_descuento']   =  $adeudos[$key_adeudo]['importe'];
+
+            $adeudos[$key_adeudo]['importe'] -=  $adeudos[$key_adeudo]['descuento'];
+
+            $adeudos[$key_adeudo]['importe_no_recargo']   =   $adeudos[$key_adeudo]['importe'];
+            $adeudos[$key_adeudo]['recargo_no_descuento'] =   0;
+            $adeudos[$key_adeudo]['recargo_total']        =   0;
           }   else   {
+
             if ($adeudos[$key_adeudo]['es_inscripcion'] == 1) {
                 $lock   =   TRUE;
             }
             
             if ($beca) {
                 $databeca = array(
-                    "cancelada_motivo" => "Pago retrasado",
-                    "cancelada_fecha" => date("Y-m-d"),
-                    "cancelada_por" => "Sistema",
-                    "id_persona" => $parametros['id_persona'],
-                    "periodo" => $parametros['periodo'],
-                    "status" => 0
+                    "cancelada_motivo"  => "Pago retrasado",
+                    "cancelada_fecha"   => date("Y-m-d"),
+                    "cancelada_por"     => "Sistema",
+                    "id_persona"        => $parametros['id_persona'],
+                    "periodo"           => $parametros['periodo'],
+                    "status"            => 0
                 );
                 Becas::update_status_beca_alumno($databeca);
                 $beca = FALSE;
             }
 
+            $adeudos[$key_adeudo]['beca'] = "N/A";
+
             if ($adeudo['aplica_recargo'] == 1 && $adeudos[$key_adeudo]['meses_retraso'] > 0) {
-                $recargo = $commond->calcular_importe_por_tipo( $adeudo['importe'], 
-                                                                $adeudo['recargo'], 
-                                                                $adeudo['tipo_recargo']); 
-                if ($adeudo['recargo_acumulado'] == 1) {
-                    $recargo *= $adeudos[$key_adeudo]['meses_retraso'];
-                }
+              $recargo = $commond->calcular_importe_por_tipo( $adeudo['importe'], 
+                                                              $adeudo['recargo'], 
+                                                              $adeudo['tipo_recargo']); 
+              if ($adeudo['recargo_acumulado'] == 1) {
+                  $recargo *= $adeudos[$key_adeudo]['meses_retraso'];
+              }
             } else {
-                $recargo = 0;
+              $recargo = 0;
             }
             
-            $adeudos[$key_adeudo]['recargo_no_descuento'] = $recargo;
-
-            $adeudos[$key_adeudo]['recargo_total'] = $recargo - $adeudos[$key_adeudo]['descueto_recargo'] - $adeudos[$key_adeudo]['pago_recargo'];
-
-            $adeudos[$key_adeudo]['importe'] += (($adeudos[$key_adeudo]['recargo_total'] - $adeudos[$key_adeudo]['descueto']) - $adeudos[$key_adeudo]['pago']);
+            $adeudos[$key_adeudo]['recargo_no_descuento'] =   $recargo - $adeudos[$key_adeudo]['pago_recargo'];
+            $adeudos[$key_adeudo]['recargo_total']        =   $recargo - $adeudos[$key_adeudo]['descuento_recargo'] - $adeudos[$key_adeudo]['pago_recargo'];
+            $adeudos[$key_adeudo]['importe_no_descuento'] =   $adeudos[$key_adeudo]['importe'] - $adeudos[$key_adeudo]['pago_importe'];
+            $adeudos[$key_adeudo]['importe_no_recargo']   =   $adeudos[$key_adeudo]['importe'] - $adeudos[$key_adeudo]['descuento'] - $adeudos[$key_adeudo]['pago_importe'];
+            $adeudos[$key_adeudo]['importe']             +=   (($adeudos[$key_adeudo]['recargo_total'] - $adeudos[$key_adeudo]['descuento']) - $adeudos[$key_adeudo]['pago_importe']);
           }
         }   else {
-          $adeudos[$key_adeudo]['recargo_total'] = $adeudos[$key_adeudo]['pago_recargo'];
-          $adeudos[$key_adeudo]['beca'] = $adeudos[$key_adeudo]['pago_beca'];
-          $adeudos[$key_adeudo]['descueto'] = $adeudos[$key_adeudo]['pago_descuento'];
-          $adeudos[$key_adeudo]['descueto_recargo'] = $adeudos[$key_adeudo]['pago_descuento_recargo'];
-          $adeudos[$key_adeudo]['importe'] = $adeudos[$key_adeudo]['pago'];
+          $adeudos[$key_adeudo]['recargo_total']    =   $adeudos[$key_adeudo]['pago_recargo'];
+          $adeudos[$key_adeudo]['beca']             =   $adeudos[$key_adeudo]['pago_beca'];
+          $adeudos[$key_adeudo]['descuento']         =   $adeudos[$key_adeudo]['pago_descuento'];
+          $adeudos[$key_adeudo]['descuento_recargo'] =   $adeudos[$key_adeudo]['pago_descuento_recargo'];
+          $adeudos[$key_adeudo]['importe']          =   $adeudos[$key_adeudo]['pago_total'];
         }
+
         if ($lock==TRUE) {
-            $adeudos[$key_adeudo]['lock'] = 1;   
+          $adeudos[$key_adeudo]['lock'] = 1;   
         } else {
-            $adeudos[$key_adeudo]['lock'] = 0;   
+          $adeudos[$key_adeudo]['lock'] = 0;   
         }
+
       }
-      if ( isset($parametros['id']) ) {
+      if ( isset($parametros['id']) && !empty($adeudos) ) {
         return $adeudos[0];
       } else {
         return $adeudos;

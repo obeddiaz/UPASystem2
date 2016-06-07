@@ -12,9 +12,9 @@ class RegistroPagoController extends \BaseController {
 		$res['data'] = Registros::All();
 		$respuesta = json_encode(array('error' =>false,'mensaje'=>'', 'respuesta'=>$res));
 		$final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
+	  $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-        return $final_response;
+		return $final_response;
 	}
 
 
@@ -25,55 +25,71 @@ class RegistroPagoController extends \BaseController {
 	 */
 	public function create()
 	{
-		$user = Session::all();
-		$parametros= Input::get();	
-		$reglas = array(
-				'tipo_pago' => 'integer',
-				'asignada_por'	=>	'required',
-			    'importe' => 'required',
-			    'importe_recargo'	=> 'required',
-			    'adeudo_id' => 'required',
-			    'razon' => 'required'
-			);
-    	$validator = Validator::make($parametros,$reglas);
+		$user 			= Session::all();
+		$parametros	= Input::get();	
+		$reglas			= array(	'adeudos_id'				=>	'required',
+													'tipo_pago'					=>	'integer',
+													'asignada_por'			=>	'required',
+													'importe' 					=>	'required',
+													'importe_recargo'		=>	'required',
+													'descuento'					=>	'required',
+													'descuento_recargo'	=>	'required',
+													'total'							=>	'required',								    
+													'razon' 						=>	'required',
+													'beca'							=>	'required',
+													'fecha_pago'				=>	'required'	);
+
+	$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails()) {
 			
-			$adeudo = Adeudos::where('id','=',$parametros['adeudo_id'])->first();
-			
-			if (isset($parametros['tipo_pago'])) {
-				$tipo_pago = $parametros['tipo_pago'];
-				unset($parametros['tipo_pago']);
-			}	else	{
-				$tipo_pago = 1;
+			$adeudo = Adeudos::obtener_adeudos_alumno(array( 	'id'  	=>  $parametros['adeudos_id'],
+																												'fecha' =>  $parametros['fecha_de_pago']));
+
+			if ($parametros['total'] <= $adeudo['importe']) {
+				
+				$pago = Pagos::create(array(	'adeudos_id'					=>	$parametros['adeudos_id'],
+																			'tipo_pago' 					=>	( isset($parametros['tipo_pago']) ? $parametros['tipo_pago'] : 1),
+																			'importe'							=>	$parametros['importe'],
+																			'importe_recargo' 		=>	$parametros['importe_recargo'],
+																			'descuento'						=>	$parametros['descuento'],
+																			'descuento_recargo'		=>	$parametros['descuento_recargo'],
+																			'total'								=>	$parametros['total'],
+																			'beca'								=>	$parametros['beca'],
+																			'fecha_pago'					=>  $parametros['fecha_pago']	));
+
+				unset(	$parametros['importe']						);
+				unset(	$parametros['importe_recargo']		);
+				unset(	$parametros['descuento']					);
+				unset(	$parametros['descuento_recargo']	);
+				unset(	$parametros['total']							);
+				unset(	$parametros['tipo_pago']					);
+
+				$parametros['pago_id'] = $pago['id'];
+				$parametros['email_login_asignacion']=$user['user']['persona']['iemail'];
+				
+				Registros::create($parametros);
+				
+				$res['data'] = Adeudos::obtener_adeudos_alumno(array(	'id_persona'	=>	$adeudo['id_persona'],
+																															'periodo' 		=>	$adeudo['periodo']	));
+
+				$respuesta = json_encode(array('error' => false, 'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
+
+			}	else  {
+
+				$respuesta = json_encode(array(	'error' 		=>	true,
+																				'mensaje'		=>	'El total es mayor al importe del adeudo (favor de confirmar los datos).',
+																				'respuesta'	=>	null 	));
+
 			}
-			
-			$pago = Pagos::create(array(
-				'tipo_pago' => $tipo_pago,
-				'importe' => $parametros['importe'],
-				'importe_recargo' => $parametros['importe_recargo']
-				'fecha_pago'	=>  date('Y-m-d H:i:s',date(strtotime('now')))
-				));
-
-			unset($parametros['importe']);
-			unset($parametros['importe_recargo']);
-
-			$parametros['pago_id'] = $pago['id'];
-			$parametros['email_login_asignacion']=$user['user']['persona']['iemail'];
-			
-			Registros::create($parametros);
-			
-			$res['data'] = Adeudos::obtener_adeudos_alumno(array('id_persona' =>$adeudo['id_persona'],
-							'periodo' => $adeudo['periodo']));
-			$respuesta = json_encode(array('error' => false, 'mensaje'=>'Nuevo registro', 'respuesta'=>$res));
 		} else {
-			$respuesta = json_encode(
-				array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null));
+			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null));
 		}
-		$final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-        return $final_response;
+		$final_response = Response::make($respuesta, 200);
+	 $final_response->header('Content-Type', "application/json; charset=utf-8");
+
+	 return $final_response;
 	}
 
 
@@ -99,9 +115,9 @@ class RegistroPagoController extends \BaseController {
 		$parametros=Input::get();		
 		$reglas = 
 			array(
-			    'id' => 'required|integer'
+				 'id' => 'required|integer'
 			);
-    	$validator = Validator::make($parametros,$reglas);
+		$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
@@ -111,9 +127,9 @@ class RegistroPagoController extends \BaseController {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 		$final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
+		  $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-        return $final_response;
+		  return $final_response;
 	}
 
 
@@ -138,19 +154,19 @@ class RegistroPagoController extends \BaseController {
 	public function update()
 	{
 		$parametros= Input::get();	
-        $user = Session::all();
+		  $user = Session::all();
 		$reglas = 
 			array(
-			    'id' => 'required|integer',
-			    'asignada_por'	=>	'size:200',
-			    'importe' => 'numeric',
-			    'importe_recargo' => 'numeric',
-			    'adeudo_id' => 'required|integer',
-			    'pago_id' => 'required|integer'
-			    'razon' => 'size:200',
-			    'tipo_pago' => 'integer'
+				 'id' => 'required|integer',
+				 'asignada_por'	=>	'size:200',
+				 'importe' => 'numeric',
+				 'importe_recargo' => 'numeric',
+				 'adeudo_id' => 'required|integer',
+				 'pago_id' => 'required|integer'
+				 'razon' => 'size:200',
+				 'tipo_pago' => 'integer'
 			);
-    	$validator = Validator::make($parametros,$reglas);
+		$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
@@ -177,9 +193,9 @@ class RegistroPagoController extends \BaseController {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 		$final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
+		  $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-        return $final_response;
+		  return $final_response;
 	}
 
 
@@ -194,9 +210,9 @@ class RegistroPagoController extends \BaseController {
 		$parametros= Input::get();	
 		$reglas = 
 			array(
-			    'id' => 'required|integer',
+				 'id' => 'required|integer',
 			);
-    	$validator = Validator::make($parametros,$reglas);
+		$validator = Validator::make($parametros,$reglas);
 
 		if (!$validator->fails())
 		{
@@ -214,8 +230,8 @@ class RegistroPagoController extends \BaseController {
 			$respuesta = json_encode(array('error' =>true,'mensaje'=>'No hay parametros o estan mal.', 'respuesta'=>null ));
 		}
 		$final_response = Response::make($respuesta, 200);
-        $final_response->header('Content-Type', "application/json; charset=utf-8");
+		  $final_response->header('Content-Type', "application/json; charset=utf-8");
 
-        return $final_response;
+		  return $final_response;
 	}
 }
